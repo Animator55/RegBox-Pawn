@@ -1,6 +1,8 @@
 import React from 'react'
 import ProdPop from './pops/ProdPop'
 import AccountPop from './pops/AccountPop'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faDollarSign, faUserCircle } from '@fortawesome/free-solid-svg-icons'
 
 type Props = {}
 
@@ -19,9 +21,13 @@ export default function TopBar({}: Props) {
     {pop && pops[pop]}
     <button
         onClick={()=>{setPop("products")}}
-    ></button>
+    >
+        <FontAwesomeIcon icon={faDollarSign}/>
+    </button>
     <button
         onClick={()=>{setPop("account")}}
-    ></button>
+    >
+        <FontAwesomeIcon icon={faUserCircle}/>
+    </button>
   </header>
 }

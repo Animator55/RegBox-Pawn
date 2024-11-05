@@ -3,10 +3,15 @@ import SearchBar from './def/Search'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSortAlphaDownAlt, faSortAlphaUpAlt, faSortAmountAsc, faSortAmountDesc } from '@fortawesome/free-solid-svg-icons'
 import OrderListPop from './pops/OrderListPop'
+import { tablePlaces } from '../defaults/tablePlaces'
+import { TableType } from '../vite-env'
 
-type Props = {}
+type Props = {
+  tables: TableType[]
+  setCurrent: Function
+}
 
-export default function TableList({}: Props) {
+export default function TableList({tables}: Props) {
     const [search, setSearch] = React.useState("")
     const [pop, setPop] = React.useState<"order" | undefined>(undefined)
     const sortIcons:{[key:string]: any} = {
@@ -21,6 +26,7 @@ export default function TableList({}: Props) {
 
     const confirmOrderList = ()=>{
         console.log("confirm")
+        setPop(undefined)
     }
 
     const Top = ()=>{
@@ -39,6 +45,17 @@ export default function TableList({}: Props) {
             </button>
         </header>
     }
+
+    const constructor = {
+      active: [],
+      unnactive: [],
+      closed: []
+    }
+
+    for(let i=0; i<tablePlaces.length; i++){
+
+    }
+
   return <section>
     {pop && <OrderListPop 
         options={orderOptions} 
@@ -47,5 +64,6 @@ export default function TableList({}: Props) {
         close={()=>{setPop(undefined)}}
     />}
     <Top/>
+    
   </section>
 }

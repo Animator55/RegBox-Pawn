@@ -1,6 +1,5 @@
-import { faList } from '@fortawesome/free-solid-svg-icons'
+import { faList, faMap } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React from 'react'
 
 type Props = {
     setNav:Function
@@ -13,6 +12,6 @@ export default function NavBar({ setNav}: Props) {
     ><FontAwesomeIcon icon={faList}/></button>
     <button
         onClick={()=>{setNav("map")}}
-    ><FontAwesomeIcon icon={faList}/></button>
+    ><FontAwesomeIcon icon={faMap}/></button>
   </nav>
 }
