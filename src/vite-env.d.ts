@@ -35,6 +35,9 @@ export type SingleEvent = {
     owner_name?: string /// only for notification events
 }
 
+export type histStructure = {
+    [key: string]: HistorialTableType
+  }
 export type HistorialTableType = {
     _id: string
     name: string

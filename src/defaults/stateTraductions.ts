@@ -1,6 +1,7 @@
+import { router } from "../vite-env"
 
-export const stateTraductions = {
-    "unnactive": "Concluida", "closed": "Cerrada", "open": "Abierta", "paying": "Pagando"
+export const stateTraductions: router = {
+    "unnactive": "Inactiva", "closed": "Cerrada", "open": "Abierta", "paying": "Pagando"
 }
 
 export const orderNameTranslations:{[key:string]: string}={
