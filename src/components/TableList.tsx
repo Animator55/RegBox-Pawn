@@ -3,15 +3,16 @@ import SearchBar from './def/Search'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSortAlphaDownAlt, faSortAlphaUpAlt, faSortAmountAsc, faSortAmountDesc } from '@fortawesome/free-solid-svg-icons'
 import OrderListPop from './pops/OrderListPop'
-import { tablePlaces } from '../defaults/tablePlaces'
-import { TableType } from '../vite-env'
+import { histStructure, TablePlaceType } from '../vite-env'
+import { stateTraductions } from '../defaults/stateTraductions'
 
 type Props = {
-  tables: TableType[]
   setCurrent: Function
+  tablePlaces: TablePlaceType[]
+  historial: histStructure
 }
 
-export default function TableList({tables}: Props) {
+export default function TableList({setCurrent,tablePlaces, historial}: Props) {
     const [search, setSearch] = React.useState("")
     const [pop, setPop] = React.useState<"order" | undefined>(undefined)
     const sortIcons:{[key:string]: any} = {
@@ -46,14 +47,38 @@ export default function TableList({tables}: Props) {
         </header>
     }
 
-    const constructor = {
-      active: [],
+    const constructor: {[key:string]: TablePlaceType[]} = {
+      open: [],
       unnactive: [],
-      closed: []
+      closed: [],
     }
 
     for(let i=0; i<tablePlaces.length; i++){
+      let key = "unnactive"
+      if(historial[tablePlaces[i]._id]) key = historial[tablePlaces[i]._id]?.historial[historial[tablePlaces[i]._id].historial.length-1].state
+      constructor[key].push(tablePlaces[i])
+    }
 
+    const TableList = ()=>{
+      return <section>
+        {Object.keys(constructor).map(key=>{
+          return <div
+            key={Math.random()}
+          >
+            <label>{stateTraductions[key]}</label>
+            <ul>
+              {constructor[key].map(el=>{
+                return <button
+                  key={Math.random()}
+                  onClick={()=>{setCurrent(el._id, key === "unnactive")}}
+                >
+                  {el.name}
+                </button>
+              })}
+            </ul>
+          </div>
+        })}
+      </section>
     }
 
   return <section>
@@ -64,6 +89,6 @@ export default function TableList({tables}: Props) {
         close={()=>{setPop(undefined)}}
     />}
     <Top/>
-    
+    <TableList/>
   </section>
 }
