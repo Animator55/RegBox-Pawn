@@ -5,6 +5,7 @@ import { faSortAlphaDownAlt, faSortAlphaUpAlt, faSortAmountAsc, faSortAmountDesc
 import OrderListPop from './pops/OrderListPop'
 import { histStructure, TablePlaceType } from '../vite-env'
 import { stateTraductions } from '../defaults/stateTraductions'
+import { colorSelector } from '../logic/colorSelector'
 
 type Props = {
   setCurrent: Function
@@ -71,6 +72,7 @@ export default function TableList({setCurrent,tablePlaces, historial}: Props) {
                 return <button
                   key={Math.random()}
                   onClick={()=>{setCurrent(el._id, key === "unnactive")}}
+                  style={{backgroundColor: colorSelector[key]}}
                 >
                   {el.name}
                 </button>
