@@ -84,19 +84,12 @@ export type userType = {
 
 export type configType = {
     animations: boolean
-    blur: boolean
-    mainColor: string
-    topBarButtons: {
-        [key: string]: boolean
-    }
     prodsAsList: boolean
-    orderedLists: boolean
     prodsInEditorAsList: boolean,
     map: {
         x: number
         y: number
         zoom: number
-        align: boolean
     }
     miniMapOrder: "abc"|"abc-r"|"def"|"def-r"
     prodListOrder: "abc"|"abc-r"|"def"|"def-r"
