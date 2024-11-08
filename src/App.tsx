@@ -37,7 +37,8 @@ export const Configuration = React.createContext({
 
 let defaultHistorialParsed = {}
 for (const id in historialDef) {
-  defaultHistorialParsed = { ...defaultHistorialParsed, [id]: JSON.parse(historialDef[id]) }
+  let parsed = JSON.parse(historialDef[id]) as HistorialTableType
+  defaultHistorialParsed = { ...defaultHistorialParsed, [id]: parsed}
 }
 
 export default function App({ }: Props) {
@@ -47,7 +48,7 @@ export default function App({ }: Props) {
   const [localHistorial, setLocalHistorial] = React.useState<histStructure>(defaultHistorialParsed)
   const [localTablePlaces, setTablePlaces] = React.useState<TablePlaceType[]>(tablePlaces)
 
-  const [pop, setPop] = React.useState<{ name: string, function: Function } | undefined>(undefined)
+  const [pop, setPop] = React.useState<{ name: string, data: any, function: Function } | undefined>(undefined)
 
   const [currentTable, setCurrentState] = React.useState<string | undefined>(undefined)
 
@@ -56,6 +57,7 @@ export default function App({ }: Props) {
     else {
       setPop({
         name: "openTable",
+        data: id,
         function: () => {
           let result = createTable(id)
           if (result) {
@@ -69,7 +71,22 @@ export default function App({ }: Props) {
 
   const getLastTable = (): TableEvents | undefined => {
     if (!currentTable || localHistorial[currentTable].historial.length === 0) return
-    return localHistorial[currentTable].historial[localHistorial[currentTable].historial.length - 1]
+    return {
+      ...localHistorial[currentTable].historial[localHistorial[currentTable].historial.length - 1], 
+      _id: currentTable,
+      name: localHistorial[currentTable].name
+    }
+  }
+
+  const getTableName = (id: string)=>{
+    let result = ""
+    for(let i=0;i<localTablePlaces.length; i++){
+      if(localTablePlaces[i]._id === id) {
+        result = localTablePlaces[i].name
+        break
+      }
+    }
+    return result
   }
 
   const createTable = (id: string) => {
@@ -124,15 +141,17 @@ export default function App({ }: Props) {
     "list": <TableList
       setCurrent={setCurrent}
       historial={localHistorial}
+      setPage={setPage}
       tablePlaces={localTablePlaces}
     />,
     "map": <Map
+    setPage={setPage}
       current={currentTable}
       setCurrent={setCurrent}
       tablesOpenMin={tablesOpenMin}
       tablePlaces={localTablePlaces}
     />,
-    "view": currentTable && <TableView current={getLastTable()} setDisplay={setDisplay} />,
+    "view": currentTable && <TableView setPage={setPage} current={getLastTable()} setDisplay={setDisplay} />,
     // "historial": <TableHistorial current_id={currentTable._id}/>,
   }
 
@@ -140,10 +159,7 @@ export default function App({ }: Props) {
     "main": <>
       <TopBar />
       {displays[displayMode]}
-      <button onClick={() => { setPage("picker") }}>
-        <FontAwesomeIcon icon={faPlus} />
-      </button>
-      <NavBar setNav={setDisplay} />
+      <NavBar currentNav={displayMode} setNav={setDisplay} />
     </>,
     "picker": <>a</>
   }
@@ -151,7 +167,7 @@ export default function App({ }: Props) {
 
   const pops: router = {
     "openTable": <ConfirmPop
-      title={"Realizar apertura de mesa?"}
+      title={"Realizar apertura de mesa "+getTableName(pop?.data)+"?"}
       subTitle={"Se guardará en el historial."}
       confirm={() => {
         if (pop?.function) pop.function()

@@ -1,7 +1,7 @@
 import React from 'react'
 import SearchBar from './def/Search'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSortAlphaDownAlt, faSortAlphaUpAlt, faSortAmountAsc, faSortAmountDesc } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faSortAlphaDownAlt, faSortAlphaUpAlt, faSortAmountAsc, faSortAmountDesc, faWarning } from '@fortawesome/free-solid-svg-icons'
 import OrderListPop from './pops/OrderListPop'
 import { histStructure, TablePlaceType } from '../vite-env'
 import { stateTraductions } from '../defaults/stateTraductions'
@@ -12,9 +12,10 @@ type Props = {
   setCurrent: Function
   tablePlaces: TablePlaceType[]
   historial: histStructure
+  setPage: Function
 }
 
-export default function TableList({ setCurrent, tablePlaces, historial }: Props) {
+export default function TableList({ setCurrent, tablePlaces, historial,setPage }: Props) {
   const [search, setSearch] = React.useState("")
   const [pop, setPop] = React.useState<"order" | undefined>(undefined)
   const sortIcons: { [key: string]: any } = {
@@ -33,15 +34,14 @@ export default function TableList({ setCurrent, tablePlaces, historial }: Props)
   }
 
   const Top = () => {
-    return <header>
+    return <header className='table-list-header'>
       <SearchBar
         searchButton={setSearch}
         placeholder='Buscar...'
         defaultValue={search}
         onChange
-        focus
       />
-      <button onClick={() => {
+      <button className='default-button' onClick={() => {
         setPop("order")
       }}>
         <FontAwesomeIcon icon={sortIcons[sortValue]} />
@@ -64,30 +64,36 @@ export default function TableList({ setCurrent, tablePlaces, historial }: Props)
   const TableList = () => {
     return <section>
       {Object.keys(constructor).map(key => {
+        let ul = constructor[key].map(el => {
+          let check = checkSearch(el.name, search)
+          return (search === "" || check !== el.name) && <button
+            key={Math.random()}
+            onClick={() => { setCurrent(el._id, key === "unnactive") }}
+            style={{ backgroundColor: colorSelector[key] }}
+            dangerouslySetInnerHTML={{ __html: check }}
+          >
+          </button>
+        })
+
         return <div
+          className='table-list-div'
           key={Math.random()}
         >
           <label>{stateTraductions[key]}</label>
-          <ul>
-            {constructor[key].map(el => {
-              let check = checkSearch(el.name, search)
-
-              return <button
-                key={Math.random()}
-                className={search !== "" && check === el.name ? "d-none" : ''}
-                onClick={() => { setCurrent(el._id, key === "unnactive") }}
-                style={{ backgroundColor: colorSelector[key] }}
-                dangerouslySetInnerHTML={{ __html: check }}
-              >
-              </button>
-            })}
+          <ul className='table-list-ul'>
+            {ul.length === 0 ? 
+              <div className='no-items'>
+                <FontAwesomeIcon icon={faWarning}/>
+                No hay mesas que enlistar
+              </div> : ul
+            }
           </ul>
         </div>
       })}
     </section>
   }
 
-  return <section>
+  return <section className='page'>
     {pop && <OrderListPop
       options={orderOptions}
       actual={"def"}
@@ -96,5 +102,9 @@ export default function TableList({ setCurrent, tablePlaces, historial }: Props)
     />}
     <Top />
     <TableList />
+
+    <button className='picker-mode-button' onClick={() => { setPage("picker") }}>
+        <FontAwesomeIcon icon={faPlus} />
+      </button>
   </section>
 }

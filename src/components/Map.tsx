@@ -11,19 +11,13 @@ type Props = {
   setCurrent: Function
   tablesOpenMin: { _id: string, name: string, state: "open" | "paying" | "closed" | "unnactive" }[]
   tablePlaces: TablePlaceType[]
+  setPage: Function
 }
 
 
-export default function Map({ current, setCurrent, tablesOpenMin, tablePlaces }: Props) {
+export default function Map({ current, setCurrent, tablesOpenMin, tablePlaces, setPage }: Props) {
   const c = React.useContext(Configuration)
   const [localMap, setMap] = React.useState<TablePlaceType[]>(tablePlaces)
-
-  const Top = () => {
-    return <header className='map-header'>
-      <section className='edit-container'>
-      </section>
-    </header>
-  }
 
   const MapDisplay = () => {
     const drag = (e: React.MouseEvent) => {
@@ -173,9 +167,11 @@ export default function Map({ current, setCurrent, tablesOpenMin, tablePlaces }:
     </section>
   }
 
-  return <section className='map'>
-    <Top />
+  return <section className='map page'>
     <MapDisplay />
+    <button className='picker-mode-button' onClick={() => { setPage("picker") }}>
+        <FontAwesomeIcon icon={faPlus} />
+      </button>
   </section>
 
 }
