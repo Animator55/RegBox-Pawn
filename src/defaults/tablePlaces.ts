@@ -3,7 +3,7 @@ import { TablePlaceType } from "../vite-env";
 export const tablePlaces: TablePlaceType[] = [
     {
       "_id": "328862752886",
-      "name": "1",
+      "name": "Living",
       "coords": {
         "x": 100,
         "y": 100
