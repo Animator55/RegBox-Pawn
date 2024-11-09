@@ -89,12 +89,6 @@ main {
   padding: 0.4rem;
   transition: border-color 300ms, background-color 300ms, color 300ms;
 }
-.default-button:hover {
-  transition: border-color 300ms, background-color 300ms, color 300ms;
-  border-color: var(--corange);
-  color: var(--corange);
-  background-color: transparent;
-}
 .default-button-2 {
     cursor: pointer;
     display: flex;
@@ -106,12 +100,6 @@ main {
     border-radius: 5px;
     padding: 0.4rem;
     transition: border-color 300ms, background-color 300ms, color 300ms;
-}
-.default-button-2:hover {
-    transition: border-color 300ms, background-color 300ms, color 300ms;
-    border-color: var(--corange);
-    color: var(--corange);
-    background-color: var(--cwhite);
 }
 
 .back-blur, .back {
@@ -261,6 +249,11 @@ main {
     font-size: 1.5rem;
     background-color: transparent;
     color: var(--cwhite);
+}
+.main-header.picker button {
+  font-size: .9rem;
+  padding: .3rem;
+  background-color: var(--cgray);
 }
 
 
@@ -419,4 +412,79 @@ main {
 .page {
   position: relative;
   height: 100%;
+}
+
+
+/**/
+
+.type-selector > header {
+  display: flex;
+  overflow-x: auto;
+  gap: .8rem;
+  padding: 1rem;
+  align-items: center;
+}
+
+.type-selector > header > button.active {
+  background-color: var(--cdarkgray);
+  color: var(--cwhite);
+  border-color: var(--cwhite);
+}
+.type-selector > header > button {
+  background-color: var(--clightgray);
+  border: 3px solid transparent;
+  border-radius: 50%;
+  width: 3.5rem;
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+}
+
+.type-selector > ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 220px));
+  padding: 0.5rem;
+  gap: .7rem;
+}
+@media (max-width:700px) {
+  .type-selector > ul {
+    grid-template-columns: 49.5% 49.5%;
+    gap: 1%;
+  }
+}
+.type-selector > ul > button {
+  padding: 2.5rem 1rem;
+  font-size: 1.2rem;
+}
+
+.return-to-type-selector {
+  position: absolute;
+  border-radius: 5px;
+  background-color: var(--corange);
+  padding: .5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  left: 1rem;
+  bottom: 1rem;
+  font-size: 1rem;
+}
+
+
+
+
+
+/**/
+
+.view-command-button {
+  display: flex;
+  background-color: var(--cblack);
+  padding: 1rem;
+  font-size: 1.2rem;
+  color: var(--clightgray);
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
 }
