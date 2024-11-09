@@ -16,6 +16,8 @@ import ConfirmPop from './components/def/ConfirmPop'
 import { defaultConfig } from './defaults/config'
 
 import "./assets/App.css"
+import Picker from './components/Picker'
+import { products, productsType } from './defaults/products'
 
 type Props = {}
 
@@ -47,6 +49,7 @@ export default function App({ }: Props) {
   const [displayMode, setDisplay] = React.useState<"list" | "map" | "view">("list")
   const [localHistorial, setLocalHistorial] = React.useState<histStructure>(defaultHistorialParsed)
   const [localTablePlaces, setTablePlaces] = React.useState<TablePlaceType[]>(tablePlaces)
+  const [prods, setProds] = React.useState<productsType>(products)
 
   const [pop, setPop] = React.useState<{ name: string, data: any, function: Function } | undefined>(undefined)
 
@@ -161,7 +164,7 @@ export default function App({ }: Props) {
       {displays[displayMode]}
       <NavBar currentNav={displayMode} setNav={setDisplay} />
     </>,
-    "picker": <>a</>
+    "picker": <Picker prods={prods} setPageMain={setPage}/>
   }
 
 
