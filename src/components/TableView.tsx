@@ -1,6 +1,5 @@
 import { faArrowLeft, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React from 'react'
 import { TableEvents } from '../vite-env'
 import { stateTraductions } from '../defaults/stateTraductions'
 import { colorSelector } from '../logic/colorSelector'
@@ -30,11 +29,6 @@ export default function TableView({current, setDisplay, setPage}: Props) {
     </ul>
   }
 
-  const Bottom = ()=>{
-    return <section>
-
-    </section>
-  }
 
   return <section className='page'>
     <Header/>

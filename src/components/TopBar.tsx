@@ -2,7 +2,7 @@ import React from 'react'
 import ProdPop from './pops/ProdPop'
 import AccountPop from './pops/AccountPop'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleDollarToSlot, faDollarSign, faUserCircle } from '@fortawesome/free-solid-svg-icons'
+import { faCircleDollarToSlot, faUserCircle } from '@fortawesome/free-solid-svg-icons'
 
 type Props = {}
 

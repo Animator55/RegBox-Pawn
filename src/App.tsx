@@ -7,8 +7,6 @@ import TableView from './components/TableView'
 import { configType, HistorialTableType, histStructure, router, SingleEvent, TableEvents, TablePlaceType } from './vite-env'
 import { historialDef } from './defaults/historialDef'
 import { tablePlaces } from './defaults/tablePlaces'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import getTableData from './logic/getTableData'
 import fixNum from './logic/fixDateNumber'
 import { back_addTable } from './logic/API'
@@ -48,9 +46,11 @@ export default function App({ }: Props) {
   const [page, setPage] = React.useState<"main" | "picker">("main")
   const [displayMode, setDisplay] = React.useState<"list" | "map" | "view">("list")
   const [localHistorial, setLocalHistorial] = React.useState<histStructure>(defaultHistorialParsed)
-  const [localTablePlaces, setTablePlaces] = React.useState<TablePlaceType[]>(tablePlaces)
-  const [prods, setProds] = React.useState<productsType>(products)
-
+  // const [localTablePlaces, setTablePlaces] = React.useState<TablePlaceType[]>(tablePlaces)
+  // const [prods, setProds] = React.useState<productsType>(products)
+  const localTablePlaces: TablePlaceType[] = tablePlaces
+  const prods: productsType = products
+  
   const [pop, setPop] = React.useState<{ name: string, data: any, function: Function } | undefined>(undefined)
 
   const [currentTable, setCurrentState] = React.useState<string | undefined>(undefined)
@@ -149,7 +149,6 @@ export default function App({ }: Props) {
     />,
     "map": <Map
     setPage={setPage}
-      current={currentTable}
       setCurrent={setCurrent}
       tablesOpenMin={tablesOpenMin}
       tablePlaces={localTablePlaces}

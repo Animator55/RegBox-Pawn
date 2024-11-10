@@ -1,7 +1,7 @@
 import React from 'react'
 import { Item, router } from '../vite-env'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCaretLeft, faCaretUp, faPlus, faSortAlphaDownAlt, faSortAlphaUpAlt, faSortAmountAsc, faSortAmountDesc } from '@fortawesome/free-solid-svg-icons'
+import { faCaretLeft, faCaretUp, faMinus, faPlus, faSortAlphaDownAlt, faSortAlphaUpAlt, faSortAmountAsc, faSortAmountDesc } from '@fortawesome/free-solid-svg-icons'
 import { productsType } from '../defaults/products'
 import SearchBar from './def/Search'
 import OrderListPop from './pops/OrderListPop'
@@ -17,9 +17,9 @@ export default function Picker({ setPageMain, prods }: Props) {
     const [search, setSearch] = React.useState<string>("")
 
     const [page, setPage] = React.useState<string>("")
-    const [pop, setPop] = React.useState<"order" | undefined>(undefined)
+    const [pop, setPop] = React.useState<"order" | "command" | undefined>(undefined)
 
-    const [selectedItem, setSelectedItem] = React.useState<string | undefined>(undefined)
+    const [selectedItem, setSelectedItem] = React.useState<Item | undefined>(undefined)
 
     const addPhase = () => {
         setResult([...result, []])
@@ -104,6 +104,38 @@ export default function Picker({ setPageMain, prods }: Props) {
 
     const ItemSelector = () => {
         if (page === "") return
+
+        const Inspector = () => {
+            return selectedItem && <div className='inspector'>
+                <p>{selectedItem.name}</p>
+                <button>Ver detalles</button>
+                <textarea placeholder='Añadir comentario...'></textarea>
+                <div className='presets'>{selectedItem.presets && selectedItem.presets.map(tag => {
+                    return <button
+                        key={Math.random()}
+                        onClick={() => { console.log("a") }}
+                    >
+                        {tag}
+                    </button>
+                })}</div>
+                <div>
+                    <p>{selectedItem.amount}</p>
+                    <div>
+                        <button key={Math.random()}
+                            onClick={() => {
+                            }}>
+                            <FontAwesomeIcon icon={faPlus} />
+                        </button>
+                        <button key={Math.random()}
+                            onClick={() => {
+                            }}>
+                            <FontAwesomeIcon icon={faMinus} />
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+
         return <section className='page'>
             <div className='item-selector'>
 
@@ -124,18 +156,15 @@ export default function Picker({ setPageMain, prods }: Props) {
                     {prods[page].map(item => {
                         return <button
                             key={Math.random()}
-                            className={selectedItem === item._id ? "active" : ""}
-                            onClick={() => { setSelectedItem(item.id) }}
+                            className={selectedItem?._id === item._id ? "active" : ""}
+                            onClick={() => { setSelectedItem(item) }}
                         >
                             {item.name}
                         </button>
                     })}
                 </ul>
             </div>
-            <div className='inspector'>
-                    
-            </div>
-
+            <Inspector />
             <button className='return-to-type-selector' onClick={() => { setPage("") }}>
                 <FontAwesomeIcon icon={faCaretLeft} />
                 Volver
@@ -148,13 +177,18 @@ export default function Picker({ setPageMain, prods }: Props) {
         "items": <ItemSelector />,
     }
 
-    return <>
-        {pop && <OrderListPop
+    const pops = {
+        "order": <OrderListPop
             options={orderOptions}
             actual={"def"}
             confirm={confirmOrderList}
             close={() => { setPop(undefined) }}
-        />}
+        />,
+        "command": <ShowCommand />
+    }
+
+    return <>
+        {pop && pops[pop]}
         <Header />
         {pages[page !== "" ? "items" : "types"]}
         <button className='view-command-button' onClick={() => { console.log("a") }}>

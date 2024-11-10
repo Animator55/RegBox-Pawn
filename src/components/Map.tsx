@@ -7,7 +7,6 @@ import { colorSelector } from '../logic/colorSelector'
 import { Configuration } from '../App'
 
 type Props = {
-  current: string | undefined
   setCurrent: Function
   tablesOpenMin: { _id: string, name: string, state: "open" | "paying" | "closed" | "unnactive" }[]
   tablePlaces: TablePlaceType[]
@@ -15,9 +14,10 @@ type Props = {
 }
 
 
-export default function Map({ current, setCurrent, tablesOpenMin, tablePlaces, setPage }: Props) {
+export default function Map({ setCurrent, tablesOpenMin, tablePlaces, setPage }: Props) {
   const c = React.useContext(Configuration)
-  const [localMap, setMap] = React.useState<TablePlaceType[]>(tablePlaces)
+  // const [localMap, setMap] = React.useState<TablePlaceType[]>(tablePlaces)
+  const localMap:TablePlaceType[] = tablePlaces
 
   const MapDisplay = () => {
     const drag = (e: React.MouseEvent) => {
