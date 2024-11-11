@@ -1,54 +1,98 @@
 import React from 'react'
 import { Item, router } from '../vite-env'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCaretLeft, faCaretUp, faMinus, faPlus, faSortAlphaDownAlt, faSortAlphaUpAlt, faSortAmountAsc, faSortAmountDesc } from '@fortawesome/free-solid-svg-icons'
+import { faAsterisk, faCaretLeft, faCaretUp, faMinus, faPlus, faSortAlphaDownAlt, faSortAlphaUpAlt, faSortAmountAsc, faSortAmountDesc } from '@fortawesome/free-solid-svg-icons'
 import { productsType } from '../defaults/products'
 import SearchBar from './def/Search'
 import OrderListPop from './pops/OrderListPop'
+import ConfirmPop from './def/ConfirmPop'
 
 type Props = {
     setPageMain: Function
     prods: productsType
 }
 
+
 export default function Picker({ setPageMain, prods }: Props) {
     const [result, setResult] = React.useState<Item[][]>([[]])
     const [phase, setPhase] = React.useState<number>(0)
     const [search, setSearch] = React.useState<string>("")
+    const UlRef = React.useRef<HTMLUListElement | null>(null);
 
     const [page, setPage] = React.useState<string>("")
-    const [pop, setPop] = React.useState<"order" | "command" | undefined>(undefined)
+    const [pop, setPop] = React.useState<"order" | "close" | "confirm" | "command" | undefined>(undefined)
 
     const [selectedItem, setSelectedItem] = React.useState<Item | undefined>(undefined)
+
+    const amountsByType: router = {}
+    const amounts: router = {}
+    for (let i = 0; i < result[phase].length; i++) {
+        let item = result[phase][i]
+        amounts[item._id] = { amount: item.amount, comment: item.comment }
+        amountsByType[item.type] = amountsByType[item.type] !== undefined ? (amountsByType[item.type] + (1 * item.amount!)) : (1 * item.amount!)
+    }
 
     const addPhase = () => {
         setResult([...result, []])
         setPhase(result.length)
     }
 
+    const editPhase = (item: Item) => {
+        let local = result[phase]
+        setSelectedItem(item)
+        setResult(Object.values({
+            ...result, [phase]: local.map(el => {
+                if (el._id === item._id) return item
+                else return el
+            })
+        }) as Item[][])
+    }
+
+    const addItemToPhase = (item: Item) => {
+        let local = result[phase]
+        setSelectedItem(item)
+        setResult(Object.values({
+            ...result, [phase]: [...local, item]
+        }) as Item[][])
+    }
+    const removeItemToPhase = (item: Item) => {
+        let local = result[phase]
+        setSelectedItem(undefined)
+        setResult(Object.values({
+            ...result, [phase]: local.filter(el => {
+                if (el._id !== item._id) return el
+            })
+        }) as Item[][])
+    }
+
     const ShowCommand = () => {
-        return <section>
-            <div>Comanda</div>
-            <hr />
-            {result.length !== 0 && result.map((pha, i) => {
-                return <section key={Math.random()}>
-                    <label>Tiempo {i + 1}</label>
-                    <ul>
-                        {pha.length !== 0 && pha.map(item => {
-                            return <li key={Math.random()}>
-                                {item.name}
-                            </li>
-                        })}
-                    </ul>
-                </section>
-            })}
+        return <section className='back-blur' onClick={(e) => {
+            let target = e.target as HTMLDivElement
+            if (target.className === "back-blur") setPop(undefined)
+        }}>
+            <section className='pop command-pop'>
+                <div>Comanda</div>
+                <hr />
+                {result.length !== 0 && result.map((pha, i) => {
+                    return <section key={Math.random()}>
+                        <label>Tiempo {i + 1}</label>
+                        <ul>
+                            {pha.length !== 0 && pha.map(item => {
+                                return <li key={Math.random()}>
+                                    {item.amount} X {item.name} {(item.comment && item.comment !== "") && ` (${item.comment})`}
+                                </li>
+                            })}
+                        </ul>
+                    </section>
+                })}
+            </section>
         </section>
     }
 
     const Header = () => {
         return <header className='main-header picker'>
-            <button className='default-button' onClick={() => { setPageMain("main") }}>Cancel</button>
-            <button className='default-button'>Confirm</button>
+            <button className='default-button' onClick={() => { setPop("close") }}>Cancelar</button>
+            <button className='default-button' onClick={() => { setPop("confirm") }}>Confirmar</button>
         </header>
     }
 
@@ -81,6 +125,7 @@ export default function Picker({ setPageMain, prods }: Props) {
                         onClick={() => { setPage(type) }}
                     >
                         {type}
+                        {(amountsByType[type] !== undefined && amountsByType[type] !== 0) && <p>{amountsByType[type]}</p>}
                     </button>
                 })}
             </ul>
@@ -101,43 +146,64 @@ export default function Picker({ setPageMain, prods }: Props) {
         console.log("confirm")
         setPop(undefined)
     }
+    let scrollHeight = UlRef.current?.scrollTop;
+    React.useLayoutEffect(() => {
+        if (UlRef.current && scrollHeight) UlRef.current.scrollTop = scrollHeight
+    });
 
     const ItemSelector = () => {
         if (page === "") return
 
         const Inspector = () => {
-            return selectedItem && <div className='inspector'>
-                <p>{selectedItem.name}</p>
-                <button>Ver detalles</button>
-                <textarea placeholder='Añadir comentario...'></textarea>
-                <div className='presets'>{selectedItem.presets && selectedItem.presets.map(tag => {
-                    return <button
-                        key={Math.random()}
-                        onClick={() => { console.log("a") }}
-                    >
-                        {tag}
-                    </button>
-                })}</div>
-                <div>
-                    <p>{selectedItem.amount}</p>
-                    <div>
-                        <button key={Math.random()}
+            return <div className='inspector'>
+                {selectedItem ? <>
+                    <p>{selectedItem.name}</p>
+                    <p className='item-price'>${selectedItem.price}</p>
+                    <textarea
+                        defaultValue={selectedItem.comment}
+                        onBlur={(e) => { editPhase({ ...selectedItem, comment: e.currentTarget.value }) }}
+                        onKeyDown={(e) => {
+                            if (e.key !== "Enter") return
+                            e.preventDefault()
+                            editPhase({ ...selectedItem, comment: e.currentTarget.value })
+                        }}
+                        placeholder='Añadir comentario...'></textarea>
+                    <div className='presets'>{selectedItem.presets && selectedItem.presets.map(tag => {
+                        return <button
+                            key={Math.random()}
                             onClick={() => {
-                            }}>
-                            <FontAwesomeIcon icon={faPlus} />
+                                let val = selectedItem.comment && selectedItem.comment !== "" ? selectedItem.comment +", " +tag : tag
+                                editPhase({ ...selectedItem, comment:  val})
+                            }}
+                        >
+                            {tag}
                         </button>
-                        <button key={Math.random()}
-                            onClick={() => {
-                            }}>
-                            <FontAwesomeIcon icon={faMinus} />
-                        </button>
+                    })}</div>
+                    <div className='amount-zone'>
+                        <p>{selectedItem.amount}</p>
+                        <div className='buttons'>
+                            <button key={Math.random()}
+                                onClick={() => {
+                                    if (selectedItem.amount === 0) addItemToPhase({ ...selectedItem, amount: selectedItem.amount! + 1 })
+                                    else editPhase({ ...selectedItem, amount: selectedItem.amount! + 1 })
+                                }}>
+                                <FontAwesomeIcon icon={faPlus} />
+                            </button>
+                            <button key={Math.random()}
+                                onClick={() => {
+                                    if (selectedItem.amount && selectedItem.amount > 1) editPhase({ ...selectedItem, amount: selectedItem.amount! - 1 })
+                                    else removeItemToPhase({ ...selectedItem, amount: selectedItem.amount! - 1 })
+                                }}>
+                                <FontAwesomeIcon icon={faMinus} />
+                            </button>
+                        </div>
                     </div>
-                </div>
+                </> : <p>Selecciona un producto.</p>}
             </div>
         }
 
-        return <section className='page'>
-            <div className='item-selector'>
+        return <section className='page item-selector'>
+            <div className='item-selector-cont'>
 
                 <header className='table-list-header'>
                     <SearchBar
@@ -152,20 +218,32 @@ export default function Picker({ setPageMain, prods }: Props) {
                         <FontAwesomeIcon icon={sortIcons[sortValue]} />
                     </button>
                 </header>
-                <ul>
+                <ul
+                    ref={UlRef}>
                     {prods[page].map(item => {
+                        let isSel = amounts[item._id] !== undefined ? amounts[item._id] : { amount: 0, comment: undefined }
                         return <button
                             key={Math.random()}
                             className={selectedItem?._id === item._id ? "active" : ""}
-                            onClick={() => { setSelectedItem(item) }}
+                            onClick={() => {
+                                setSelectedItem({ ...item, amount: isSel.amount, comment: isSel.comment })
+                                if (isSel?.amount === 0) addItemToPhase({ ...item, amount: isSel.amount + 1, comment: isSel.comment })
+                                if (selectedItem?._id === item._id
+                                    && selectedItem.amount !== undefined) editPhase({ ...selectedItem, amount: selectedItem.amount + 1, comment: selectedItem.comment })
+                            }}
                         >
+                            {isSel.amount !== 0 && <p>{isSel.amount}</p>}
                             {item.name}
+                            {isSel.comment && <div><FontAwesomeIcon icon={faAsterisk} /></div>}
                         </button>
                     })}
                 </ul>
             </div>
             <Inspector />
-            <button className='return-to-type-selector' onClick={() => { setPage("") }}>
+            <button className='return-to-type-selector' onClick={() => {
+                setPage("")
+                setSelectedItem(undefined)
+            }}>
                 <FontAwesomeIcon icon={faCaretLeft} />
                 Volver
             </button>
@@ -178,6 +256,17 @@ export default function Picker({ setPageMain, prods }: Props) {
     }
 
     const pops = {
+        "close": <ConfirmPop
+            title='¿Cancelar comanda?'
+            close={() => { setPop(undefined) }}
+            confirm={() => { setPageMain("main") }}
+        />,
+        "confirm": <ConfirmPop
+            title='¿Enviar comanda?'
+            subTitle='Se enviarán los datos de la comanda.'
+            close={() => { setPop(undefined) }}
+            confirm={() => { setPageMain("main") }}
+        />,
         "order": <OrderListPop
             options={orderOptions}
             actual={"def"}
@@ -191,7 +280,7 @@ export default function Picker({ setPageMain, prods }: Props) {
         {pop && pops[pop]}
         <Header />
         {pages[page !== "" ? "items" : "types"]}
-        <button className='view-command-button' onClick={() => { console.log("a") }}>
+        <button className='view-command-button' onClick={() => { setPop("command") }}>
             <FontAwesomeIcon icon={faCaretUp} /> Ver comanda</button>
     </>
 }

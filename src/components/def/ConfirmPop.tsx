@@ -1,19 +1,19 @@
 
 type Props = {
     title: string
-    subTitle: string,
+    subTitle?: string,
     confirm: Function
     close: Function
 }
 
-export default function ConfirmPop({title, subTitle, confirm, close}: Props) {
+export default function ConfirmPop({title, confirm, close, subTitle}: Props) {
     return <section className='back-blur confirm-spefic' onClick={(e) => {
         let target = e.target as HTMLDivElement
         if (target.className === "back-blur confirm-spefic") close()
     }}>
         <section className='pop confirm-pop'>
             <h2>{title}</h2>
-            <p>{subTitle}</p>
+            {subTitle && <p>{subTitle}</p>}
             <hr></hr>
             <div className='buttons-confirm'>
                 <button className="default-button" onClick={()=>{confirm()}}>Si</button>

@@ -15,7 +15,7 @@ import { defaultConfig } from './defaults/config'
 
 import "./assets/App.css"
 import Picker from './components/Picker'
-import { products, productsType } from './defaults/products'
+import { products1, productsType } from './defaults/products'
 
 type Props = {}
 
@@ -49,7 +49,7 @@ export default function App({ }: Props) {
   // const [localTablePlaces, setTablePlaces] = React.useState<TablePlaceType[]>(tablePlaces)
   // const [prods, setProds] = React.useState<productsType>(products)
   const localTablePlaces: TablePlaceType[] = tablePlaces
-  const prods: productsType = products
+  const prods: productsType = products1
   
   const [pop, setPop] = React.useState<{ name: string, data: any, function: Function } | undefined>(undefined)
 
