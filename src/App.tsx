@@ -4,7 +4,7 @@ import TableList from './components/TableList'
 import NavBar from './components/NavBar'
 import Map from './components/Map'
 import TableView from './components/TableView'
-import { configType, HistorialTableType, histStructure, router, SingleEvent, TableEvents, TablePlaceType } from './vite-env'
+import { configType, HistorialTableType, histStructure, Item, router, SingleEvent, TableEvents, TablePlaceType } from './vite-env'
 import { historialDef } from './defaults/historialDef'
 import { tablePlaces } from './defaults/tablePlaces'
 import getTableData from './logic/getTableData'
@@ -38,7 +38,7 @@ export const Configuration = React.createContext({
 let defaultHistorialParsed = {}
 for (const id in historialDef) {
   let parsed = JSON.parse(historialDef[id]) as HistorialTableType
-  defaultHistorialParsed = { ...defaultHistorialParsed, [id]: parsed}
+  defaultHistorialParsed = { ...defaultHistorialParsed, [id]: parsed }
 }
 
 export default function App({ }: Props) {
@@ -50,13 +50,14 @@ export default function App({ }: Props) {
   // const [prods, setProds] = React.useState<productsType>(products)
   const localTablePlaces: TablePlaceType[] = tablePlaces
   const prods: productsType = products1
-  
+
   const [pop, setPop] = React.useState<{ name: string, data: any, function: Function } | undefined>(undefined)
 
   const [currentTable, setCurrentState] = React.useState<string | undefined>(undefined)
+  const [picker, setPicker] = React.useState<Item[][]>([[]])
 
   const setCurrent = (id: string, creating: boolean) => {
-    if (!creating) {setCurrentState(id); setDisplay("view")}
+    if (!creating) { setCurrentState(id); setDisplay("view") }
     else {
       setPop({
         name: "openTable",
@@ -75,16 +76,16 @@ export default function App({ }: Props) {
   const getLastTable = (): TableEvents | undefined => {
     if (!currentTable || localHistorial[currentTable].historial.length === 0) return
     return {
-      ...localHistorial[currentTable].historial[localHistorial[currentTable].historial.length - 1], 
+      ...localHistorial[currentTable].historial[localHistorial[currentTable].historial.length - 1],
       _id: currentTable,
       name: localHistorial[currentTable].name
     }
   }
 
-  const getTableName = (id: string)=>{
+  const getTableName = (id: string | undefined) => {
     let result = ""
-    for(let i=0;i<localTablePlaces.length; i++){
-      if(localTablePlaces[i]._id === id) {
+    if(id) for (let i = 0; i < localTablePlaces.length; i++) {
+      if (localTablePlaces[i]._id === id) {
         result = localTablePlaces[i].name
         break
       }
@@ -148,7 +149,7 @@ export default function App({ }: Props) {
       tablePlaces={localTablePlaces}
     />,
     "map": <Map
-    setPage={setPage}
+      setPage={setPage}
       setCurrent={setCurrent}
       tablesOpenMin={tablesOpenMin}
       tablePlaces={localTablePlaces}
@@ -159,17 +160,29 @@ export default function App({ }: Props) {
 
   const pages: { [key: string]: any } = {
     "main": <>
-      <TopBar />
+      <TopBar pickerOn={picker} />
       {displays[displayMode]}
       <NavBar currentNav={displayMode} setNav={setDisplay} />
     </>,
-    "picker": <Picker prods={prods} setPageMain={setPage}/>
+    "picker": <Picker
+      result={picker}
+      setPicker={setPicker}
+      selectedTable={getTableName(currentTable)}
+      prods={prods}
+      cancelPicker={()=>{
+        setPage("main")
+        setPicker([[]])
+      }}
+      confirmPicker={()=>{
+        setPage("main")
+      }}
+    />
   }
 
 
   const pops: router = {
     "openTable": <ConfirmPop
-      title={"Realizar apertura de mesa "+getTableName(pop?.data)+"?"}
+      title={"Realizar apertura de mesa " + getTableName(pop?.data) + "?"}
       subTitle={"Se guardará en el historial."}
       confirm={() => {
         if (pop?.function) pop.function()

@@ -3,10 +3,11 @@ import ProdPop from './pops/ProdPop'
 import AccountPop from './pops/AccountPop'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleDollarToSlot, faUserCircle } from '@fortawesome/free-solid-svg-icons'
+import { Item } from '../vite-env'
 
-type Props = {}
+type Props = {pickerOn: Item[][]}
 
-export default function TopBar({}: Props) {
+export default function TopBar({pickerOn}: Props) {
     const [pop, setPop] = React.useState<"products" | "account" |undefined>(undefined)
 
     const closePop = ()=>{

@@ -8,13 +8,16 @@ import OrderListPop from './pops/OrderListPop'
 import ConfirmPop from './def/ConfirmPop'
 
 type Props = {
-    setPageMain: Function
+    result: Item[][]
+    cancelPicker: Function
+    confirmPicker: Function
+    setPicker: Function
     prods: productsType
+    selectedTable: string | undefined
 }
 
 
-export default function Picker({ setPageMain, prods }: Props) {
-    const [result, setResult] = React.useState<Item[][]>([[]])
+export default function Picker({ cancelPicker, confirmPicker, prods, selectedTable, result, setPicker }: Props) {
     const [phase, setPhase] = React.useState<number>(0)
     const [search, setSearch] = React.useState<string>("")
     const UlRef = React.useRef<HTMLUListElement | null>(null);
@@ -33,14 +36,14 @@ export default function Picker({ setPageMain, prods }: Props) {
     }
 
     const addPhase = () => {
-        setResult([...result, []])
+        setPicker([...result, []])
         setPhase(result.length)
     }
 
     const editPhase = (item: Item) => {
         let local = result[phase]
         setSelectedItem(item)
-        setResult(Object.values({
+        setPicker(Object.values({
             ...result, [phase]: local.map(el => {
                 if (el._id === item._id) return item
                 else return el
@@ -51,14 +54,14 @@ export default function Picker({ setPageMain, prods }: Props) {
     const addItemToPhase = (item: Item) => {
         let local = result[phase]
         setSelectedItem(item)
-        setResult(Object.values({
+        setPicker(Object.values({
             ...result, [phase]: [...local, item]
         }) as Item[][])
     }
     const removeItemToPhase = (item: Item) => {
         let local = result[phase]
         setSelectedItem(undefined)
-        setResult(Object.values({
+        setPicker(Object.values({
             ...result, [phase]: local.filter(el => {
                 if (el._id !== item._id) return el
             })
@@ -92,7 +95,7 @@ export default function Picker({ setPageMain, prods }: Props) {
     const Header = () => {
         return <header className='main-header picker'>
             <button className='default-button' onClick={() => { setPop("close") }}>Cancelar</button>
-            <button className='default-button' onClick={() => { setPop("confirm") }}>Confirmar</button>
+            <button className={(result.length !== 1 && result[0].length !== 0) ?'default-button' : "default-button disabled"} onClick={() => { if(result.length !== 1 && result[0].length !== 0) setPop("confirm") }}>Confirmar</button>
         </header>
     }
 
@@ -259,13 +262,13 @@ export default function Picker({ setPageMain, prods }: Props) {
         "close": <ConfirmPop
             title='¿Cancelar comanda?'
             close={() => { setPop(undefined) }}
-            confirm={() => { setPageMain("main") }}
+            confirm={() => { cancelPicker() }}
         />,
         "confirm": <ConfirmPop
             title='¿Enviar comanda?'
-            subTitle='Se enviarán los datos de la comanda.'
+            subTitle={('Se enviarán los datos de la comanda'+ (selectedTable && " a la mesa "+ selectedTable)+'.')}
             close={() => { setPop(undefined) }}
-            confirm={() => { setPageMain("main") }}
+            confirm={() => {confirmPicker() }}
         />,
         "order": <OrderListPop
             options={orderOptions}

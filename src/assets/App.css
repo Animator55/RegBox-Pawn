@@ -14,7 +14,7 @@ body {
   --cred2: #f36c6c54;
   --cdarkgray: rgb(66, 66, 66);
   overflow: hidden;
-  background-color: var(--cwhite);
+  background-color: var(--cdarkgray);
   height: 100dvh;
   max-height: 100dvh;
 }
@@ -80,6 +80,7 @@ main {
 
 main {
   max-height: 100dvh;
+  background-color: var(--cwhite);
 }
 
 
