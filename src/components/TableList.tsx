@@ -1,7 +1,7 @@
 import React from 'react'
 import SearchBar from './def/Search'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faSortAlphaDownAlt, faSortAlphaUpAlt, faSortAmountAsc, faSortAmountDesc, faWarning } from '@fortawesome/free-solid-svg-icons'
+import { faPen, faPlus, faSortAlphaDownAlt, faSortAlphaUpAlt, faSortAmountAsc, faSortAmountDesc, faWarning } from '@fortawesome/free-solid-svg-icons'
 import OrderListPop from './pops/OrderListPop'
 import { histStructure, TablePlaceType } from '../vite-env'
 import { stateTraductions } from '../defaults/stateTraductions'
@@ -13,9 +13,10 @@ type Props = {
   tablePlaces: TablePlaceType[]
   historial: histStructure
   setPage: Function
+  pickerOn: boolean
 }
 
-export default function TableList({ setCurrent, tablePlaces, historial,setPage }: Props) {
+export default function TableList({ setCurrent, tablePlaces, historial, setPage,pickerOn }: Props) {
   const [search, setSearch] = React.useState("")
   const [pop, setPop] = React.useState<"order" | undefined>(undefined)
   const sortIcons: { [key: string]: any } = {
@@ -81,9 +82,9 @@ export default function TableList({ setCurrent, tablePlaces, historial,setPage }
         >
           <label>{stateTraductions[key]}</label>
           <ul className='table-list-ul'>
-            {ul.length === 0 ? 
+            {ul.length === 0 ?
               <div className='no-items'>
-                <FontAwesomeIcon icon={faWarning}/>
+                <FontAwesomeIcon icon={faWarning} />
                 No hay mesas que enlistar
               </div> : ul
             }
@@ -103,8 +104,10 @@ export default function TableList({ setCurrent, tablePlaces, historial,setPage }
     <Top />
     <TableList />
 
-    <button className='picker-mode-button' onClick={() => { setPage("picker") }}>
-        <FontAwesomeIcon icon={faPlus} />
-      </button>
+    <button className='picker-mode-button'
+      style={pickerOn ? { backgroundColor: "var(--cgreen)" } : {}}
+      onClick={() => { setPage("picker") }}>
+      <FontAwesomeIcon icon={pickerOn ? faPen : faPlus} />
+    </button>
   </section>
 }

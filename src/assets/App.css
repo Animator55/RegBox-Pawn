@@ -249,11 +249,10 @@ main {
   padding: 0.5rem 1rem;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  color: var(--cwhite);
 }
 
-.main-header>button:last-child {
-  margin-left: auto;
-}
 
 .main-header>button {
   display: flex;
@@ -264,11 +263,24 @@ main {
   color: var(--cwhite);
 }
 
+.main-header p {
+  margin: 0;
+}
 .main-header.picker button {
   font-size: .9rem;
   padding: .3rem;
   background-color: var(--cgray);
 }
+
+.main-header > .select-warning {
+  display: flex;
+  gap: .7rem;
+  width: 100%;
+  color: var(--cwhite);
+  justify-content: center;
+  align-items: center;
+}
+
 
 
 /**/
@@ -468,6 +480,7 @@ main {
 .type-selector>ul {
   display: grid;
   grid-template-columns: repeat(auto-fit, 180px);
+  justify-content: center;
   padding: 0.5rem;
   gap: .7rem;
   margin: 0;

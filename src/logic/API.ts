@@ -1,4 +1,4 @@
-import { TableEvents } from "../vite-env"
+import { Item, TableEvents } from "../vite-env"
 
 export const back_addTable = (Table: TableEvents)=>{
     Table
@@ -29,5 +29,10 @@ export const back_addTable = (Table: TableEvents)=>{
     // let result = checkUser(session.name, undefined, session.domain)
     
     // let alert = responses[result.type]
+    return true
+}
+
+export const back_editTable = (id:string, data: Item[][])=>{
+    data;id
     return true
 }

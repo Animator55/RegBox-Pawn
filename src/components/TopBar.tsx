@@ -2,10 +2,9 @@ import React from 'react'
 import ProdPop from './pops/ProdPop'
 import AccountPop from './pops/AccountPop'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleDollarToSlot, faUserCircle } from '@fortawesome/free-solid-svg-icons'
-import { Item } from '../vite-env'
+import {  faCircleDollarToSlot, faUserCircle, faWarning } from '@fortawesome/free-solid-svg-icons'
 
-type Props = { pickerOn: Item[][] }
+type Props = { pickerOn: boolean }
 
 export default function TopBar({ pickerOn }: Props) {
     const [pop, setPop] = React.useState<"products" | "account" | undefined>(undefined)
@@ -19,7 +18,14 @@ export default function TopBar({ pickerOn }: Props) {
         "account": <AccountPop close={closePop} />,
     }
     return <header className='main-header'>
-        {(pickerOn.length === 1 && pickerOn[0].length !== 0)?
+        {pickerOn ?
+            <>
+                <div className='select-warning'>
+                    <FontAwesomeIcon icon={faWarning}/>
+                    <p>Selecciona una mesa</p>
+                </div>
+            </>
+            :
             <>
                 {pop && pops[pop]}
                 <button
@@ -33,8 +39,6 @@ export default function TopBar({ pickerOn }: Props) {
                     <FontAwesomeIcon icon={faUserCircle} />
                 </button>
             </>
-            :
-            <p>Selecciona una mesa</p>
         }
     </header>
 }

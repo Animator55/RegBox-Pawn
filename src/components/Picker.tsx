@@ -95,7 +95,8 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
     const Header = () => {
         return <header className='main-header picker'>
             <button className='default-button' onClick={() => { setPop("close") }}>Cancelar</button>
-            <button className={(result.length !== 1 && result[0].length !== 0) ?'default-button' : "default-button disabled"} onClick={() => { if(result.length !== 1 && result[0].length !== 0) setPop("confirm") }}>Confirmar</button>
+            <p>{selectedTable && ("Mesa " + selectedTable)}</p>
+            <button className={(result.length !== 1 || result[0].length !== 0) ?'default-button' : "default-button disabled"} onClick={() => { if(result.length !== 1 || result[0].length !== 0) setPop("confirm") }}>Confirmar</button>
         </header>
     }
 

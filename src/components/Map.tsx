@@ -1,4 +1,4 @@
-import { faExpand, faMinus, faPlus, faWarning } from '@fortawesome/free-solid-svg-icons'
+import { faExpand, faMinus, faPen, faPlus, faWarning } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import { TablePlaceType } from '../vite-env'
@@ -11,10 +11,11 @@ type Props = {
   tablesOpenMin: { _id: string, name: string, state: "open" | "paying" | "closed" | "unnactive" }[]
   tablePlaces: TablePlaceType[]
   setPage: Function
+  pickerOn: boolean
 }
 
 
-export default function Map({ setCurrent, tablesOpenMin, tablePlaces, setPage }: Props) {
+export default function Map({ setCurrent, tablesOpenMin, tablePlaces, setPage,pickerOn }: Props) {
   const c = React.useContext(Configuration)
   // const [localMap, setMap] = React.useState<TablePlaceType[]>(tablePlaces)
   const localMap:TablePlaceType[] = tablePlaces
@@ -169,9 +170,11 @@ export default function Map({ setCurrent, tablesOpenMin, tablePlaces, setPage }:
 
   return <section className='map page'>
     <MapDisplay />
-    <button className='picker-mode-button' onClick={() => { setPage("picker") }}>
-        <FontAwesomeIcon icon={faPlus} />
-      </button>
+    <button className='picker-mode-button'
+      style={pickerOn ? { backgroundColor: "var(--cgreen)" } : {}}
+      onClick={() => { setPage("picker") }}>
+      <FontAwesomeIcon icon={pickerOn ? faPen : faPlus} />
+    </button>
   </section>
 
 }

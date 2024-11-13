@@ -9,7 +9,7 @@ import { historialDef } from './defaults/historialDef'
 import { tablePlaces } from './defaults/tablePlaces'
 import getTableData from './logic/getTableData'
 import fixNum from './logic/fixDateNumber'
-import { back_addTable } from './logic/API'
+import { back_addTable, back_editTable } from './logic/API'
 import ConfirmPop from './components/def/ConfirmPop'
 import { defaultConfig } from './defaults/config'
 
@@ -55,9 +55,28 @@ export default function App({ }: Props) {
 
   const [currentTable, setCurrentState] = React.useState<string | undefined>(undefined)
   const [picker, setPicker] = React.useState<Item[][]>([[]])
+  let pickerOn = (picker.length !== 1 || picker[0].length !== 0)
 
   const setCurrent = (id: string, creating: boolean) => {
-    if (!creating) { setCurrentState(id); setDisplay("view") }
+    if (!creating) {
+      if (pickerOn) {
+        setPop({
+          name: "selectTable",
+          data: id,
+          function: () => {
+            let result = back_editTable(id, picker)
+            if (result) {
+              // setCurrentState(id)
+              // setDisplay("view")
+              setPicker([[]])
+            }
+          }
+        })
+      }
+      else {
+        setCurrentState(id); setDisplay("view")
+      }
+    }
     else {
       setPop({
         name: "openTable",
@@ -65,8 +84,22 @@ export default function App({ }: Props) {
         function: () => {
           let result = createTable(id)
           if (result) {
-            setCurrentState(id)
-            setDisplay("view")
+            if (pickerOn) setPop({
+              name: "selectTable",
+              data: id,
+              function: () => {
+                let result = back_editTable(id, picker)
+                if (result) {
+                  // setCurrentState(id)
+                  // setDisplay("view")
+                  setPicker([[]])
+                }
+              }
+            })
+            else {
+              setCurrentState(id)
+              setDisplay("view")
+            }
           }
         }
       })
@@ -84,7 +117,7 @@ export default function App({ }: Props) {
 
   const getTableName = (id: string | undefined) => {
     let result = ""
-    if(id) for (let i = 0; i < localTablePlaces.length; i++) {
+    if (id) for (let i = 0; i < localTablePlaces.length; i++) {
       if (localTablePlaces[i]._id === id) {
         result = localTablePlaces[i].name
         break
@@ -147,20 +180,27 @@ export default function App({ }: Props) {
       historial={localHistorial}
       setPage={setPage}
       tablePlaces={localTablePlaces}
+      pickerOn={pickerOn}
     />,
     "map": <Map
       setPage={setPage}
       setCurrent={setCurrent}
       tablesOpenMin={tablesOpenMin}
       tablePlaces={localTablePlaces}
+      pickerOn={pickerOn}
     />,
-    "view": currentTable && <TableView setPage={setPage} current={getLastTable()} setDisplay={setDisplay} />,
+    "view": currentTable && <TableView
+      pickerOn={pickerOn}
+      setPage={setPage}
+      current={getLastTable()}
+      setDisplay={setDisplay}
+    />,
     // "historial": <TableHistorial current_id={currentTable._id}/>,
   }
 
   const pages: { [key: string]: any } = {
     "main": <>
-      <TopBar pickerOn={picker} />
+      <TopBar pickerOn={pickerOn} />
       {displays[displayMode]}
       <NavBar currentNav={displayMode} setNav={setDisplay} />
     </>,
@@ -169,11 +209,11 @@ export default function App({ }: Props) {
       setPicker={setPicker}
       selectedTable={getTableName(currentTable)}
       prods={prods}
-      cancelPicker={()=>{
+      cancelPicker={() => {
         setPage("main")
         setPicker([[]])
       }}
-      confirmPicker={()=>{
+      confirmPicker={() => {
         setPage("main")
       }}
     />
@@ -185,8 +225,17 @@ export default function App({ }: Props) {
       title={"Realizar apertura de mesa " + getTableName(pop?.data) + "?"}
       subTitle={"Se guardará en el historial."}
       confirm={() => {
-        if (pop?.function) pop.function()
+        let func = pop?.function
         setPop(undefined)
+        if (func !== undefined) func()
+      }} close={() => { setPop(undefined) }} />,
+    "selectTable": <ConfirmPop
+      title={"Confirmar comanda a mesa " + getTableName(pop?.data) + "?"}
+      subTitle={"Modificará la mesa y se guardará en el historial."}
+      confirm={() => {
+        let func = pop?.function
+        setPop(undefined)
+        if (func !== undefined) func()
       }} close={() => { setPop(undefined) }} />
   }
 
