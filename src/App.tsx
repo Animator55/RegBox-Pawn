@@ -198,6 +198,10 @@ export default function App({ }: Props) {
     // "historial": <TableHistorial current_id={currentTable._id}/>,
   }
 
+  React.useEffect(()=>{
+      if(currentTable !== undefined && displayMode !== "view") setCurrentState(undefined)
+  }, [displayMode])
+
   const pages: { [key: string]: any } = {
     "main": <>
       <TopBar pickerOn={pickerOn} />
@@ -214,6 +218,7 @@ export default function App({ }: Props) {
         setPicker([[]])
       }}
       confirmPicker={() => {
+        if(currentTable) setPicker([[]])
         setPage("main")
       }}
     />
