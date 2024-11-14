@@ -82,7 +82,7 @@ export default function TableList({ setCurrent, tablePlaces, historial, setPage,
         >
           <label>{stateTraductions[key]}</label>
           <ul className='table-list-ul'>
-            {ul.length === 0 ?
+            {ul.length === 0 || !ul ?
               <div className='no-items'>
                 <FontAwesomeIcon icon={faWarning} />
                 No hay mesas que enlistar
