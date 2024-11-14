@@ -169,14 +169,15 @@ main {
 
 .zoom-container {
   display: flex;
+  flex-direction: column;
   align-items: center;
   background-color: var(--corange);
   color: var(--cwhite);
   border-radius: 3px;
   position: absolute;
   z-index: 2;
-  left: 1rem;
-  bottom: 1rem;
+  right: 1.3rem;
+  bottom: 6rem;
   width: fit-content;
 }
 
@@ -202,13 +203,13 @@ main {
   justify-content: center;
   z-index: 2;
   position: absolute;
-  left: 1rem;
-  font-size: 1rem;
+  right: 1.3rem;
+  font-size: 1.2rem;
   background-color: var(--corange);
   border-radius: 5px;
-  padding: .5rem;
+  padding: 1.1rem;
   color: var(--cblack);
-  bottom: 3rem;
+  bottom: 12rem;
 }
 
 .background {
@@ -388,8 +389,9 @@ main {
   justify-content: center;
   padding: 1rem;
   font-size: 1.2rem;
-  background-color: var(--cdarkgray);
-  color: var(--corange)
+  background-color: var(--cblack);
+  border-radius: 10px;
+  color: var(--cwhite)
 }
 
 
@@ -694,6 +696,7 @@ main {
 .view-command-button {
   display: flex;
   font-size: 1.2rem;
+  background-color: transparent;
   color: var(--clightgray);
   justify-content: center;
   align-items: center;

@@ -244,12 +244,6 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
                 </ul>
             </div>
             <Inspector />
-            <button className='return-to-type-selector' onClick={() => {
-                setPage("")
-                setSelectedItem(undefined)
-            }}>
-                <FontAwesomeIcon icon={faArrowLeft} />
-            </button>
         </section>
     }
 
@@ -286,7 +280,7 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
         <Header />
         {pages[page !== "" ? "items" : "types"]}
         <nav className='picker-nav'>
-            <button className='return-to-type-selector' onClick={() => {
+            <button className={page !== "" ? 'return-to-type-selector default-button' : "return-to-type-selector default-button disabled"} onClick={() => {
                 setPage("")
                 setSelectedItem(undefined)
             }}>
