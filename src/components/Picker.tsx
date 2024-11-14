@@ -1,7 +1,7 @@
 import React from 'react'
 import { Item, router } from '../vite-env'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAsterisk, faCaretLeft, faCaretUp, faMinus, faPlus, faSortAlphaDownAlt, faSortAlphaUpAlt, faSortAmountAsc, faSortAmountDesc } from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeft, faAsterisk, faCaretUp, faMinus, faPlus, faSortAlphaDownAlt, faSortAlphaUpAlt, faSortAmountAsc, faSortAmountDesc } from '@fortawesome/free-solid-svg-icons'
 import { productsType } from '../defaults/products'
 import SearchBar from './def/Search'
 import OrderListPop from './pops/OrderListPop'
@@ -96,7 +96,7 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
         return <header className='main-header picker'>
             <button className='default-button' onClick={() => { setPop("close") }}>Cancelar</button>
             <p>{selectedTable && ("Mesa " + selectedTable)}</p>
-            <button className={(result.length !== 1 || result[0].length !== 0) ?'default-button' : "default-button disabled"} onClick={() => { if(result.length !== 1 || result[0].length !== 0) setPop("confirm") }}>Confirmar</button>
+            <button className={(result.length !== 1 || result[0].length !== 0) ? 'default-button' : "default-button disabled"} onClick={() => { if (result.length !== 1 || result[0].length !== 0) setPop("confirm") }}>Confirmar</button>
         </header>
     }
 
@@ -176,8 +176,8 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
                         return <button
                             key={Math.random()}
                             onClick={() => {
-                                let val = selectedItem.comment && selectedItem.comment !== "" ? selectedItem.comment +", " +tag : tag
-                                editPhase({ ...selectedItem, comment:  val})
+                                let val = selectedItem.comment && selectedItem.comment !== "" ? selectedItem.comment + ", " + tag : tag
+                                editPhase({ ...selectedItem, comment: val })
                             }}
                         >
                             {tag}
@@ -248,8 +248,7 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
                 setPage("")
                 setSelectedItem(undefined)
             }}>
-                <FontAwesomeIcon icon={faCaretLeft} />
-                Volver
+                <FontAwesomeIcon icon={faArrowLeft} />
             </button>
         </section>
     }
@@ -266,10 +265,12 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
             confirm={() => { cancelPicker() }}
         />,
         "confirm": <ConfirmPop
-            title='¿Enviar comanda?'
-            subTitle={('Se enviarán los datos de la comanda'+ (selectedTable && " a la mesa "+ selectedTable)+'.')}
+            title={'¿'+(selectedTable ? "Enviar" : "Confirmar") + ' comanda?'}
+            subTitle={
+                selectedTable? ('Se enviarán los datos de la comanda a la mesa ' + selectedTable + '.'):
+                'Se pasará a seleccionar una mesa.'}
             close={() => { setPop(undefined) }}
-            confirm={() => {confirmPicker() }}
+            confirm={() => { confirmPicker() }}
         />,
         "order": <OrderListPop
             options={orderOptions}
@@ -284,7 +285,16 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
         {pop && pops[pop]}
         <Header />
         {pages[page !== "" ? "items" : "types"]}
-        <button className='view-command-button' onClick={() => { setPop("command") }}>
-            <FontAwesomeIcon icon={faCaretUp} /> Ver comanda</button>
+        <nav className='picker-nav'>
+            <button className='return-to-type-selector' onClick={() => {
+                setPage("")
+                setSelectedItem(undefined)
+            }}>
+                <FontAwesomeIcon icon={faArrowLeft} />
+            </button>
+            <button className='view-command-button' onClick={() => { setPop("command") }}>
+                <FontAwesomeIcon icon={faCaretUp} /> Ver comanda
+            </button>
+        </nav>
     </>
 }

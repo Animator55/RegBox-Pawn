@@ -7,14 +7,7 @@ type Props = {
 }
 
 export default function NavBar({ currentNav, setNav }: Props) {
-  return <nav className='main-nav'>
-    <button
-      className={currentNav === "list" ? "active" : ""}
-      onClick={() => { setNav("list") }}
-      ><FontAwesomeIcon icon={faList} /></button>
-    <button
-      className={currentNav === "map" ? "active" : ""}
-      onClick={() => { setNav("map") }}
-    ><FontAwesomeIcon icon={faMap} /></button>
-  </nav>
+  return <button className='main-nav' onClick={() => { setNav(currentNav === "list" ? "map" :"list") }}>
+    <FontAwesomeIcon icon={currentNav === "map" ? faList: faMap} />
+  </button>
 }
