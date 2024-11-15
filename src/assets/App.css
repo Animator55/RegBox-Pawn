@@ -307,6 +307,7 @@ main {
 
 .table-list-ul .no-items {
   display: flex;
+  align-items: center;
   max-width: none;
   gap: 1rem;
 }
@@ -387,11 +388,12 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
-  font-size: 1.2rem;
-  background-color: var(--cblack);
-  border-radius: 10px;
-  color: var(--cwhite)
+  font-size: 1.5rem;
+  background-color: var(--corange);
+  border-radius: 50%;
+  color: var(--cblack);
+  height: 4rem;
+  width: 4rem;
 }
 
 
