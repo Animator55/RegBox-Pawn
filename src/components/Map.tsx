@@ -5,6 +5,7 @@ import { TablePlaceType } from '../vite-env'
 import { checkTable } from '../logic/checkTableState'
 import { colorSelector } from '../logic/colorSelector'
 import { Configuration } from '../App'
+import Slider from './def/Slider'
 
 type Props = {
   setCurrent: Function
@@ -113,7 +114,7 @@ export default function Map({ setCurrent, tablesOpenMin, tablePlaces, setPage,pi
           <button title='Alejar' onClick={() => { changeZoom(false) }}>
             <FontAwesomeIcon icon={faMinus} />
           </button>
-          <p title='Zoom' className='zoom-number'>{Math.round(c.config.map.zoom * 100)}%</p>
+          <Slider value={c.config.map.zoom*100} setValue={(val:number)=>{c.setConfig({...c.config, map:{...c.config.map, zoom: val}})}}/>
           <button title='Acercar' onClick={() => { changeZoom(true) }}>
             <FontAwesomeIcon icon={faPlus} />
           </button>

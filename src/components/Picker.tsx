@@ -8,6 +8,7 @@ import OrderListPop from './pops/OrderListPop'
 import ConfirmPop from './def/ConfirmPop'
 import checkSearch from '../logic/checkSearch'
 import { Configuration } from '../App'
+import { sortBy } from '../logic/sortListBy'
 
 type Props = {
     result: Item[][]
@@ -209,6 +210,8 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
             </div>
         }
 
+        let sortedList: Item[] = sortBy[sortValue](prods[page])
+
         return <section className='page item-selector'>
             <div className='item-selector-cont'>
 
@@ -228,7 +231,7 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
                 </header>
                 <ul
                     ref={UlRef}>
-                    {prods[page].map(item => {
+                    {sortedList.map(item => {
                         let check = checkSearch(item.name, search)
                         let isSel = amounts[item._id] !== undefined ? amounts[item._id] : { amount: 0, comment: undefined }
                         return (search === "" || check !== item.name) &&<button
