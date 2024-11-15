@@ -6,6 +6,8 @@ import { productsType } from '../defaults/products'
 import SearchBar from './def/Search'
 import OrderListPop from './pops/OrderListPop'
 import ConfirmPop from './def/ConfirmPop'
+import checkSearch from '../logic/checkSearch'
+import { Configuration } from '../App'
 
 type Props = {
     result: Item[][]
@@ -21,6 +23,7 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
     const [phase, setPhase] = React.useState<number>(0)
     const [search, setSearch] = React.useState<string>("")
     const UlRef = React.useRef<HTMLUListElement | null>(null);
+    const c = React.useContext(Configuration)
 
     const [page, setPage] = React.useState<string>("")
     const [pop, setPop] = React.useState<"order" | "close" | "confirm" | "command" | undefined>(undefined)
@@ -144,10 +147,10 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
     }
 
     const orderOptions = ["abc", "abc-r", "def", "def-r"]
-    let sortValue = "def"
+    let sortValue = c.config.prodListOrder
 
-    const confirmOrderList = () => {
-        console.log("confirm")
+    const confirmOrderList = (value: "abc"|"abc-r"| "def"|"def-r") => {
+        c.setConfig({...c.config, prodListOrder: value})
         setPop(undefined)
     }
     let scrollHeight = UlRef.current?.scrollTop;
@@ -215,6 +218,7 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
                         defaultValue={search}
                         placeholder='Buscar...'
                         onChange
+                        focus={search !== ""}
                     />
                     <button className='default-button' onClick={() => {
                         setPop("order")
@@ -225,8 +229,9 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
                 <ul
                     ref={UlRef}>
                     {prods[page].map(item => {
+                        let check = checkSearch(item.name, search)
                         let isSel = amounts[item._id] !== undefined ? amounts[item._id] : { amount: 0, comment: undefined }
-                        return <button
+                        return (search === "" || check !== item.name) &&<button
                             key={Math.random()}
                             className={selectedItem?._id === item._id ? "active" : ""}
                             onClick={() => {
@@ -236,8 +241,10 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
                                     && selectedItem.amount !== undefined) editPhase({ ...selectedItem, amount: selectedItem.amount + 1, comment: selectedItem.comment })
                             }}
                         >
-                            {isSel.amount !== 0 && <p>{isSel.amount}</p>}
-                            {item.name}
+                            {isSel.amount !== 0 && <p className='amount-count'>{isSel.amount}</p>}
+                            <p
+                                dangerouslySetInnerHTML={{ __html: check }}
+                            ></p>
                             {isSel.comment && <div><FontAwesomeIcon icon={faAsterisk} /></div>}
                         </button>
                     })}
@@ -259,16 +266,16 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
             confirm={() => { cancelPicker() }}
         />,
         "confirm": <ConfirmPop
-            title={'¿'+(selectedTable ? "Enviar" : "Confirmar") + ' comanda?'}
+            title={'¿' + (selectedTable ? "Enviar" : "Confirmar") + ' comanda?'}
             subTitle={
-                selectedTable? ('Se enviarán los datos de la comanda a la mesa ' + selectedTable + '.'):
-                'Se pasará a seleccionar una mesa.'}
+                selectedTable ? ('Se enviarán los datos de la comanda a la mesa ' + selectedTable + '.') :
+                    'Se pasará a seleccionar una mesa.'}
             close={() => { setPop(undefined) }}
             confirm={() => { confirmPicker() }}
         />,
         "order": <OrderListPop
             options={orderOptions}
-            actual={"def"}
+            actual={sortValue}
             confirm={confirmOrderList}
             close={() => { setPop(undefined) }}
         />,
@@ -280,7 +287,7 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
         <Header />
         {pages[page !== "" ? "items" : "types"]}
         <nav className='picker-nav'>
-            <button className={page !== "" ? 'return-to-type-selector default-button' : "return-to-type-selector default-button disabled"} onClick={() => {
+            <button className="return-to-type-selector " style={{opacity:page !== ""? 1 : 0}} onClick={() => {
                 setPage("")
                 setSelectedItem(undefined)
             }}>

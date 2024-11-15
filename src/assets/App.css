@@ -290,6 +290,7 @@ main {
   display: flex;
   padding: 0.5rem;
   align-items: center;
+  gap: .5rem;
 }
 
 .table-list-div {
@@ -540,11 +541,13 @@ main {
 }
 
 .return-to-type-selector {
-  padding: .5rem;
+  padding: 0 .5rem;
   display: flex;
   align-items: center;
   gap: 1rem;
-  font-size: 1rem;
+  font-size: 1.3rem;
+  background-color: transparent;
+  color: var(--cwhite);
 }
 
 /***/
@@ -565,7 +568,10 @@ main {
   color: var(--cwhite);
 }
 
-.item-selector-cont>ul>button>p,
+.item-selector-cont>ul>button>p {
+  margin: 0;
+}
+.item-selector-cont>ul>button>.amount-count,
 .item-selector-cont>ul>button>div {
   position: absolute;
   width: 1.5rem;

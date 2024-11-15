@@ -41,6 +41,7 @@ export default function TableList({ setCurrent, tablePlaces, historial, setPage,
         placeholder='Buscar...'
         defaultValue={search}
         onChange
+        focus={search !== ""}
       />
       <button className='default-button' onClick={() => {
         setPop("order")
@@ -75,6 +76,7 @@ export default function TableList({ setCurrent, tablePlaces, historial, setPage,
           >
           </button>
         })
+        
 
         return <div
           className='table-list-div'
@@ -82,7 +84,7 @@ export default function TableList({ setCurrent, tablePlaces, historial, setPage,
         >
           <label>{stateTraductions[key]}</label>
           <ul className='table-list-ul'>
-            {ul.length === 0 || !ul ?
+            {ul.length === 0 || !ul[0] ?
               <div className='no-items'>
                 <FontAwesomeIcon icon={faWarning} />
                 No hay mesas que enlistar
