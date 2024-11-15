@@ -195,7 +195,6 @@ export default function App({ }: Props) {
       current={getLastTable()}
       setDisplay={setDisplay}
     />,
-    // "historial": <TableHistorial current_id={currentTable._id}/>,
   }
 
   React.useEffect(()=>{
