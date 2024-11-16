@@ -108,9 +108,9 @@ export default function Map({ setCurrent, tablesOpenMin, tablePlaces, setPage,pi
 
     const Buttons = () => {
       return <>
-        <button title='Centrar mapa' className='center-map' onClick={() => { c.setConfig({ ...c.config, map: { ...c.config.map, x: 0, y: 0 } }) }
-        }><FontAwesomeIcon icon={faExpand} /></button>
         <div className='zoom-container'>
+          <button title='Centrar mapa' className='center-map' onClick={() => { c.setConfig({ ...c.config, map: { ...c.config.map, x: 0, y: 0 } }) }
+          }><FontAwesomeIcon icon={faExpand} /></button>
           <button title='Alejar' onClick={() => { changeZoom(false) }}>
             <FontAwesomeIcon icon={faMinus} />
           </button>

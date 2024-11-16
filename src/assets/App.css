@@ -176,7 +176,7 @@ main {
   border-radius: 3px;
   position: absolute;
   z-index: 2;
-  right: 2.2rem;
+  right: 1.9rem;
   bottom: 6rem;
   width: fit-content;
 }
@@ -200,15 +200,11 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2;
-  position: absolute;
-  right: 6rem;
-  font-size: 1.2rem;
-  background-color: var(--corange);
+  font-size: 1rem;
+  background-color: transparent;
   border-radius: 5px;
   padding: .6rem;
-  color: var(--cblack);
-  bottom: 1.3rem;
+  color: var(--cwhite);
 }
 
 .background {
@@ -225,7 +221,7 @@ main {
   height: 2000px;
   position: absolute;
   cursor: all-scroll;
-  /* background-image: linear-gradient(var(--cdarkgray) 1px, transparent 1px), linear-gradient(to right, var(--cdarkgray) 1px, #131313 1px); */
+  background-image: linear-gradient(var(--cdarkgray) 1px, transparent 1px), linear-gradient(to right, var(--cdarkgray) 1px, #131313 1px);
   background-size: 20px 20px;
   transition: scale 300ms;
 }
@@ -247,7 +243,7 @@ main {
   overflow: hidden;
 } 
 .back-slider {
-  width: 0.5rem;
+  width: 0.2rem;
   height: 25dvh;
   background-color: var(--clightgray);
 }
@@ -256,6 +252,7 @@ main {
   position: absolute;
   left: -0.25rem;
   background-color: var(--corange);
+  border: 1px solid var(--cblack);
   padding: 0.5rem 0;
   width: 2rem;
   display: flex;

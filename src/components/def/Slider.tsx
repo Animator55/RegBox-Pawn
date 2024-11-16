@@ -13,8 +13,8 @@ export default function Slider({ value, setValue }: Props) {
         let prevY = e.touches[0].clientY
 
         const move = (e2: TouchEvent) => {
-            let result = (value/2 +e2.touches[0].clientY -prevY)
-            target.style.top = result/2 < 0 ? "0%" : result/2 > 200 ? "100%" : result/2 + "%"
+            let result = (value/2 +e2.touches[0].clientY -prevY) + 30
+            target.style.top = result/2 < 0 ? "0%" : result/2 > 100 ? "100%" : result/2 + "%"
             let draggable = document.querySelector(".draggable") as HTMLDivElement
             if(draggable) draggable.style.scale = `${result/100}`
         }
