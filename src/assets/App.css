@@ -181,15 +181,6 @@ main {
   width: fit-content;
 }
 
-/* .zoom-container>p {
-  margin: 0;
-  color: var(--clightgray);
-  background-color: var(--cdarkgray);
-  border-radius: 5px;
-  padding: 0 0.5rem;
-  margin: 0.1rem 0;
-}*/
-
 .zoom-container>button {
   background-color: transparent;
   color: var(--cwhite);
@@ -219,6 +210,7 @@ main {
 .draggable {
   width: 2000px;
   height: 2000px;
+  transform-origin: 0 0;
   position: absolute;
   cursor: all-scroll;
   background-image: linear-gradient(var(--cdarkgray) 1px, transparent 1px), linear-gradient(to right, var(--cdarkgray) 1px, #131313 1px);
@@ -251,8 +243,7 @@ main {
   border-radius: 5px;
   position: absolute;
   left: -0.25rem;
-  background-color: var(--corange);
-  border: 1px solid var(--cblack);
+  background-color: var(--cwhite);
   padding: 0.5rem 0;
   width: 2rem;
   display: flex;
@@ -403,7 +394,7 @@ main {
 /***/
 
 .main-nav {
-  position: absolute;
+  position: fixed;
   left: 1rem;
   bottom: 1rem;
   display: flex;
@@ -713,7 +704,7 @@ main {
 .picker-nav {
   display: flex;
   background-color: var(--cblack);
-  padding: 1rem;
+  padding: 0.5rem 1rem;
   font-size: 1.2rem;
   color: var(--clightgray);
   justify-content: space-between;

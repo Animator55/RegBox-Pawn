@@ -92,15 +92,15 @@ export default function Map({ setCurrent, tablesOpenMin, tablePlaces, setPage,pi
       if (!zone) return
       let scale = parseFloat(zone.style.scale)
       let newScale = !zoomin ? scale - 0.02 : scale + 0.02
-      if (newScale < 0.05) return
+      if (newScale < 0.05 || newScale > 2) return
       zone.style.scale = `${newScale}`
       if (!zone.parentElement) return
       zone.parentElement.addEventListener("mousemove", () => {
         c.setConfig({ ...c.config, map: { ...c.config.map, zoom: newScale } })
       })
-      let numberDiv = document.querySelector(".zoom-number") as HTMLDivElement
-      if (!numberDiv) return
-      numberDiv.textContent = `${Math.round(newScale * 100)}%`
+      let drag = document.querySelector(".drag-slider") as HTMLDivElement
+      if (!drag) return
+      drag.style.top = `${Math.round(newScale*100/2)}%`
     }
 
 
