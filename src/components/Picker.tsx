@@ -107,12 +107,17 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
     const TypeSelector = () => {
         let phases = []
         for (let i = 0; i < result.length; i++) {
+            let phaseLength = 0
+            for(let j=0;j<result[i].length;j++){
+                phaseLength += result[i][j].amount!
+            }
             phases.push(<button
                 key={Math.random()}
                 onClick={() => { setPhase(i) }}
                 className={phase === i ? "active" : ""}
             >
                 {i + 1}
+                {phaseLength !== 0 && <p>{phaseLength}</p>}
             </button>)
         }
         phases.push(<button
