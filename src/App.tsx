@@ -59,8 +59,9 @@ export default function App({ }: Props) {
 
   const setCurrent = (id: string, creating: boolean) => {
     if (!creating) {
-      if (pickerOn) {
-        setPop({
+      let lastTable = getLastTable(id)
+      if (pickerOn) { /// checks if picker as data
+        if(lastTable && lastTable.state === "open") setPop({ // checks tableState and activates pop up
           name: "selectTable",
           data: id,
           function: () => {
@@ -106,12 +107,13 @@ export default function App({ }: Props) {
     }
   }
 
-  const getLastTable = (): TableEvents | undefined => {
-    if (!currentTable || localHistorial[currentTable].historial.length === 0) return
+  const getLastTable = (id?: string): TableEvents | undefined => {
+    let local_id = id === undefined ? currentTable : id
+    if (!local_id || localHistorial[local_id].historial.length === 0) return
     return {
-      ...localHistorial[currentTable].historial[localHistorial[currentTable].historial.length - 1],
+      ...localHistorial[local_id].historial[localHistorial[local_id].historial.length - 1],
       _id: currentTable,
-      name: localHistorial[currentTable].name
+      name: localHistorial[local_id].name
     }
   }
 
