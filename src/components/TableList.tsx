@@ -16,7 +16,7 @@ type Props = {
   pickerOn: boolean
 }
 
-export default function TableList({ setCurrent, tablePlaces, historial, setPage,pickerOn }: Props) {
+export default function TableList({ setCurrent, tablePlaces, historial, setPage, pickerOn }: Props) {
   const [search, setSearch] = React.useState("")
   const [pop, setPop] = React.useState<"order" | undefined>(undefined)
   const sortIcons: { [key: string]: any } = {
@@ -66,25 +66,30 @@ export default function TableList({ setCurrent, tablePlaces, historial, setPage,
   const TableList = () => {
     return <section>
       {Object.keys(constructor).map(key => {
-        let ul = constructor[key].map(el => {
+        let ul : JSX.Element[] = []
+        constructor[key].map(el => {
           let check = checkSearch(el.name, search)
-          return (search === "" || check !== el.name) && <button
+          if(search === "" || check !== el.name) ul.push(<button
             key={Math.random()}
             onClick={() => { setCurrent(el._id, key === "unnactive") }}
             style={{ backgroundColor: colorSelector[key] }}
             dangerouslySetInnerHTML={{ __html: check }}
           >
-          </button>
+          </button>)
         })
-        
+
+        const lengthChecks = ul.length === 0
 
         return <div
           className='table-list-div'
           key={Math.random()}
         >
-          <label>{stateTraductions[key]}</label>
+          <label>
+            <p style={{backgroundColor: colorSelector[key]}}>{ul.length}</p>
+            <p>{stateTraductions[key]}</p>
+          </label>
           <ul className='table-list-ul'>
-            {ul.length === 0 || !ul[0] ?
+            {lengthChecks ?
               <div className='no-items'>
                 <FontAwesomeIcon icon={faWarning} />
                 No hay mesas que enlistar
