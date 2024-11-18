@@ -164,6 +164,7 @@ main {
 .map-display {
   position: relative;
   height: 100%;
+  touch-action: none;
 }
 
 
@@ -208,9 +209,10 @@ main {
 }
 
 .draggable {
+  transform-origin: 0 0;
+  will-change: scale, top, left;
   width: 2000px;
   height: 2000px;
-  transform-origin: 0 0;
   position: absolute;
   cursor: all-scroll;
   background-image: linear-gradient(var(--cdarkgray) 1px, transparent 1px), linear-gradient(to right, var(--cdarkgray) 1px, #131313 1px);
@@ -291,6 +293,12 @@ main {
   color: var(--cwhite);
   justify-content: center;
   align-items: center;
+  animation: intermitent 1s infinite ease-in-out;
+}
+
+@keyframes intermitent {
+  0%, 100% {opacity: 0.2;}
+  50% {opacity: 1;}
 }
 
 
@@ -460,8 +468,8 @@ main {
   display: flex;
   overflow-x: auto;
   overflow-y: hidden;
-  gap: .8rem;
-  padding: 1rem;
+  gap: .5rem;
+  padding: .7rem;
   align-items: center;
 }
 
@@ -471,6 +479,21 @@ main {
   border-color: var(--cwhite);
 }
 
+.type-selector>header>button>p {
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--cgreen);
+  bottom: 0;
+  right: 0;
+  margin: 0;
+  color: var(--cdarkgray);
+  font-size: 0.8rem;
+}
 .type-selector>header>button {
   background-color: var(--clightgray);
   border: 3px solid transparent;
@@ -481,6 +504,7 @@ main {
   align-items: center;
   justify-content: center;
   font-size: 1.4rem;
+  position: relative;
 }
 
 .type-selector>ul {
