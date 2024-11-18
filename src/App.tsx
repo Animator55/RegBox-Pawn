@@ -41,15 +41,22 @@ for (const id in historialDef) {
   defaultHistorialParsed = { ...defaultHistorialParsed, [id]: parsed }
 }
 
+let defaultSelector = "list"
+
 export default function App({ }: Props) {
   const [config, setConfig] = React.useState(defaultConfig)
   const [page, setPage] = React.useState<"main" | "picker">("main")
-  const [displayMode, setDisplay] = React.useState<"list" | "map" | "view">("list")
+  const [displayMode, setDisplayState] = React.useState<"list" | "map" | "view">("list")
   const [localHistorial, setLocalHistorial] = React.useState<histStructure>(defaultHistorialParsed)
   // const [localTablePlaces, setTablePlaces] = React.useState<TablePlaceType[]>(tablePlaces)
   // const [prods, setProds] = React.useState<productsType>(products)
   const localTablePlaces: TablePlaceType[] = tablePlaces
   const prods: productsType = products1
+
+  const setDisplay = (val: "list" | "map" | "view")=>{
+    if(val !== "view")defaultSelector = val
+    setDisplayState(val)
+  }
 
   const [pop, setPop] = React.useState<{ name: string, data: any, function: Function } | undefined>(undefined)
 
@@ -195,7 +202,6 @@ export default function App({ }: Props) {
       pickerOn={pickerOn}
       setPage={setPage}
       current={getLastTable()}
-      setDisplay={setDisplay}
     />,
   }
 
@@ -207,7 +213,7 @@ export default function App({ }: Props) {
     "main": <>
       <TopBar pickerOn={pickerOn} />
       {displays[displayMode]}
-      <NavBar currentNav={displayMode} setNav={setDisplay} />
+      <NavBar defaultSelector={defaultSelector} currentNav={displayMode} setNav={setDisplay} />
     </>,
     "picker": <Picker
       result={picker}

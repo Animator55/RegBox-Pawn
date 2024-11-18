@@ -6,18 +6,14 @@ import { colorSelector } from '../logic/colorSelector'
 
 type Props = {
   current: TableEvents | undefined
-  setDisplay: Function
   setPage: Function
   pickerOn: boolean
 }
 
-export default function TableView({ current, setDisplay, setPage, pickerOn }: Props) {
+export default function TableView({ current, setPage, pickerOn }: Props) {
   const Header = () => {
     if (!current) return
     return <header className='table-view-header'>
-      <button className='default-button' onClick={() => { setDisplay("list") }}>
-        <FontAwesomeIcon icon={faArrowLeft} />
-      </button>
       <h3>Mesa {current.name}</h3>
       <p style={{ backgroundColor: colorSelector[current.state] }}>{stateTraductions[current.state]}</p>
     </header>
