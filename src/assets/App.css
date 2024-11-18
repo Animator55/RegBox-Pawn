@@ -141,7 +141,7 @@ main {
 }
 
 
-.picker-mode-button {
+.picker-mode-button, .search-fixed-button {
   display: flex;
   position: absolute;
   bottom: 1rem;
@@ -156,6 +156,14 @@ main {
   justify-content: center;
 }
 
+.search-fixed-button {
+  width: 3rem;
+  height: 3rem;
+  right: 1.5rem;
+  bottom: 6rem;
+  color: var(--cblack);
+  background-color: var(--cgreen);
+}
 
 
 /**/

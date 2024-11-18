@@ -1,4 +1,4 @@
-import { faArrowLeft, faPen, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faPen, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { TableEvents } from '../vite-env'
 import { stateTraductions } from '../defaults/stateTraductions'

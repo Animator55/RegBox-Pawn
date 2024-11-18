@@ -1,7 +1,7 @@
 import React from 'react'
 import SearchBar from './def/Search'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPen, faPlus, faSortAlphaDownAlt, faSortAlphaUpAlt, faSortAmountAsc, faSortAmountDesc, faWarning } from '@fortawesome/free-solid-svg-icons'
+import { faMagnifyingGlass, faPen, faPlus, faSortAlphaDownAlt, faSortAlphaUpAlt, faSortAmountAsc, faSortAmountDesc, faWarning } from '@fortawesome/free-solid-svg-icons'
 import OrderListPop from './pops/OrderListPop'
 import { histStructure, TablePlaceType } from '../vite-env'
 import { stateTraductions } from '../defaults/stateTraductions'
@@ -110,6 +110,13 @@ export default function TableList({ setCurrent, tablePlaces, historial, setPage,
       style={pickerOn ? { backgroundColor: "var(--cgreen)" } : {}}
       onClick={() => { setPage("picker") }}>
       <FontAwesomeIcon icon={pickerOn ? faPen : faPlus} />
+    </button>
+    <button className='search-fixed-button'
+      onClick={() => {
+        let input = document.querySelector(".input-expand") as HTMLInputElement
+        if (input) input.focus()
+      }}>
+      <FontAwesomeIcon icon={faMagnifyingGlass} />
     </button>
   </section>
 }
