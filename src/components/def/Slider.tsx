@@ -13,16 +13,16 @@ export default function Slider({ value, setValue }: Props) {
         let prevY = e.touches[0].clientY
 
         const move = (e2: TouchEvent) => {
-            let result = (value/2 +e2.touches[0].clientY -prevY) + 30
-            target.style.top = result/2 < 0 ? "0%" : result/2 > 100 ? "100%" : result/2 + "%"
+            let result = (value +e2.touches[0].clientY -prevY) 
+            target.style.top = result < 0 ? "0%" : result > 100 ? "100%" : result + "%"
             let draggable = document.querySelector(".draggable") as HTMLDivElement
-            if(draggable) draggable.style.scale = `${result/100}`
+            if(draggable) draggable.style.scale = `${(parseInt(target.style.top)/100)*1.5+0.5}`
         }
 
         const end = () => {
             document.removeEventListener("touchmove", move)
             document.removeEventListener("touchend", end)
-            setValue(parseInt(target.style.top)*2/100)
+            setValue((parseInt(target.style.top)/100)*1.5+0.5)
         }
 
         document.addEventListener("touchmove", move)
@@ -33,7 +33,7 @@ export default function Slider({ value, setValue }: Props) {
         <div className='back-slider'></div>
         <div className='drag-slider'
             onTouchStart={drag}
-            style={{ top: value/2 + "%" }}
+            style={{ top: value + "%" }}
         >
         </div>
     </div>
