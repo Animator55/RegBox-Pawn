@@ -42,6 +42,7 @@ for (const id in historialDef) {
 }
 
 let defaultSelector = "list"
+let lastCreated: string | undefined = undefined
 
 export default function App({ }: Props) {
   const [config, setConfig] = React.useState(defaultConfig)
@@ -53,8 +54,8 @@ export default function App({ }: Props) {
   const localTablePlaces: TablePlaceType[] = tablePlaces
   const prods: productsType = products1
 
-  const setDisplay = (val: "list" | "map" | "view")=>{
-    if(val !== "view")defaultSelector = val
+  const setDisplay = (val: "list" | "map" | "view") => {
+    if (val !== "view") defaultSelector = val
     setDisplayState(val)
   }
 
@@ -68,14 +69,24 @@ export default function App({ }: Props) {
     if (!creating) {
       let lastTable = getLastTable(id)
       if (pickerOn) { /// checks if picker as data
-        if(lastTable && lastTable.state === "open") setPop({ // checks tableState and activates pop up
+        if (lastTable && lastTable.state === "open") setPop({ // checks tableState and activates pop up
           name: "selectTable",
           data: id,
           function: () => {
             let result = back_editTable(id, picker)
             if (result) {
-              // setCurrentState(id)
-              // setDisplay("view")
+              if (localHistorial[id] && localHistorial[id].historial.length !== 0) {
+                setLocalHistorial({
+                  ...localHistorial, [id]: {
+                    ...localHistorial[id], historial: localHistorial[id].historial.map((table, i) => {
+                      if (i !== localHistorial[id].historial.length - 1) return table
+                      else return { ...table, products: picker }
+                    })
+                  }
+                })
+              }
+              setCurrentState(id)
+              setDisplay("view")
               setPicker([[]])
             }
           }
@@ -92,18 +103,7 @@ export default function App({ }: Props) {
         function: () => {
           let result = createTable(id)
           if (result) {
-            if (pickerOn) setPop({
-              name: "selectTable",
-              data: id,
-              function: () => {
-                let result = back_editTable(id, picker)
-                if (result) {
-                  // setCurrentState(id)
-                  // setDisplay("view")
-                  setPicker([[]])
-                }
-              }
-            })
+            if (pickerOn) lastCreated = id
             else {
               setCurrentState(id)
               setDisplay("view")
@@ -205,9 +205,16 @@ export default function App({ }: Props) {
     />,
   }
 
-  React.useEffect(()=>{
-      if(currentTable !== undefined && displayMode !== "view") setCurrentState(undefined)
+  React.useEffect(() => {
+    if (currentTable !== undefined && displayMode !== "view") setCurrentState(undefined)
   }, [displayMode])
+
+  React.useEffect(() => {
+    if (lastCreated) {
+      setCurrent(lastCreated, false)
+      lastCreated = undefined
+    }
+  })
 
   const pages: { [key: string]: any } = {
     "main": <>
@@ -225,7 +232,7 @@ export default function App({ }: Props) {
         setPicker([[]])
       }}
       confirmPicker={() => {
-        if(currentTable) setPicker([[]])
+        if (currentTable) setPicker([[]])
         setPage("main")
       }}
     />

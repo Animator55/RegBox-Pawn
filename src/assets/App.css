@@ -214,11 +214,12 @@ main {
   height: 100%;
   overflow: hidden;
   border: 3px solid transparent;
+  touch-action: none;
 }
 
 .draggable {
   transform-origin: 0 0;
-  will-change: scale, top, left;
+  transform: scale(1) translate(0, 0);
   width: 2000px;
   height: 2000px;
   position: absolute;
@@ -260,6 +261,9 @@ main {
   align-items: center;
   justify-content: center;
 }
+
+
+
 
 /***/
 
@@ -469,6 +473,12 @@ main {
   padding: 0.4rem;
   left: auto;
   right: .5rem;
+}
+
+.prod-item {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
 }
 
 

@@ -5,7 +5,7 @@ export type TableType = {
     name: string
     discount: number
     discountType: "percent" | "amount"
-    products: Item[]
+    products: Item[][]
     opened: string[]
     payMethod: PayMethod[] | undefined
     state: "open" | "paying" | "closed" | "unnactive"
@@ -15,7 +15,7 @@ export type TableEvents = {
     name?: string
     discount: number
     discountType: "percent" | "amount"
-    products: Item[],
+    products: Item[][],
     opened: string[]
     total: string
     events: SingleEvent[]
