@@ -13,16 +13,28 @@ export default function Slider({ value, setValue }: Props) {
         let prevY = e.touches[0].clientY
 
         const move = (e2: TouchEvent) => {
-            let result = (value +e2.touches[0].clientY -prevY) 
-            target.style.top = result < 0 ? "0%" : result > 100 ? "100%" : result + "%"
+            let result = (value + (e2.touches[0].clientY - prevY)/2)
+            target.style.top = result < 0 ? "0%" : result > 90 ? "90%" : result + "%"
             let draggable = document.querySelector(".draggable") as HTMLDivElement
-            if(draggable) draggable.style.scale = `${(parseInt(target.style.top)/100)*1.5+0.5}`
+            if (!draggable) return
+            let prevData = draggable.style.transform
+
+            const regex = /scale\(([\d.]+)\)\s+translate\(([\d.-]+)px,\s*([\d.-]+)px\)/;
+
+            const matches = prevData.match(regex);
+            if (matches) {
+                const translateX = parseFloat(matches[2]);
+                const translateY = parseFloat(matches[3]);
+
+                draggable.style.transform = `scale(${(parseFloat(target.style.top) / 100) * 1.5 + 0.5}) translate(${translateX}px,${translateY}px)`
+            }
+
         }
 
         const end = () => {
             document.removeEventListener("touchmove", move)
             document.removeEventListener("touchend", end)
-            setValue((parseInt(target.style.top)/100)*1.5+0.5)
+            setValue((parseFloat(target.style.top) / 100) * 1.5 + 0.5)
         }
 
         document.addEventListener("touchmove", move)

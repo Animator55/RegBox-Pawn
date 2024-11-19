@@ -187,6 +187,7 @@ main {
   z-index: 2;
   right: 1.9rem;
   bottom: 6rem;
+  gap: .7rem;
   width: fit-content;
 }
 

@@ -63,7 +63,7 @@ export default function Map({ setCurrent, tablesOpenMin, tablePlaces, setPage, p
         const distCurrent = calculateDistance(touch1, touch2);
 
         scale = lastScale * (distCurrent / distStart);
-        scale = Math.min(Math.max(scale, 0.5), 2); // Limitar zoom entre 1x y 3x
+        scale = Math.min(Math.max(scale, 0.5), 1.8); // Limitar zoom entre 1x y 3x
         let drag = document.querySelector(".drag-slider") as HTMLDivElement
         if (!drag) return
         drag.style.top = `${Math.round(scale - 0.5 / 1.5)}%`
@@ -117,79 +117,6 @@ export default function Map({ setCurrent, tablesOpenMin, tablePlaces, setPage, p
   })
 
   const MapDisplay = () => {
-    // const drag = (e: React.MouseEvent) => {
-    //   let back = e.target as HTMLDivElement
-    //   if (back.className !== "background" && back.className !== "draggable") return
-    //   let target = back.className !== "draggable" ? back.firstChild as HTMLDivElement : back
-    //   const move = (e2: MouseEvent) => {
-    //     let left = parseInt(target.style.left)
-    //     let top = parseInt(target.style.top)
-
-    //     target.style.left = left + e2.movementX + "px"
-    //     target.style.top = top + e2.movementY + "px"
-    //   }
-    //   const drop = () => {
-    //     let target = document.querySelector(".draggable") as HTMLDivElement
-    //     if(!target) return
-    //     let x = parseInt(target.style.left)
-    //     let y = parseInt(target.style.top)
-
-    //     if (x !== c.config.map.x || y !== c.config.map.y) c.setConfig(
-    //       { ...c.config, map: { ...c.config.map, x: x, y: y } })
-
-    //     document.removeEventListener("mousemove", move)
-    //     document.removeEventListener("mouseup", drop)
-    //     document.removeEventListener("mouseleave", drop)
-    //   }
-
-    //   document.addEventListener("mousemove", move)
-    //   document.addEventListener("mouseup", drop)
-    //   document.addEventListener("mouseleave", drop)
-    // }
-    // const drag_Touch = (e: React.TouchEvent) => {
-    //   let back = e.target as HTMLDivElement
-    //   if (back.className !== "background" && back.className !== "draggable") return
-    //   let target = back.className !== "draggable" ? back.firstChild as HTMLDivElement : back
-
-    //   let left = parseInt(target.style.left)
-    //   let top = parseInt(target.style.top)
-    //   let origin_x = e.touches[0].pageX - left
-    //   let origin_y = e.touches[0].pageY - top
-    //   const move = (e2: TouchEvent) => {
-    //     let changeX = e2.touches[0].pageX - origin_x
-    //     let changeY = e2.touches[0].pageY - origin_y
-    //     target.style.left = changeX + "px"
-    //     target.style.top = changeY + "px"
-    //   }
-    //   const drop = () => {
-    //     let target = document.querySelector(".draggable") as HTMLDivElement
-    //     if(!target) return
-
-    //     let x = parseInt(target.style.left)
-    //     let y = parseInt(target.style.top)
-
-    //     if (x !== c.config.map.x || y !== c.config.map.y) c.setConfig(
-    //       { ...c.config, map: { ...c.config.map, x: x, y: y } })
-
-    //     document.removeEventListener("touchmove", move)
-    //     document.removeEventListener("touchend", drop)
-    //     document.removeEventListener("touchcancel", drop)
-    //   }
-
-    //   document.addEventListener("touchmove", move)
-    //   document.addEventListener("touchend", drop)
-    //   document.addEventListener("touchcancel", drop)
-    // }
-    /// touchresize
-
-    const changeZoom = (zoomin: boolean) => {
-      let zone = document.querySelector(".draggable") as HTMLDivElement
-      if (!zone) return
-      let scale = parseFloat(zone.style.scale)
-      let newScale = !zoomin ? scale - 0.02 : scale + 0.02
-      if (newScale < 0.5 || newScale > 2) return
-      c.setConfig({ ...c.config, map: { ...c.config.map, zoom: newScale } })
-    }
 
 
     ///components 
@@ -199,13 +126,7 @@ export default function Map({ setCurrent, tablesOpenMin, tablePlaces, setPage, p
         <div className='zoom-container'>
           <button title='Centrar mapa' className='center-map' onClick={() => { c.setConfig({ ...c.config, map: { ...c.config.map, x: 0, y: 0 } }) }
           }><FontAwesomeIcon icon={faExpand} /></button>
-          <button title='Alejar' onClick={() => { changeZoom(false) }}>
-            <FontAwesomeIcon icon={faMinus} />
-          </button>
-          <Slider value={Math.round((c.config.map.zoom - 0.5/ 1.5)*100)} setValue={(val: number) => { c.setConfig({ ...c.config, map: { ...c.config.map, zoom: val } }) }} />
-          <button title='Acercar' onClick={() => { changeZoom(true) }}>
-            <FontAwesomeIcon icon={faPlus} />
-          </button>
+          <Slider value={((c.config.map.zoom - 0.5)/ 1.5)*100} setValue={(val: number) => { c.setConfig({ ...c.config, map: { ...c.config.map, zoom: val } }) }} />
         </div>
       </>
     }
