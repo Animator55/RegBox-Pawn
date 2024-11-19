@@ -1,4 +1,4 @@
-import { faExpand, faMinus, faPen, faPlus, faWarning } from '@fortawesome/free-solid-svg-icons'
+import { faExpand, faPen, faPlus, faWarning } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import { TablePlaceType } from '../vite-env'
