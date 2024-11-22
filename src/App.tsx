@@ -232,7 +232,19 @@ export default function App({ }: Props) {
         setPicker([[]])
       }}
       confirmPicker={() => {
-        if (currentTable) setPicker([[]])
+        if (currentTable) {
+          if (localHistorial[currentTable] && localHistorial[currentTable].historial.length !== 0) {
+            setLocalHistorial({
+              ...localHistorial, [currentTable]: {
+                ...localHistorial[currentTable], historial: localHistorial[currentTable].historial.map((table, i) => {
+                  if (i !== localHistorial[currentTable].historial.length - 1) return table
+                  else return { ...table, products: picker }
+                })
+              }
+            })
+          }
+          setPicker([[]])
+        }
         setPage("main")
       }}
     />
