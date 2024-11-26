@@ -127,7 +127,7 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
             <FontAwesomeIcon icon={faPlus} />
         </button>)
 
-        return <section className='page type-selector'>
+        return <section id="picker-page" className='page type-selector'>
             <header>
                 {phases}
             </header>
@@ -217,7 +217,7 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
 
         let sortedList: Item[] = sortBy[sortValue](prods[page])
 
-        return <section className='page item-selector'>
+        return <section id="picker-page" className='page item-selector'>
             <div className='item-selector-cont'>
 
                 <header className='table-list-header'>
@@ -274,6 +274,7 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
             confirm={() => { cancelPicker() }}
         />,
         "confirm": <ConfirmPop
+            time
             title={'¿' + (selectedTable ? "Enviar" : "Confirmar") + ' comanda?'}
             subTitle={
                 selectedTable ? ('Se enviarán los datos de la comanda a la mesa ' + selectedTable + '.') :
@@ -289,6 +290,23 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
         />,
         "command": <ShowCommand />
     }
+
+    React.useEffect(() => {
+        history.pushState(null, "", location.href);
+    
+        const handlePopState = (event: PopStateEvent) => {
+            event.preventDefault();
+            let section = document.getElementById("picker-page")
+            if(section && section.classList.contains("item-selector")) setPage("")
+            else setPop("close")
+        };
+    
+        window.addEventListener("popstate", handlePopState);
+    
+        return () => {
+          window.removeEventListener("popstate", handlePopState);
+        };
+      }, []);
 
     return <>
         {pop && pops[pop]}
