@@ -293,11 +293,11 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
 
     React.useEffect(() => {
         history.pushState(null, "", location.href);
-    
+        
         const handlePopState = (event: PopStateEvent) => {
             event.preventDefault();
             let section = document.getElementById("picker-page")
-            if(section && section.classList.contains("item-selector")) setPage("")
+            if(section && section.classList.contains("item-selector"))setPage("")
             else setPop("close")
         };
     
@@ -306,7 +306,7 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
         return () => {
           window.removeEventListener("popstate", handlePopState);
         };
-      }, []);
+      });
 
     return <>
         {pop && pops[pop]}
