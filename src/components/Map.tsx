@@ -66,7 +66,7 @@ export default function Map({ setCurrent, tablesOpenMin, tablePlaces, setPage, p
         scale = Math.min(Math.max(scale, 0.5), 1.8); // Limitar zoom entre 1x y 3x
         let drag = document.querySelector(".drag-slider") as HTMLDivElement
         if (!drag) return
-        drag.style.top = `${Math.round(scale - 0.5 / 1.5)}%`
+        drag.style.top = `${Math.round((scale - 0.5) / 1.5)*100}%`
       }
 
       if (e.touches.length === 1) {
