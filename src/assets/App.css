@@ -121,6 +121,30 @@ main {
   align-items: center;
 }
 
+.progress-bar {
+  position: relative;
+  height: .5rem;
+  border-radius: 5px;
+  overflow: hidden;
+  margin: .5rem;
+}
+.progress-bar::after {
+  content: "";
+  background-color: var(--corange);
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  animation: progress 1s linear forwards;
+}
+
+@keyframes progress {
+  to {
+    width: 100%;
+  }
+} 
+
 .confirm-pop {
   text-align: center;
   padding: 1rem;
@@ -453,33 +477,83 @@ main {
 .table-view-header {
   display: flex;
   align-items: center;
-  padding: 0.5rem;
+  padding: 0.5rem 1rem;
+  justify-content: space-between;
 }
 
 .table-view-header>h3,
 .table-view-header>p {
-  margin: 0 auto;
   font-size: 1rem;
-}
-
-.table-view-header>button,
-.table-view-header>p {
-  font-size: 1rem;
-  left: .5rem;
-  position: absolute;
+  margin: 0;
 }
 
 .table-view-header>p {
   border-radius: 5px;
   padding: 0.4rem;
-  left: auto;
-  right: .5rem;
 }
 
-.prod-item {
+
+.table-list {
+  margin: 0.5rem;
+  border-radius: 7px;
+  background-color: var(--cdarkgray);
+  padding: 1rem;
+  color: var(--cwhite);
+}
+.table-list > div {
   display: flex;
+  flex-direction: column;
   gap: 0.5rem;
+}
+.table-list label {
+  color: var(--clightgray);
+  border-bottom: 1px solid;
   width: 100%;
+}
+.table-list > div > ul {
+  padding-left: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.prod-item >div {
+  background-color: var(--cwhite);
+  color: var(--cdarkgray);
+  padding: 0.3rem;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.prod-item {
+  border-radius: 5px;
+  overflow: hidden;
+  display: grid;
+  background-color: var(--cdarkgray);
+  grid-template-columns: 68% 10% 20%;
+  gap: 1%;
+  width: 100%;
+}
+
+.amount-buttons {
+  padding: 0 0.2rem!important;
+  background-color: transparent!important;
+  display: flex;
+  align-items: center;
+  gap: .2rem;
+}
+.amount-buttons > button {
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  background-color: var(--cgreen);
+  color: var(--cblack);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.amount-buttons > button:last-child {
+  background-color: var(--cred);
 }
 
 

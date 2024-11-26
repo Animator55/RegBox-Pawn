@@ -1,4 +1,4 @@
-import { faPen, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faMinus, faPen, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Item, TableEvents } from '../vite-env'
 import { stateTraductions } from '../defaults/stateTraductions'
@@ -19,7 +19,7 @@ export default function TableView({ current, setPage, pickerOn }: Props) {
     </header>
   }
   const List = () => { /// fix structure before doing this one
-    return <ul>
+    return <ul className='table-list'>
       {current?.products.map((pha, i) => {
         return <div key={Math.random()}>
           <label>Tiempo {i+1}</label>
@@ -27,7 +27,11 @@ export default function TableView({ current, setPage, pickerOn }: Props) {
             {pha.map((el:Item) => {
               return <div className='prod-item' key={Math.random()}>
                 <div>{el.name}</div>
-                <div>x{el.amount}</div>
+                <div>{el.amount}</div>
+                <div className='amount-buttons'>
+                  <button><FontAwesomeIcon icon={faPlus}/></button>
+                  <button><FontAwesomeIcon icon={faMinus}/></button>
+                </div>
               </div>
             })}
           </ul>
