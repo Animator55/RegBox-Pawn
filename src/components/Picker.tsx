@@ -296,9 +296,7 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
         
         const handlePopState = (event: PopStateEvent) => {
             event.preventDefault();
-            let section = document.getElementById("picker-page")
-            if(section && section.classList.contains("item-selector"))setPage("")
-            else setPop("close")
+            setPop("close")
         };
     
         window.addEventListener("popstate", handlePopState);
