@@ -117,8 +117,6 @@ export default function Map({ setCurrent, tablesOpenMin, tablePlaces, setPage, p
   })
 
   const MapDisplay = () => {
-
-
     ///components 
 
     const Buttons = () => {

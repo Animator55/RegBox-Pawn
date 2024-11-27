@@ -145,6 +145,13 @@ main {
   }
 } 
 
+.order-pop {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  padding: 1rem;
+}
+
 .confirm-pop {
   text-align: center;
   padding: 1rem;

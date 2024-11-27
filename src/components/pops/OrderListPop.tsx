@@ -21,7 +21,7 @@ export default function OrderListPop ({options, actual, close, confirm}: Props) 
         let target = e.target as HTMLDivElement
         if (target.className === "back-blur") close()
     }}>
-        <section className='pop switch-pop'>
+        <section className='pop order-pop'>
             <h2 style={{textAlign: "center"}}>Ordenar</h2>
             <select value={selected} onChange={(e)=>{
                 let val = e.target.value
