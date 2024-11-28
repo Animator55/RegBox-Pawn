@@ -10,8 +10,8 @@ type Props = {
 
 export default function ConfirmPop({ title, confirm, close, subTitle, time }: Props) {
     React.useEffect(() => {
-        let pop = document.querySelector(".confirm-pop")
         if (time) setTimeout(() => {
+            let pop = document.querySelector(".confirm-pop")
             if (pop) confirm()
         }, 1000)
     })

@@ -45,10 +45,10 @@ export default function TableView({ current, setPage, pickerOn }: Props) {
   return <section className='page'>
     <Header />
     <List />
-    <button className='picker-mode-button'
+    {(current && current.state !== "closed" ) && <button className='picker-mode-button'
       style={pickerOn ? { backgroundColor: "var(--cgreen)" } : {}}
       onClick={() => { setPage("picker") }}>
       <FontAwesomeIcon icon={pickerOn ? faPen : faPlus} />
-    </button>
+    </button>}
   </section>
 }

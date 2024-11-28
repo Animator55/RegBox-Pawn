@@ -44,6 +44,13 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
         setPhase(result.length)
     }
 
+    const movePhase=(index: number, toIndex: number)=>{
+        let newResult = []
+        for(let i=0; i<result.length; i++){
+            if()
+        }
+    }
+
     const editPhase = (item: Item) => {
         let local = result[phase]
         setSelectedItem(item)
@@ -304,7 +311,7 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
         return () => {
           window.removeEventListener("popstate", handlePopState);
         };
-      });
+      })
 
     return <>
         {pop && pops[pop]}
