@@ -597,6 +597,27 @@ main {
   border-color: var(--cwhite);
 }
 
+.type-selector>header>.phase-placeholder {
+  display: none;
+}
+.type-selector>header:has(.float)>.phase-placeholder {
+  display: flex;
+  width: 3.5rem;
+  height: 3.5rem;
+  background-color: blue;
+  border-radius: 50%;
+  width: 3.5rem;
+  height: 3.5rem;
+  font-size: 1.4rem;
+}
+
+.type-selector>header>button.float {
+  position: absolute;
+  z-index: 2;
+  scale: 0.8;
+  pointer-events: none;
+}
+
 .type-selector>header>button>p {
   position: absolute;
   width: 1rem;
@@ -616,8 +637,8 @@ main {
   background-color: var(--clightgray);
   border: 3px solid transparent;
   border-radius: 50%;
-  width: 3.5rem;
-  height: 3.5rem;
+  min-width: 3.5rem;
+  min-height: 3.5rem;
   display: flex;
   align-items: center;
   justify-content: center;

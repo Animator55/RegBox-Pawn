@@ -33,7 +33,7 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
 
     const amountsByType: router = {}
     const amounts: router = {}
-    for (let i = 0; i < result[phase].length; i++) {
+    if (result[phase]) for (let i = 0; i < result[phase].length; i++) {
         let item = result[phase][i]
         amounts[item._id] = { amount: item.amount, comment: item.comment }
         amountsByType[item.type] = amountsByType[item.type] !== undefined ? (amountsByType[item.type] + (1 * item.amount!)) : (1 * item.amount!)
@@ -44,11 +44,24 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
         setPhase(result.length)
     }
 
-    const movePhase=(index: number, toIndex: number)=>{
-        let newResult = []
-        for(let i=0; i<result.length; i++){
-            if()
+    const movePhase = ( index: number, toIndex: number) => {
+        if(index === undefined || toIndex === undefined) return 
+        let value: Item[] | undefined = undefined
+        let newResult = result.map((el, i) => {
+            if (i === index) {
+                value = el
+                return "PH"
+            }
+            else return el
+        })
+        if (value === undefined) return
+        newResult.splice(toIndex + 1, 0, value)
+        let preFilter = newResult
+        let settedValue = []
+        for (let i = 0; i < preFilter.length; i++) {
+            if (typeof preFilter[i] !== "string") settedValue.push(preFilter[i])
         }
+        setPicker(settedValue as Item[][])
     }
 
     const editPhase = (item: Item) => {
@@ -110,22 +123,76 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
             <button className={(result.length !== 1 || result[0].length !== 0) ? 'default-button' : "default-button disabled"} onClick={() => { if (result.length !== 1 || result[0].length !== 0) setPop("confirm") }}>Confirmar</button>
         </header>
     }
+    let pressTimer: null | number = null;
+    let draggingPhase: boolean = false
 
+    const DragPhase = (e: React.TouchEvent) => {
+        pressTimer = setTimeout(() => {
+            draggingPhase = true
+            let target = e.target as HTMLButtonElement
+            if (!target) return
+            target.classList.add("float")
+            let left = target.offsetLeft
+            let top = target.offsetTop
+            let origin_x = e.touches[0].pageX - left
+            let origin_y = e.touches[0].pageY - top
+            const move = (e2: TouchEvent) => {
+                let changeX = e2.touches[0].pageX - origin_x
+                let changeY = e2.touches[0].pageY - origin_y
+                target.style.left = changeX + "px"
+                target.style.top = changeY + "px"
+            }
+            const drop = ()=>{
+                let float = document.querySelector(".float") as HTMLButtonElement
+                if(!float) return
+                float.classList.remove("float")
+                float.style.top= ""
+                float.style.left= ""
+                movePhase(parseInt(float.id.split("_")[1]), 0) /// issue, result in old state ///IMPORTANT
+
+                document.removeEventListener("touchmove", move)
+                document.removeEventListener("touchend", drop)
+                document.removeEventListener("touchcancel", drop)
+            }
+            
+            document.addEventListener("touchmove", move)
+            document.addEventListener("touchend", drop)
+            document.addEventListener("touchcancel", drop)
+
+        }, 500)
+    };
+    const DragPhaseCancel = () => {
+        if (pressTimer !== null) {
+            clearTimeout(pressTimer); // Cancela el temporizador si se suelta antes de tiempo
+            pressTimer = null;
+            draggingPhase = false
+        }
+    };
     const TypeSelector = () => {
         let phases = []
         for (let i = 0; i < result.length; i++) {
             let phaseLength = 0
-            for(let j=0;j<result[i].length;j++){
+            for (let j = 0; j < result[i].length; j++) {
                 phaseLength += result[i][j].amount!
             }
-            phases.push(<button
-                key={Math.random()}
-                onClick={() => { setPhase(i) }}
+            phases.push(<React.Fragment key={Math.random()}>    
+                <div className='phase-placeholder' id={'ph_'+i}>{i}</div>
+                <button
+                id={'phase_'+i}
+                onTouchStart={(e) => {
+                    DragPhase(e)
+                }}
+                onTouchEnd={() => {
+                    if (!draggingPhase) setPhase(i)
+                    DragPhaseCancel()
+                }}
                 className={phase === i ? "active" : ""}
             >
                 {i + 1}
                 {phaseLength !== 0 && <p>{phaseLength}</p>}
-            </button>)
+            </button>
+            </React.Fragment>
+            )
         }
         phases.push(<button
             key={Math.random()}
@@ -162,8 +229,8 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
     const orderOptions = ["abc", "abc-r", "def", "def-r"]
     let sortValue = c.config.prodListOrder
 
-    const confirmOrderList = (value: "abc"|"abc-r"| "def"|"def-r") => {
-        c.setConfig({...c.config, prodListOrder: value})
+    const confirmOrderList = (value: "abc" | "abc-r" | "def" | "def-r") => {
+        c.setConfig({ ...c.config, prodListOrder: value })
         setPop(undefined)
     }
     let scrollHeight = UlRef.current?.scrollTop;
@@ -246,7 +313,7 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
                     {sortedList.map(item => {
                         let check = checkSearch(item.name, search)
                         let isSel = amounts[item._id] !== undefined ? amounts[item._id] : { amount: 0, comment: undefined }
-                        return (search === "" || check !== item.name) &&<button
+                        return (search === "" || check !== item.name) && <button
                             key={Math.random()}
                             className={selectedItem?._id === item._id ? "active" : ""}
                             onClick={() => {
@@ -300,25 +367,26 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
 
     React.useEffect(() => {
         history.pushState(null, "", location.href);
-        
+
         const handlePopState = (event: PopStateEvent) => {
             event.preventDefault();
             setPop("close")
         };
-    
+
         window.addEventListener("popstate", handlePopState);
-    
+
         return () => {
-          window.removeEventListener("popstate", handlePopState);
+            window.removeEventListener("popstate", handlePopState);
         };
-      })
+    })
 
     return <>
+        <button onClick={() => { movePhase(0, 2) }}>fasgfas</button>
         {pop && pops[pop]}
         <Header />
         {pages[page !== "" ? "items" : "types"]}
         <nav className='picker-nav'>
-            <button className="return-to-type-selector " style={{opacity:page !== ""? 1 : 0}} onClick={() => {
+            <button className="return-to-type-selector " style={{ opacity: page !== "" ? 1 : 0 }} onClick={() => {
                 setPage("")
                 setSelectedItem(undefined)
             }}>
