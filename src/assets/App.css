@@ -583,6 +583,7 @@ main {
 /**/
 
 .type-selector>header {
+  position: relative;
   display: flex;
   overflow-x: auto;
   overflow-y: hidden;
@@ -600,21 +601,13 @@ main {
 .type-selector>header>.phase-placeholder {
   display: none;
 }
-.type-selector>header:has(.float)>.phase-placeholder {
-  display: flex;
-  width: 3.5rem;
-  height: 3.5rem;
-  background-color: blue;
-  border-radius: 50%;
-  width: 3.5rem;
-  height: 3.5rem;
-  font-size: 1.4rem;
+.type-selector>header:has(.float)>button {
+  position: relative;
 }
 
 .type-selector>header>button.float {
-  position: absolute;
+  position: relative;
   z-index: 2;
-  scale: 0.8;
   pointer-events: none;
 }
 

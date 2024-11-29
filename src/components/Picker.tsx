@@ -132,23 +132,36 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
             let target = e.target as HTMLButtonElement
             if (!target) return
             target.classList.add("float")
-            let left = target.offsetLeft
-            let top = target.offsetTop
-            let origin_x = e.touches[0].pageX - left
-            let origin_y = e.touches[0].pageY - top
+            let origin_x = e.touches[0].pageX
+            target.style.left = 0 + "px"
+            let theOtherI = -1
+            let width = target.clientWidth *2
             const move = (e2: TouchEvent) => {
                 let changeX = e2.touches[0].pageX - origin_x
-                let changeY = e2.touches[0].pageY - origin_y
-                target.style.left = changeX + "px"
-                target.style.top = changeY + "px"
+                if(changeX < width/3 || changeX > (width/3)*-1) theOtherI = -1
+                let index = parseInt(target.id.split("_")[1])
+                if(
+                    (index === 0 && changeX<0) ||
+                    (index === result.length-1 && changeX>0)
+                ) return 
+                let theOtherIndex = changeX < 0 ? (index -1) : (index+1)
+                let theOtherOne = document.getElementById('phase_'+theOtherIndex)
+                if(!theOtherOne) return
+                changeX = Math.abs(changeX) > (width/2) ? changeX>0?(width/2):((width/2)*-1) : changeX
+                target.style.left =changeX + "px"
+                theOtherOne.style.left = -changeX + "px"
+                if(changeX > (width/3) || changeX < (width/3)*-1) theOtherI = theOtherIndex
+                console.log(theOtherI)
             }
             const drop = ()=>{
                 let float = document.querySelector(".float") as HTMLButtonElement
                 if(!float) return
+                let other = document.getElementById("phase_"+theOtherI) as HTMLButtonElement
                 float.classList.remove("float")
-                float.style.top= ""
                 float.style.left= ""
-                movePhase(parseInt(float.id.split("_")[1]), 0) /// issue, result in old state ///IMPORTANT
+                if(!other) return
+                other.style.left =""
+                if(theOtherI !== -1)movePhase(parseInt(float.id.split("_")[1]), theOtherI) /// issue, result in old state ///IMPORTANT
 
                 document.removeEventListener("touchmove", move)
                 document.removeEventListener("touchend", drop)
@@ -159,7 +172,7 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
             document.addEventListener("touchend", drop)
             document.addEventListener("touchcancel", drop)
 
-        }, 500)
+        }, 200)
     };
     const DragPhaseCancel = () => {
         if (pressTimer !== null) {
@@ -176,7 +189,7 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
                 phaseLength += result[i][j].amount!
             }
             phases.push(<React.Fragment key={Math.random()}>    
-                <div className='phase-placeholder' id={'ph_'+i}>{i}</div>
+                {/* <div className='phase-placeholder' id={'ph_'+i}>{i}</div> */}
                 <button
                 id={'phase_'+i}
                 onTouchStart={(e) => {
@@ -381,7 +394,6 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
     })
 
     return <>
-        <button onClick={() => { movePhase(0, 2) }}>fasgfas</button>
         {pop && pops[pop]}
         <Header />
         {pages[page !== "" ? "items" : "types"]}
