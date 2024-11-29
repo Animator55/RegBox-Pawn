@@ -55,12 +55,15 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
             else return el
         })
         if (value === undefined) return
-        newResult.splice(toIndex + 1, 0, value)
+        let checkedToIndex =toIndex < index ? toIndex : toIndex+1
+        newResult.splice(checkedToIndex, 0, value)
         let preFilter = newResult
         let settedValue = []
         for (let i = 0; i < preFilter.length; i++) {
             if (typeof preFilter[i] !== "string") settedValue.push(preFilter[i])
         }
+        if(phase === index) setPhase(toIndex)
+        else if(phase === toIndex) setPhase(index)
         setPicker(settedValue as Item[][])
     }
 
@@ -147,7 +150,8 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
                 let theOtherIndex = changeX < 0 ? (index -1) : (index+1)
                 let theOtherOne = document.getElementById('phase_'+theOtherIndex)
                 if(!theOtherOne) return
-                changeX = Math.abs(changeX) > (width/2) ? changeX>0?(width/2):((width/2)*-1) : changeX
+                let limit = width/2 + 14
+                changeX = Math.abs(changeX) > limit ? changeX>0?limit:(limit*-1) : changeX
                 target.style.left =changeX + "px"
                 theOtherOne.style.left = -changeX + "px"
                 if(changeX > (width/3) || changeX < (width/3)*-1) theOtherI = theOtherIndex
@@ -172,7 +176,7 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
             document.addEventListener("touchend", drop)
             document.addEventListener("touchcancel", drop)
 
-        }, 200)
+        }, 400)
     };
     const DragPhaseCancel = () => {
         if (pressTimer !== null) {

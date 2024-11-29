@@ -587,7 +587,7 @@ main {
   display: flex;
   overflow-x: auto;
   overflow-y: hidden;
-  gap: .5rem;
+  gap: 7px;
   padding: .7rem;
   align-items: center;
 }
@@ -598,9 +598,6 @@ main {
   border-color: var(--cwhite);
 }
 
-.type-selector>header>.phase-placeholder {
-  display: none;
-}
 .type-selector>header:has(.float)>button {
   position: relative;
 }
