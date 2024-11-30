@@ -52,6 +52,10 @@ button {
   cursor: pointer;
 }
 
+.invisible {
+  opacity: 0;
+}
+
 input {
   border: none;
 }
@@ -586,7 +590,7 @@ main {
   position: relative;
   display: flex;
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y:hidden;
   gap: 7px;
   padding: .7rem;
   align-items: center;
@@ -608,6 +612,47 @@ main {
   pointer-events: none;
 }
 
+.type-selector>header>button:not(.selected) span {
+  max-width: 0rem;
+  max-height: 0rem;
+  overflow: hidden;
+}
+.type-selector>header>button.selected > .number {
+  max-height: 0rem;
+  overflow: hidden;
+  pointer-events: none;
+}
+.type-selector>header>button.selected span {
+  position: absolute;
+  z-index: 1;
+  border-radius: 8px;
+  padding: 0.4rem;
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  justify-content: space-between;
+}
+.type-selector>header>button span> button:nth-child(2){
+  background-color: var(--cred);
+}
+
+.type-selector>header>button span> button {
+  background-color: var(--cgreen);
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  font-size: 1.3rem;
+  color: var(--cblack);
+}
+
+.phase-move-button * {
+  pointer-events: none;
+}
+
+
+.type-selector>header:has(.selected)>button>p {
+  display: none;
+}
 .type-selector>header>button>p {
   position: absolute;
   width: 1rem;
@@ -630,6 +675,7 @@ main {
   min-width: 3.5rem;
   min-height: 3.5rem;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: 1.4rem;

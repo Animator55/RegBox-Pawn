@@ -1,7 +1,7 @@
 import React from 'react'
 import { Item, router } from '../vite-env'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowLeft, faAsterisk, faCaretUp, faMinus, faPlus, faSortAlphaDownAlt, faSortAlphaUpAlt, faSortAmountAsc, faSortAmountDesc } from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeft, faAsterisk, faCaretLeft, faCaretRight, faCaretUp, faMinus, faPlus, faSortAlphaDownAlt, faSortAlphaUpAlt, faSortAmountAsc, faSortAmountDesc, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { productsType } from '../defaults/products'
 import SearchBar from './def/Search'
 import OrderListPop from './pops/OrderListPop'
@@ -42,6 +42,16 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
     const addPhase = () => {
         setPicker([...result, []])
         setPhase(result.length)
+    }
+    const removePhase = (index: number)=>{
+        // check currentPhase
+        let newSelectedPhase = index
+        if(newSelectedPhase >= result.length-1) newSelectedPhase = index - 1
+        setPhase(newSelectedPhase)
+
+        setPicker(result.filter((el, i)=>{
+            if(i !== index) return el
+        }))
     }
 
     const movePhase = ( index: number, toIndex: number) => {
@@ -129,60 +139,26 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
     let pressTimer: null | number = null;
     let draggingPhase: boolean = false
 
-    const DragPhase = (e: React.TouchEvent) => {
+    const DragPhase = (index:number) => {
         pressTimer = setTimeout(() => {
-            draggingPhase = true
-            let target = e.target as HTMLButtonElement
+            let target = document.getElementById("phase_"+index) as HTMLButtonElement
             if (!target) return
-            target.classList.add("float")
-            let origin_x = e.touches[0].pageX
-            target.style.left = 0 + "px"
-            let theOtherI = -1
-            let width = target.clientWidth *2
-            const move = (e2: TouchEvent) => {
-                let changeX = e2.touches[0].pageX - origin_x
-                if(changeX < width/3 || changeX > (width/3)*-1) theOtherI = -1
-                let index = parseInt(target.id.split("_")[1])
-                if(
-                    (index === 0 && changeX<0) ||
-                    (index === result.length-1 && changeX>0)
-                ) return 
-                let theOtherIndex = changeX < 0 ? (index -1) : (index+1)
-                let theOtherOne = document.getElementById('phase_'+theOtherIndex)
-                if(!theOtherOne) return
-                let limit = width/2 + 14
-                changeX = Math.abs(changeX) > limit ? changeX>0?limit:(limit*-1) : changeX
-                target.style.left =changeX + "px"
-                theOtherOne.style.left = -changeX + "px"
-                if(changeX > (width/3) || changeX < (width/3)*-1) theOtherI = theOtherIndex
-                console.log(theOtherI)
+            draggingPhase = true
+            target.classList.add("selected")
+            const cancel = (e: TouchEvent)=>{
+                let button = e.target as HTMLButtonElement
+                if(!button) return 
+                if(!button.classList.contains("phase-move-button")) target.classList.remove("selected")
+                document.removeEventListener("touchstart", cancel)
             }
-            const drop = ()=>{
-                let float = document.querySelector(".float") as HTMLButtonElement
-                if(!float) return
-                let other = document.getElementById("phase_"+theOtherI) as HTMLButtonElement
-                float.classList.remove("float")
-                float.style.left= ""
-                if(!other) return
-                other.style.left =""
-                if(theOtherI !== -1)movePhase(parseInt(float.id.split("_")[1]), theOtherI) /// issue, result in old state ///IMPORTANT
-
-                document.removeEventListener("touchmove", move)
-                document.removeEventListener("touchend", drop)
-                document.removeEventListener("touchcancel", drop)
-            }
-            
-            document.addEventListener("touchmove", move)
-            document.addEventListener("touchend", drop)
-            document.addEventListener("touchcancel", drop)
-
+            document.addEventListener("touchstart", cancel)
         }, 400)
     };
     const DragPhaseCancel = () => {
         if (pressTimer !== null) {
-            clearTimeout(pressTimer); // Cancela el temporizador si se suelta antes de tiempo
-            pressTimer = null;
+            clearTimeout(pressTimer);
             draggingPhase = false
+            pressTimer = null;
         }
     };
     const TypeSelector = () => {
@@ -193,11 +169,10 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
                 phaseLength += result[i][j].amount!
             }
             phases.push(<React.Fragment key={Math.random()}>    
-                {/* <div className='phase-placeholder' id={'ph_'+i}>{i}</div> */}
                 <button
                 id={'phase_'+i}
-                onTouchStart={(e) => {
-                    DragPhase(e)
+                onTouchStart={() => {
+                    if(result.length > 1) DragPhase(i)
                 }}
                 onTouchEnd={() => {
                     if (!draggingPhase) setPhase(i)
@@ -205,7 +180,14 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
                 }}
                 className={phase === i ? "active" : ""}
             >
-                {i + 1}
+                <div className='number'>{i + 1}</div>
+                <span>
+                    <button className={i === 0 ? "invisible" : "phase-move-button"} 
+                    onClick={()=>{if(i !== 0)movePhase(i, i-1)}}><FontAwesomeIcon icon={faCaretLeft}/></button>
+                    <button className='phase-move-button' onClick={()=>{if(result.length > 1)removePhase(i)}}><FontAwesomeIcon icon={faXmark}/></button>
+                    <button className={i === result.length-1 ? "invisible" : "phase-move-button"} 
+                    onClick={()=>{if(i !== result.length-1)movePhase(i, i+1)}}><FontAwesomeIcon icon={faCaretRight}/></button>
+                </span>
                 {phaseLength !== 0 && <p>{phaseLength}</p>}
             </button>
             </React.Fragment>
