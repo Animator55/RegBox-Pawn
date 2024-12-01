@@ -80,7 +80,7 @@ export default function App({ }: Props) {
                   ...localHistorial, [id]: {
                     ...localHistorial[id], historial: localHistorial[id].historial.map((table, i) => {
                       if (i !== localHistorial[id].historial.length - 1) return table
-                      else return { ...table, products: picker }
+                      else return { ...table, products: [...table.products, ...picker] }
                     })
                   }
                 })
@@ -199,6 +199,7 @@ export default function App({ }: Props) {
       pickerOn={pickerOn}
     />,
     "view": currentTable && <TableView
+    setPicker={setPicker}
       pickerOn={pickerOn}
       setPage={setPage}
       current={getLastTable()}
@@ -223,6 +224,32 @@ export default function App({ }: Props) {
       <NavBar defaultSelector={defaultSelector} currentNav={displayMode} setNav={setDisplay} />
     </>,
     "picker": <Picker
+      result={picker}
+      setPicker={setPicker}
+      selectedTable={getTableName(currentTable)}
+      prods={prods}
+      cancelPicker={() => {
+        setPage("main")
+        setPicker([[]])
+      }}
+      confirmPicker={() => {
+        if (currentTable) {
+          if (localHistorial[currentTable] && localHistorial[currentTable].historial.length !== 0) {
+            setLocalHistorial({
+              ...localHistorial, [currentTable]: {
+                ...localHistorial[currentTable], historial: localHistorial[currentTable].historial.map((table, i) => {
+                  if (i !== localHistorial[currentTable].historial.length - 1) return table
+                  else return { ...table, products: [...table.products, ...picker] }
+                })
+              }
+            })
+          }
+          setPicker([[]])
+        }
+        setPage("main")
+      }}
+    />,
+    "picker-with-data": <Picker
       result={picker}
       setPicker={setPicker}
       selectedTable={getTableName(currentTable)}

@@ -7,10 +7,11 @@ import { colorSelector } from '../logic/colorSelector'
 type Props = {
   current: TableEvents | undefined
   setPage: Function
+  setPicker: Function
   pickerOn: boolean
 }
 
-export default function TableView({ current, setPage, pickerOn }: Props) {
+export default function TableView({ current, setPage, pickerOn, setPicker }: Props) {
   const Header = () => {
     if (!current) return
     return <header className='table-view-header'>
@@ -22,15 +23,15 @@ export default function TableView({ current, setPage, pickerOn }: Props) {
     return <ul className='table-list'>
       {current?.products.map((pha, i) => {
         return <div key={Math.random()}>
-          <label>Tiempo {i+1}</label>
+          <label>Tiempo {i + 1}</label>
           <ul>
-            {pha.map((el:Item) => {
+            {pha.map((el: Item) => {
               return <div className='prod-item' key={Math.random()}>
                 <div>{el.name}</div>
                 <div>{el.amount}</div>
                 <div className='amount-buttons'>
-                  <button><FontAwesomeIcon icon={faPlus}/></button>
-                  <button><FontAwesomeIcon icon={faMinus}/></button>
+                  <button><FontAwesomeIcon icon={faPlus} /></button>
+                  <button><FontAwesomeIcon icon={faMinus} /></button>
                 </div>
               </div>
             })}
@@ -45,10 +46,20 @@ export default function TableView({ current, setPage, pickerOn }: Props) {
   return <section className='page'>
     <Header />
     <List />
-    {(current && current.state !== "closed" ) && <button className='picker-mode-button'
-      style={pickerOn ? { backgroundColor: "var(--cgreen)" } : {}}
-      onClick={() => { setPage("picker") }}>
-      <FontAwesomeIcon icon={pickerOn ? faPen : faPlus} />
-    </button>}
+    {(current && current.state !== "closed") && <>
+      {!pickerOn && <button className='search-fixed-button'
+        onClick={() => {
+          setPicker(current.products)
+          setPage("picker-with-data")
+        }}>
+        <FontAwesomeIcon icon={faPen} />
+      </button>}
+      <button className='picker-mode-button'
+        style={pickerOn ? { backgroundColor: "var(--cgreen)" } : {}}
+        onClick={() => { setPage("picker") }}>
+        <FontAwesomeIcon icon={pickerOn ? faPen : faPlus} />
+      </button>
+    </>
+    }
   </section>
 }
