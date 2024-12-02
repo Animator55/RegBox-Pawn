@@ -146,6 +146,8 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
             draggingPhase = true
             target.classList.add("selected")
             const cancel = (e: TouchEvent)=>{
+                console.log("documentevent")
+                DragPhaseCancel()
                 let button = e.target as HTMLButtonElement
                 if(!button) return 
                 if(!button.classList.contains("phase-move-button")) target.classList.remove("selected")
@@ -172,9 +174,12 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
                 <button
                 id={'phase_'+i}
                 onTouchStart={() => {
+                    console.log("touchStart React", draggingPhase)
                     if(result.length > 1) DragPhase(i)
-                }}
-                onTouchEnd={() => {
+                    }}
+                onTouchEnd={(e) => {
+                    console.log("touchEnd React" + draggingPhase)
+                    console.log(e)
                     if (!draggingPhase) setPhase(i)
                     DragPhaseCancel()
                 }}
@@ -183,10 +188,10 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
                 <div className='number'>{i + 1}</div>
                 <span>
                     <button className={i === 0 ? "invisible" : "phase-move-button"} 
-                    onClick={()=>{if(i !== 0)movePhase(i, i-1)}}><FontAwesomeIcon icon={faCaretLeft}/></button>
-                    <button className='phase-move-button' onClick={()=>{if(result.length > 1)removePhase(i)}}><FontAwesomeIcon icon={faXmark}/></button>
+                    onTouchStart={()=>{if(i !== 0)movePhase(i, i-1)}}><FontAwesomeIcon icon={faCaretLeft}/></button>
+                    <button className='phase-move-button' onTouchStart={()=>{if(result.length > 1)removePhase(i)}}><FontAwesomeIcon icon={faXmark}/></button>
                     <button className={i === result.length-1 ? "invisible" : "phase-move-button"} 
-                    onClick={()=>{if(i !== result.length-1)movePhase(i, i+1)}}><FontAwesomeIcon icon={faCaretRight}/></button>
+                    onTouchStart={()=>{if(i !== result.length-1)movePhase(i, i+1)}}><FontAwesomeIcon icon={faCaretRight}/></button>
                 </span>
                 {phaseLength !== 0 && <p>{phaseLength}</p>}
             </button>
