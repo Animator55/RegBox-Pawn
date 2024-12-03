@@ -54,6 +54,16 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
         }))
     }
 
+    const switchPhasesAnimation = (index: number, toIndex: number)=>{
+        let target = document.getElementById("phase_"+index) as HTMLButtonElement
+        let target2 = document.getElementById("phase_"+toIndex) as HTMLButtonElement
+        if(!target || !target2) return 
+        let toRight = index < toIndex
+        target.classList.remove("selected")
+        target.classList.add(toRight ? "slide-to-right": "slide-to-left")
+        target2.classList.add(!toRight ? "slide-to-right": "slide-to-left")
+    }
+
     const movePhase = ( index: number, toIndex: number) => {
         if(index === undefined || toIndex === undefined) return 
         let value: Item[] | undefined = undefined
@@ -72,9 +82,12 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
         for (let i = 0; i < preFilter.length; i++) {
             if (typeof preFilter[i] !== "string") settedValue.push(preFilter[i])
         }
-        if(phase === index) setPhase(toIndex)
-        else if(phase === toIndex) setPhase(index)
-        setPicker(settedValue as Item[][])
+        switchPhasesAnimation(index, toIndex)
+        setTimeout(()=>{
+            if(phase === index) setPhase(toIndex)
+            else if(phase === toIndex) setPhase(index)
+            setPicker(settedValue as Item[][])
+        }, 300)
     }
 
     const editPhase = (item: Item) => {
@@ -146,7 +159,6 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
             draggingPhase = true
             target.classList.add("selected")
             const cancel = (e: TouchEvent)=>{
-                console.log("documentevent")
                 DragPhaseCancel()
                 let button = e.target as HTMLButtonElement
                 if(!button) return 
@@ -174,12 +186,9 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
                 <button
                 id={'phase_'+i}
                 onTouchStart={() => {
-                    console.log("touchStart React", draggingPhase)
                     if(result.length > 1) DragPhase(i)
                     }}
-                onTouchEnd={(e) => {
-                    console.log("touchEnd React" + draggingPhase)
-                    console.log(e)
+                onTouchEnd={() => {
                     if (!draggingPhase) setPhase(i)
                     DragPhaseCancel()
                 }}
