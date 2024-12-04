@@ -3,15 +3,17 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Item, TableEvents } from '../vite-env'
 import { stateTraductions } from '../defaults/stateTraductions'
 import { colorSelector } from '../logic/colorSelector'
+import React from 'react'
 
 type Props = {
   current: TableEvents | undefined
   setPage: Function
   setPicker: Function
+  setMap: Function
   pickerOn: boolean
 }
 
-export default function TableView({ current, setPage, pickerOn, setPicker }: Props) {
+export default function TableView({ current, setPage, pickerOn, setPicker, setMap }: Props) {
   const Header = () => {
     if (!current) return
     return <header className='table-view-header'>
@@ -41,6 +43,21 @@ export default function TableView({ current, setPage, pickerOn, setPicker }: Pro
 
     </ul>
   }
+  
+  React.useEffect(() => {
+    history.pushState(null, "", location.href);
+
+    const handlePopState = (event: PopStateEvent) => {
+        event.preventDefault();
+        setMap()
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+        window.removeEventListener("popstate", handlePopState);
+    };
+})
 
 
   return <section className='page'>
