@@ -1,4 +1,4 @@
-import { faMinus, faPen, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faMinus, faPen, faPlus, faWarning } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Item, TableEvents } from '../vite-env'
 import { stateTraductions } from '../defaults/stateTraductions'
@@ -23,41 +23,47 @@ export default function TableView({ current, setPage, pickerOn, setPicker, setMa
   }
   const List = () => { /// fix structure before doing this one
     return <ul className='table-list'>
-      {current?.products.map((pha, i) => {
-        return <div key={Math.random()}>
-          <label>Tiempo {i + 1}</label>
-          <ul>
-            {pha.map((el: Item) => {
-              return <div className='prod-item' key={Math.random()}>
-                <div>{el.name}</div>
-                <div>{el.amount}</div>
-                <div className='amount-buttons'>
-                  <button><FontAwesomeIcon icon={faPlus} /></button>
-                  <button><FontAwesomeIcon icon={faMinus} /></button>
-                </div>
-              </div>
-            })}
-          </ul>
+      {current?.products.length === 0 ?
+        <div className='warning'>
+          <FontAwesomeIcon icon={faWarning} />
+          <p>No hay productos que enlistar.</p>
         </div>
-      })}
+        :
+        current?.products.map((pha, i) => {
+          return <div key={Math.random()}>
+            <label>Tiempo {i + 1}</label>
+            <ul>
+              {pha.map((el: Item) => {
+                return <div className='prod-item' key={Math.random()}>
+                  <div>{el.name}</div>
+                  <div>{el.amount}</div>
+                  <div className='amount-buttons'>
+                    <button><FontAwesomeIcon icon={faPlus} /></button>
+                    <button><FontAwesomeIcon icon={faMinus} /></button>
+                  </div>
+                </div>
+              })}
+            </ul>
+          </div>
+        })}
 
     </ul>
   }
-  
+
   React.useEffect(() => {
     history.pushState(null, "", location.href);
 
     const handlePopState = (event: PopStateEvent) => {
-        event.preventDefault();
-        setMap()
+      event.preventDefault();
+      setMap()
     };
 
     window.addEventListener("popstate", handlePopState);
 
     return () => {
-        window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener("popstate", handlePopState);
     };
-})
+  })
 
 
   return <section className='page'>

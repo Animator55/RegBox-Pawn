@@ -9,17 +9,27 @@ import { colorSelector } from '../logic/colorSelector'
 import "../assets/sidebar.css"
 
 type Props = {
-  isCurrent: string| undefined
+  isCurrent: string | undefined
   setCurrent: Function
   tablePlaces: TablePlaceType[]
   historial: histStructure
   setMap: Function
 }
 
-export default function SideBar({ setCurrent, tablePlaces, historial, setMap ,isCurrent }: Props) {
+export default function SideBar({ setCurrent, tablePlaces, historial, setMap, isCurrent }: Props) {
   const [search, setSearch] = React.useState("")
-  const [visible, setVisible] = React.useState(false)
+  const [visible, setVisibleState] = React.useState(false)
 
+  const setVisible = (val: boolean) => {
+    if (val) setVisibleState(val)
+    let sidebar = document.querySelector(".side-bar") as HTMLDivElement
+    if (!sidebar) return
+    sidebar.classList.add("fade-to-left")
+    sidebar.offsetTop
+    setTimeout(() => {
+      setVisibleState(val)   
+    }, 300)
+  }
 
   const constructor: { [key: string]: TablePlaceType[] } = {
     open: [],

@@ -315,7 +315,7 @@ main {
 
 .main-header {
   background-color: var(--cblack);
-  padding: .5rem 1.5rem;
+  padding: .5rem 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -501,21 +501,26 @@ main {
 
 .table-view-header>h3,
 .table-view-header>p {
+  color: var(--cwhite);
   font-size: 1rem;
   margin: 0;
 }
 
 .table-view-header>p {
+  color: var(--cdarker);
   border-radius: 5px;
   padding: 0.4rem;
 }
 
 
 .table-list {
+  height: 100%;
   margin: 0.5rem;
+  margin-bottom: 6rem;
   border-radius: 7px;
   background-color: var(--cdarkgray);
   padding: 1rem;
+  overflow-y: auto;
   color: var(--cwhite);
 }
 .table-list > div {

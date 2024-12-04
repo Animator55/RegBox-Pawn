@@ -10,17 +10,23 @@
     box-shadow: 0 0 5px var(--clightgray);
     /* backdrop-filter: blur(1px); */
     animation: side-bar 300ms forwards;
+    opacity: 0;
 }
 
 @keyframes side-bar {
-    from {
+    0% {
         opacity: 0;
         left: -5rem;
     }
-    to {
+    100% {
         opacity: 1;
         left: 0;
     }
+}
+
+.fade-to-left {
+    opacity: 1;
+    animation: side-bar 300ms forwards reverse;
 }
 
 .side-bar:has(.warning) {
