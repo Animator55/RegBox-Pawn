@@ -61,6 +61,10 @@
     margin: 0;
 }
 
+.table-list-side > button.active {
+    box-shadow: 0 0 5px var(--cwhite);
+    border-color: var(--cwhite)!important;
+}
 .table-list-side > button {
     border: 2px solid var(--clightgray);
     color: var(--clightgray);

@@ -193,6 +193,7 @@ export default function App({ }: Props) {
       pickerOn={pickerOn}
       setPage={setPage}
       current={getLastTable()}
+      setMap={() => { setDisplay("map") }}
     />,
   }
 
@@ -212,7 +213,7 @@ export default function App({ }: Props) {
       <TopBar pickerOn={pickerOn} />
       {displays[displayMode]}
       <SideBar
-        isCurrent={currentTable !== undefined}
+        isCurrent={currentTable}
         setMap={() => { setDisplay("map") }}
         setCurrent={setCurrent}
         tablePlaces={tablePlaces}
