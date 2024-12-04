@@ -1,6 +1,5 @@
 import React from 'react'
 import TopBar from './components/TopBar'
-import NavBar from './components/SideBar'
 import Map from './components/Map'
 import TableView from './components/TableView'
 import { configType, HistorialTableType, histStructure, Item, router, SingleEvent, TableEvents, TablePlaceType } from './vite-env'

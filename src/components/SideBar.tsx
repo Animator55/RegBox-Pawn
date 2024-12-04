@@ -36,7 +36,7 @@ export default function SideBar({ setCurrent, tablePlaces, historial, setMap ,is
   const TableList = () => {
     let ul: JSX.Element[] = []
     for (const key in constructor) {
-      constructor[key].map((el, i) => {
+      constructor[key].map((el) => {
         let check = checkSearch(el.name, search)
         if (search === "" || check !== el.name) ul.push(<button
           key={Math.random()}
