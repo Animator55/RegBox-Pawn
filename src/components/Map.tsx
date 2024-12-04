@@ -130,7 +130,7 @@ export default function Map({ setCurrent, tablesOpenMin, tablePlaces, setPage, p
     }
 
     const TableDraggable = ({ tbl }: { tbl: TablePlaceType }) => {
-      let color = "var(--clightgray)"
+      let color = ""
       let check = checkTable(tbl._id, tablesOpenMin)
       if (check.result) color = colorSelector[check.state]
 
@@ -145,7 +145,8 @@ export default function Map({ setCurrent, tablesOpenMin, tablePlaces, setPage, p
           height: tbl.size.y,
           top: tbl.coords.y,
           left: tbl.coords.x,
-          backgroundColor: color
+          borderColor: color,
+          color: color
         }}
       >
         <p>{tbl.name}</p>

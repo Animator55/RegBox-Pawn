@@ -3,6 +3,7 @@
 body {
   margin: 0;
   --cblack: #0c0a09;
+  --cdarker: #1b1b1b;
   --cdarkgray: #242424;
   --cgray: #6d655f;
   --clightgray: #cfcbc7;
@@ -14,7 +15,7 @@ body {
   --cred2: #f36c6c54;
   --cdarkgray: rgb(66, 66, 66);
   overflow: hidden;
-  background-color: var(--cdarkgray);
+  background-color: var(--cblack);
   height: 100dvh;
   max-height: 100dvh;
 }
@@ -84,7 +85,6 @@ main {
 
 main {
   max-height: 100dvh;
-  background-color: var(--cwhite);
 }
 
 
@@ -114,8 +114,7 @@ main {
   transition: border-color 300ms, background-color 300ms, color 300ms;
 }
 
-.back-blur,
-.back {
+.back-blur {
   position: fixed;
   z-index: 50;
   inset: 0;
@@ -123,6 +122,11 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.back {
+  position: fixed;
+  z-index: 20;
+  inset: 0;
 }
 
 .progress-bar {
@@ -249,7 +253,6 @@ main {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  border: 3px solid transparent;
   touch-action: none;
 }
 
@@ -260,13 +263,16 @@ main {
   height: 2000px;
   position: absolute;
   cursor: all-scroll;
-  background-image: linear-gradient(var(--cdarkgray) 1px, transparent 1px), linear-gradient(to right, var(--cdarkgray) 1px, #131313 1px);
+  background-image: linear-gradient(var(--cdarker) 1px, transparent 1px), linear-gradient(to right, var(--cdarker) 1px, #131313 1px);
   background-size: 20px 20px;
   transition: scale 300ms;
 }
 
 .table {
-  background-color: var(--clightgray);
+  background-color: var(--cblack);
+  border: 3px solid var(--clightgray);
+  color: var(--clightgray);
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -284,15 +290,16 @@ main {
 .back-slider {
   width: 0.2rem;
   height: 25dvh;
-  background-color: var(--clightgray);
+  background-color: var(--cgray);
+  border-radius: 10px;
 }
 .drag-slider {
-  border-radius: 5px;
   position: absolute;
-  left: -0.25rem;
-  background-color: var(--cwhite);
-  padding: 0.5rem 0;
-  width: 2rem;
+  left: 0.08rem;
+  background-color: var(--corange);
+  border-radius: 50%;
+  width: 1rem;
+  height: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -307,8 +314,8 @@ main {
 
 
 .main-header {
-  background-color: var(--cdarkgray);
-  padding: 0.5rem 1rem;
+  background-color: var(--cblack);
+  padding: .5rem 1.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -475,9 +482,9 @@ main {
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
-  background-color: var(--corange);
+  background-color:rgba(255, 255, 255, 0.151);
   border-radius: 50%;
-  color: var(--cblack);
+  color: var(--cwhite);
   height: 4rem;
   width: 4rem;
 }
@@ -585,6 +592,10 @@ main {
 
 
 /**/
+
+#picker-page {
+  background: var(--cwhite);
+}
 
 .type-selector>header {
   position: relative;
@@ -733,15 +744,15 @@ main {
 
 @media (max-width:700px) {
   .item-selector-cont>ul {
-    grid-template-columns: 49.5% 49.5%;
-    gap: 1%;
+    grid-template-columns: 49% 49%;
+    gap: 2%;
   }
 }
 
 @media (max-width:350px) {
   .item-selector-cont>ul {
     grid-template-columns: 100%;
-    gap: 1%;
+    gap: 2%;
   }
 }
 
@@ -764,6 +775,8 @@ main {
   position: relative;
   padding: 2.5rem 1rem;
   font-size: 1.2rem;
+  border-radius: 10px;
+  background-color: var(--cwhite);
   box-shadow: 2px 2px 5px var(--clightgray);
 }
 

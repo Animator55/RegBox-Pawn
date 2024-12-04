@@ -1,7 +1,6 @@
 import React from 'react'
 import TopBar from './components/TopBar'
-import TableList from './components/TableList'
-import NavBar from './components/NavBar'
+import NavBar from './components/SideBar'
 import Map from './components/Map'
 import TableView from './components/TableView'
 import { configType, HistorialTableType, histStructure, Item, router, SingleEvent, TableEvents, TablePlaceType } from './vite-env'
@@ -16,6 +15,7 @@ import { defaultConfig } from './defaults/config'
 import "./assets/App.css"
 import Picker from './components/Picker'
 import { products1, productsType } from './defaults/products'
+import SideBar from './components/SideBar'
 
 type Props = {}
 
@@ -41,21 +41,19 @@ for (const id in historialDef) {
   defaultHistorialParsed = { ...defaultHistorialParsed, [id]: parsed }
 }
 
-let defaultSelector = "list"
 let lastCreated: string | undefined = undefined
 
 export default function App({ }: Props) {
   const [config, setConfig] = React.useState(defaultConfig)
   const [page, setPage] = React.useState<"main" | "picker">("main")
-  const [displayMode, setDisplayState] = React.useState<"list" | "map" | "view">("list")
+  const [displayMode, setDisplayState] = React.useState<"map" | "view">("map")
   const [localHistorial, setLocalHistorial] = React.useState<histStructure>(defaultHistorialParsed)
   // const [localTablePlaces, setTablePlaces] = React.useState<TablePlaceType[]>(tablePlaces)
   // const [prods, setProds] = React.useState<productsType>(products)
   const localTablePlaces: TablePlaceType[] = tablePlaces
   const prods: productsType = products1
 
-  const setDisplay = (val: "list" | "map" | "view") => {
-    if (val !== "view") defaultSelector = val
+  const setDisplay = (val: "map" | "view") => {
     setDisplayState(val)
   }
 
@@ -184,13 +182,6 @@ export default function App({ }: Props) {
   }
 
   const displays: { [key: string]: any } = {
-    "list": <TableList
-      setCurrent={setCurrent}
-      historial={localHistorial}
-      setPage={setPage}
-      tablePlaces={localTablePlaces}
-      pickerOn={pickerOn}
-    />,
     "map": <Map
       setPage={setPage}
       setCurrent={setCurrent}
@@ -199,7 +190,7 @@ export default function App({ }: Props) {
       pickerOn={pickerOn}
     />,
     "view": currentTable && <TableView
-    setPicker={setPicker}
+      setPicker={setPicker}
       pickerOn={pickerOn}
       setPage={setPage}
       current={getLastTable()}
@@ -221,7 +212,13 @@ export default function App({ }: Props) {
     "main": <>
       <TopBar pickerOn={pickerOn} />
       {displays[displayMode]}
-      <NavBar defaultSelector={defaultSelector} currentNav={displayMode} setNav={setDisplay} />
+      <SideBar
+        isCurrent={currentTable !== undefined}
+        setMap={() => { setDisplay("map") }}
+        setCurrent={setCurrent}
+        tablePlaces={tablePlaces}
+        historial={localHistorial}
+      />
     </>,
     "picker": <Picker
       result={picker}

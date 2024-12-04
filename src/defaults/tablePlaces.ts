@@ -9,8 +9,8 @@ export const tablePlaces: TablePlaceType[] = [
         "y": 100
       },
       "size": {
-        "x": 40,
-        "y": 40
+        "x": 80,
+        "y": 80
       }
     },
     {

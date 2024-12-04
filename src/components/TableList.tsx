@@ -84,10 +84,10 @@ export default function TableList({ setCurrent, tablePlaces, historial, setPage,
           className='table-list-div'
           key={Math.random()}
         >
-          <label>
+          {/* <label>
             <p style={{backgroundColor: colorSelector[key]}}>{ul.length}</p>
             <p>{stateTraductions[key]}</p>
-          </label>
+          </label> */}
           <ul className='table-list-ul'>
             {lengthChecks ?
               <div className='no-items'>
