@@ -14,11 +14,13 @@ type Props = {
 }
 
 export default function TableView({ current, setPage, pickerOn, setPicker, setMap }: Props) {
+  const [selected, setSelected] = React.useState<{ phase: number, item: string } | undefined>(undefined)
+
   const Header = () => {
     if (!current) return
     return <header className='table-view-header'>
       <h3>Mesa {current.name}</h3>
-      <p style={{ backgroundColor: colorSelector[current.state] }}>{stateTraductions[current.state]}</p>
+      <p style={{ color: colorSelector[current.state] }}>{stateTraductions[current.state]}</p>
     </header>
   }
   const List = () => { /// fix structure before doing this one
@@ -34,9 +36,14 @@ export default function TableView({ current, setPage, pickerOn, setPicker, setMa
             <label>Tiempo {i + 1}</label>
             <ul>
               {pha.map((el: Item) => {
-                return <div className='prod-item' key={Math.random()}>
+                let isSelected = selected?.phase === i && selected.item === el._id
+                return <div
+                  className={isSelected ? 'prod-item selected' : 'prod-item'}
+                  onClick={() => {
+                    if(!isSelected)setSelected({ phase: i, item: el._id })
+                  }} key={Math.random()}>
                   <div>{el.name}</div>
-                  <div>{el.amount}</div>
+                  <div className="amount-div">{el.amount}</div>
                   <div className='amount-buttons'>
                     <button><FontAwesomeIcon icon={faPlus} /></button>
                     <button><FontAwesomeIcon icon={faMinus} /></button>

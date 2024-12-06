@@ -295,9 +295,13 @@ export default function App({ }: Props) {
     }
   })
 
+  const RequestHistorial = ()=>{
+    if(conn )conn.send({type:"request-historial"})
+  }
+
   const pages: { [key: string]: any } = {
     "main": <>
-      <TopBar pickerOn={pickerOn} session={session} />
+      <TopBar pickerOn={pickerOn} session={session} RequestHistorial={RequestHistorial}/>
       {displays[displayMode]}
       <SideBar
         isCurrent={currentTable}
@@ -388,7 +392,7 @@ export default function App({ }: Props) {
   }
 
   return <main>
-    <button onClick={()=>{console.log(conn); if(conn )conn.send({type:"request-historial"})}}>Request Historial</button>
+    <button onClick={()=>{console.log(conn); }}>Request Historial</button>
     <Configuration.Provider value={{ config: config, setConfig: setConfig }}>
       {pop && pop.name && pops[pop.name]}
       {pages[page]}

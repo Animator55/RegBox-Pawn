@@ -18,6 +18,7 @@ body {
   background-color: var(--cblack);
   height: 100dvh;
   max-height: 100dvh;
+  touch-action: none;
 }
 
 * {
@@ -198,8 +199,8 @@ main {
 .search-fixed-button {
   width: 3rem;
   height: 3rem;
-  right: 1.5rem;
-  bottom: 6rem;
+  bottom: 1.5rem;
+  right: 6rem;
   color: var(--cblack);
   background-color: var(--cgreen);
 }
@@ -318,7 +319,7 @@ main {
   padding: .5rem 1rem;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 1rem;
   color: var(--cwhite);
 }
 
@@ -330,6 +331,21 @@ main {
   font-size: 1.5rem;
   background-color: transparent;
   color: var(--cwhite);
+}
+
+.main-header>.refresh {
+  margin-left: auto;
+}
+
+.main-header>.account{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+}
+.main-header>.account>p{
+  margin: 0;
+  font-size: .9rem;
 }
 
 .main-header p {
@@ -498,7 +514,6 @@ main {
   padding: 0.5rem 1rem;
   justify-content: space-between;
 }
-
 .table-view-header>h3,
 .table-view-header>p {
   color: var(--cwhite);
@@ -506,8 +521,13 @@ main {
   margin: 0;
 }
 
+.table-view-header>h3{
+  font-size: 1.2rem;
+  font-weight: normal;
+}
+
 .table-view-header>p {
-  color: var(--cdarker);
+  border: 1px solid;
   border-radius: 5px;
   padding: 0.4rem;
 }
@@ -518,8 +538,7 @@ main {
   margin: 0.5rem;
   margin-bottom: 6rem;
   border-radius: 7px;
-  background-color: var(--cdarkgray);
-  padding: 1rem;
+  padding: .3rem;
   overflow-y: auto;
   color: var(--cwhite);
 }
@@ -529,7 +548,7 @@ main {
   gap: 0.5rem;
 }
 .table-list label {
-  color: var(--clightgray);
+  color: var(--cwhite);
   border-bottom: 1px solid;
   width: 100%;
 }
@@ -541,8 +560,8 @@ main {
 }
 
 .prod-item >div {
-  background-color: var(--cwhite);
-  color: var(--cdarkgray);
+  background-color: var(--cdarkgray);
+  color: var(--cwhite);
   padding: 0.3rem;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -552,10 +571,27 @@ main {
   border-radius: 5px;
   overflow: hidden;
   display: grid;
-  background-color: var(--cdarkgray);
   grid-template-columns: 68% 10% 20%;
   gap: 1%;
   width: 100%;
+}
+.prod-item >div.amount-div{
+  border-radius: 0 5px 5px 0;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  padding: 0 .5rem;
+  width: calc(300% - 1rem);
+  transition: width 200ms;
+}
+.prod-item.selected>div.amount-div{
+  width: 100%;
+  padding: 0;
+  justify-content: center;
+  transition: width 200ms;
+}
+.prod-item:not(.selected) .amount-buttons {
+  display: none;
 }
 
 .amount-buttons {

@@ -2,12 +2,12 @@ import React from 'react'
 import ProdPop from './pops/ProdPop'
 import AccountPop from './pops/AccountPop'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {  faCircleDollarToSlot, faUserCircle, faWarning } from '@fortawesome/free-solid-svg-icons'
+import {  faCircleDollarToSlot, faRotate, faUserCircle, faWarning } from '@fortawesome/free-solid-svg-icons'
 import { sessionType } from '../vite-env'
 
-type Props = { pickerOn: boolean , session: sessionType |undefined}
+type Props = { pickerOn: boolean , session: sessionType |undefined, RequestHistorial:Function}
 
-export default function TopBar({ pickerOn,session }: Props) {
+export default function TopBar({ pickerOn,session, RequestHistorial }: Props) {
     const [pop, setPop] = React.useState<"products" | "account" | undefined>(undefined)
 
     const closePop = () => {
@@ -34,11 +34,15 @@ export default function TopBar({ pickerOn,session }: Props) {
                 >
                     <FontAwesomeIcon icon={faCircleDollarToSlot} />
                 </button>
+                <button className='refresh' onClick={()=>{RequestHistorial()}}>
+                    <FontAwesomeIcon icon={faRotate}/>
+                </button>
                 <button
+                    className='account'
                     onClick={() => { setPop("account") }}
                 >
                     <FontAwesomeIcon icon={faUserCircle} />
-                    {session?.name}
+                    <p>{session?.name}</p>
                 </button>
             </>
         }
