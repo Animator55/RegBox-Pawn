@@ -2,7 +2,7 @@ import React from 'react'
 import TopBar from './components/TopBar'
 import Map from './components/Map'
 import TableView from './components/TableView'
-import { configType, HistorialTableType, histStructure, Item, router, SingleEvent, TableEvents, TablePlaceType } from './vite-env'
+import { configType, HistorialTableType, histStructure, Item, router, sessionType, SingleEvent, TableEvents, TablePlaceType } from './vite-env'
 import { historialDef } from './defaults/historialDef'
 import { tablePlaces } from './defaults/tablePlaces'
 import getTableData from './logic/getTableData'
@@ -10,6 +10,7 @@ import fixNum from './logic/fixDateNumber'
 import { back_addTable, back_editTable } from './logic/API'
 import ConfirmPop from './components/def/ConfirmPop'
 import { defaultConfig } from './defaults/config'
+import Peer, { DataConnection } from 'peerjs'
 
 import "./assets/App.css"
 import Picker from './components/Picker'
@@ -42,7 +43,28 @@ for (const id in historialDef) {
 
 let lastCreated: string | undefined = undefined
 
+
+const userData = { /// localStorage
+  _id: "pawn-1",
+  core: "main-1"
+}
+let peer: Peer | undefined = undefined
+let conn: DataConnection | undefined = undefined
+
+
+const generateSession = (id: string, core: string) => {
+  return {
+    _id: id,
+    name: id,
+    role: "pawn",
+    opened: "0",
+    domain: core,
+    url: ""
+  } as sessionType
+}
+
 export default function App({ }: Props) {
+  const [session, setSession] = React.useState<sessionType | undefined>(undefined)
   const [config, setConfig] = React.useState(defaultConfig)
   const [page, setPage] = React.useState<"main" | "picker">("main")
   const [displayMode, setDisplayState] = React.useState<"map" | "view">("map")
@@ -72,7 +94,21 @@ export default function App({ }: Props) {
           function: () => {
             let result = back_editTable(id, picker)
             if (result) {
-              if (localHistorial[id] && localHistorial[id].historial.length !== 0) {
+              if (localHistorial[id] && localHistorial[id].historial.length !== 0 && session) {
+                let date = new Date
+                let message = {
+                  important: false,
+                  type: "products",
+                  comment: "Añadidos productos",
+                  timestamp: fixNum(date.getHours()) + ":" + fixNum(date.getMinutes()),
+                  _id: `${Math.random()}`,
+                  name:localHistorial[id].name ,
+                  accepted: undefined, /// only for notification events
+                  products: picker, /// only for notification events
+                  owner: session._id,
+                  owner_name: session.name, /// only for notification events
+                }
+                if(conn) conn.send(message)
                 setLocalHistorial({
                   ...localHistorial, [id]: {
                     ...localHistorial[id], historial: localHistorial[id].historial.map((table, i) => {
@@ -201,7 +237,61 @@ export default function App({ }: Props) {
     if (currentTable !== undefined && displayMode !== "view") setCurrentState(undefined)
   }, [displayMode])
 
+
+  const connectToCore = (core: string) => { // trys to connect to peers, if chat is undefined, func will loop
+    if (conn !== undefined) return
+
+    function closeConn() {
+      console.log('you changed the chat')
+      conn = undefined
+    }
+
+    if (!peer) return
+    conn = peer.connect(core)
+    conn.on('close', closeConn)
+  }
+
+  function connection(id: string): undefined | string { //crea tu session
+    peer = new Peer(id);
+    if (peer === undefined) return
+
+    peer.on('error', function (err) {
+      switch (err.type) {
+        case 'unavailable-id':
+          console.log(id + ' is taken')
+          peer = undefined
+          break
+        case 'peer-unavailable':
+          console.log('user offline')
+          break
+        default:
+          conn = undefined
+          console.log('an error happened')
+      }
+      return false;
+    })
+    peer.on('open', function (id: string) {
+      if (peer === undefined || peer.id === undefined) return
+      setSession(generateSession(id, userData.core))
+      connectToCore(userData.core)
+    })
+    if (conn !== undefined) return
+    peer.on("connection", function (conn) {
+
+      conn.on("data", function (data) { //RECIEVED DATA
+        console.log(data)
+      })
+
+      conn.on('close', function () {
+        console.log('connection was closed by ' + conn.peer)
+        conn.close()
+      })
+    });
+  }
+
   React.useEffect(() => {
+    if (!userData) return
+    if (!peer) connection(userData._id)
     if (lastCreated) {
       setCurrent(lastCreated, false)
       lastCreated = undefined
@@ -210,7 +300,7 @@ export default function App({ }: Props) {
 
   const pages: { [key: string]: any } = {
     "main": <>
-      <TopBar pickerOn={pickerOn} />
+      <TopBar pickerOn={pickerOn} session={session} />
       {displays[displayMode]}
       <SideBar
         isCurrent={currentTable}
@@ -231,7 +321,21 @@ export default function App({ }: Props) {
       }}
       confirmPicker={() => {
         if (currentTable) {
-          if (localHistorial[currentTable] && localHistorial[currentTable].historial.length !== 0) {
+          if (localHistorial[currentTable] && localHistorial[currentTable].historial.length !== 0 && session) {
+            let date = new Date
+            let message = {
+              important: false,
+              type: "products",
+              comment: "Añadidos productos",
+              timestamp: fixNum(date.getHours()) + ":" + fixNum(date.getMinutes()),
+              _id: `${Math.random()}`,
+              name:localHistorial[currentTable].name ,
+              accepted: undefined, /// only for notification events
+              products: picker, /// only for notification events
+              owner: session._id,
+              owner_name: session.name, /// only for notification events
+            }
+            if(conn) conn.send(message)
             setLocalHistorial({
               ...localHistorial, [currentTable]: {
                 ...localHistorial[currentTable], historial: localHistorial[currentTable].historial.map((table, i) => {
