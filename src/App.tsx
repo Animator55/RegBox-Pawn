@@ -68,7 +68,7 @@ export default function App({ }: Props) {
   const [config, setConfig] = React.useState(defaultConfig)
   const [page, setPage] = React.useState<"main" | "picker">("main")
   const [displayMode, setDisplayState] = React.useState<"map" | "view">("map")
-  const [localHistorial, setLocalHistorial] = React.useState<histStructure>(defaultHistorialParsed)
+  const [localHistorial, setLocalHistorial] = React.useState<histStructure | undefined>(undefined)
   // const [localTablePlaces, setTablePlaces] = React.useState<TablePlaceType[]>(tablePlaces)
   // const [prods, setProds] = React.useState<productsType>(products)
   const localTablePlaces: TablePlaceType[] = tablePlaces
@@ -93,7 +93,7 @@ export default function App({ }: Props) {
           data: id,
           function: () => {
             let result = back_editTable(id, picker)
-            if (result) {
+            if (result && localHistorial) {
               if (localHistorial[id] && localHistorial[id].historial.length !== 0 && session) {
                 let date = new Date
                 let message = {
@@ -101,7 +101,8 @@ export default function App({ }: Props) {
                   type: "products",
                   comment: "Añadidos productos",
                   timestamp: fixNum(date.getHours()) + ":" + fixNum(date.getMinutes()),
-                  _id: `${Math.random()}`,
+                  notification_id: `${Math.random()*Math.random()}`,
+                  _id: id,
                   name:localHistorial[id].name ,
                   accepted: undefined, /// only for notification events
                   products: picker, /// only for notification events
@@ -109,14 +110,6 @@ export default function App({ }: Props) {
                   owner_name: session.name, /// only for notification events
                 }
                 if(conn) conn.send(message)
-                setLocalHistorial({
-                  ...localHistorial, [id]: {
-                    ...localHistorial[id], historial: localHistorial[id].historial.map((table, i) => {
-                      if (i !== localHistorial[id].historial.length - 1) return table
-                      else return { ...table, products: [...table.products, ...picker] }
-                    })
-                  }
-                })
               }
               setCurrentState(id)
               setDisplay("view")
@@ -149,7 +142,7 @@ export default function App({ }: Props) {
 
   const getLastTable = (id?: string): TableEvents | undefined => {
     let local_id = id === undefined ? currentTable : id
-    if (!local_id || localHistorial[local_id].historial.length === 0) return
+    if (!local_id || !localHistorial || localHistorial[local_id].historial.length === 0) return
     return {
       ...localHistorial[local_id].historial[localHistorial[local_id].historial.length - 1],
       _id: currentTable,
@@ -277,9 +270,13 @@ export default function App({ }: Props) {
     })
     if (conn !== undefined) return
     peer.on("connection", function (conn) {
-
-      conn.on("data", function (data) { //RECIEVED DATA
+      console.log("connected with "+ conn.peer)
+      conn.on("data", function (data:{type: string, data: histStructure} | any) { //RECIEVED DATA
         console.log(data)
+        if(data.type === "historial") {
+          console.log(data)
+          setLocalHistorial(data.data)
+        }
       })
 
       conn.on('close', function () {
@@ -320,7 +317,7 @@ export default function App({ }: Props) {
         setPicker([[]])
       }}
       confirmPicker={() => {
-        if (currentTable) {
+        if (currentTable && localHistorial) {
           if (localHistorial[currentTable] && localHistorial[currentTable].historial.length !== 0 && session) {
             let date = new Date
             let message = {
@@ -328,7 +325,7 @@ export default function App({ }: Props) {
               type: "products",
               comment: "Añadidos productos",
               timestamp: fixNum(date.getHours()) + ":" + fixNum(date.getMinutes()),
-              _id: `${Math.random()}`,
+              _id: currentTable,
               name:localHistorial[currentTable].name ,
               accepted: undefined, /// only for notification events
               products: picker, /// only for notification events
@@ -336,14 +333,6 @@ export default function App({ }: Props) {
               owner_name: session.name, /// only for notification events
             }
             if(conn) conn.send(message)
-            setLocalHistorial({
-              ...localHistorial, [currentTable]: {
-                ...localHistorial[currentTable], historial: localHistorial[currentTable].historial.map((table, i) => {
-                  if (i !== localHistorial[currentTable].historial.length - 1) return table
-                  else return { ...table, products: [...table.products, ...picker] }
-                })
-              }
-            })
           }
           setPicker([[]])
         }
@@ -360,7 +349,7 @@ export default function App({ }: Props) {
         setPicker([[]])
       }}
       confirmPicker={() => {
-        if (currentTable) {
+        if (currentTable && localHistorial) {
           if (localHistorial[currentTable] && localHistorial[currentTable].historial.length !== 0) {
             setLocalHistorial({
               ...localHistorial, [currentTable]: {
@@ -399,6 +388,7 @@ export default function App({ }: Props) {
   }
 
   return <main>
+    <button onClick={()=>{console.log(conn); if(conn )conn.send({type:"request-historial"})}}>Request Historial</button>
     <Configuration.Provider value={{ config: config, setConfig: setConfig }}>
       {pop && pop.name && pops[pop.name]}
       {pages[page]}

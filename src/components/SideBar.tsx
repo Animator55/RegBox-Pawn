@@ -12,7 +12,7 @@ type Props = {
   isCurrent: string | undefined
   setCurrent: Function
   tablePlaces: TablePlaceType[]
-  historial: histStructure
+  historial: histStructure | undefined
   setMap: Function
 }
 
@@ -39,7 +39,7 @@ export default function SideBar({ setCurrent, tablePlaces, historial, setMap, is
 
   for (let i = 0; i < tablePlaces.length; i++) {
     let key = "unnactive"
-    if (historial[tablePlaces[i]._id]) key = historial[tablePlaces[i]._id]?.historial[historial[tablePlaces[i]._id].historial.length - 1].state
+    if (historial && historial[tablePlaces[i]._id]) key = historial[tablePlaces[i]._id]?.historial[historial[tablePlaces[i]._id].historial.length - 1].state
     constructor[key].push(tablePlaces[i])
   }
 
