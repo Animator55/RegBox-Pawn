@@ -146,7 +146,7 @@ export default function Map({ setCurrent, tablesOpenMin, tablePlaces, setPage, p
           top: tbl.coords.y,
           left: tbl.coords.x,
           borderColor: color,
-          color: color
+          color: color,
         }}
       >
         <p>{tbl.name}</p>

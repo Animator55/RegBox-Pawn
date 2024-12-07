@@ -242,9 +242,13 @@ main {
   align-items: center;
   justify-content: center;
   font-size: 1rem;
-  background-color: transparent;
-  border-radius: 5px;
-  padding: .6rem;
+  width: 2rem;
+  height: 2rem;
+  max-width: 2rem;
+  max-height: 2rem;
+  background-color: rgba(0, 0, 0, 0.459)!important;
+  box-shadow: 0 0 5px var(--clightgray);
+  border-radius: 50%;
   color: var(--cwhite);
 }
 
@@ -270,7 +274,7 @@ main {
 }
 
 .table {
-  background-color: var(--cblack);
+  background: transparent;
   border: 3px solid var(--clightgray);
   color: var(--clightgray);
   border-radius: 4px;
@@ -334,7 +338,7 @@ main {
 }
 
 .main-header>.refresh {
-  margin-left: auto;
+  margin-right: auto;
 }
 
 .main-header>.account{
@@ -343,13 +347,22 @@ main {
   justify-content: center;
   gap: .5rem;
 }
+.main-header>.refresh>p,
 .main-header>.account>p{
   margin: 0;
   font-size: .9rem;
 }
 
+.refresh:active, .account:active {
+  color: var(--corange);
+  transition: color 150ms;
+}
+
 .main-header p {
   margin: 0;
+}
+.main-header.picker{
+  justify-content: space-between;
 }
 .main-header.picker button {
   font-size: .9rem;

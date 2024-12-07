@@ -1,4 +1,4 @@
-import { faListUl, faMap, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRotateBack, faListUl, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { histStructure, TablePlaceType } from '../vite-env'
 import React from 'react'
@@ -90,8 +90,7 @@ export default function SideBar({ setCurrent, tablePlaces, historial, setMap, is
         {isCurrent !== undefined && <button onClick={() => {
           setMap(); setVisible(false)
         }} className='return-to-map'>
-          <FontAwesomeIcon icon={faMap} />
-          Volver
+          <FontAwesomeIcon icon={faArrowRotateBack} />
         </button>}
       </footer>
     </section>
