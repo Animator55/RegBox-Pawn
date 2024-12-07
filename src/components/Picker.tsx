@@ -1,7 +1,7 @@
 import React from 'react'
 import { Item, router } from '../vite-env'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowLeft, faAsterisk, faCaretLeft, faCaretRight, faCaretUp, faMinus, faPlus, faSortAlphaDownAlt, faSortAlphaUpAlt, faSortAmountAsc, faSortAmountDesc, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faAsterisk, faCaretLeft, faCaretRight, faMinus, faPlus, faReceipt, faRotateBack, faSortAlphaDownAlt, faSortAlphaUpAlt, faSortAmountAsc, faSortAmountDesc, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { productsType } from '../defaults/products'
 import SearchBar from './def/Search'
 import OrderListPop from './pops/OrderListPop'
@@ -43,29 +43,29 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
         setPicker([...result, []])
         setPhase(result.length)
     }
-    const removePhase = (index: number)=>{
+    const removePhase = (index: number) => {
         // check currentPhase
         let newSelectedPhase = index
-        if(newSelectedPhase >= result.length-1) newSelectedPhase = index - 1
+        if (newSelectedPhase >= result.length - 1) newSelectedPhase = index - 1
         setPhase(newSelectedPhase)
 
-        setPicker(result.filter((el, i)=>{
-            if(i !== index) return el
+        setPicker(result.filter((el, i) => {
+            if (i !== index) return el
         }))
     }
 
-    const switchPhasesAnimation = (index: number, toIndex: number)=>{
-        let target = document.getElementById("phase_"+index) as HTMLButtonElement
-        let target2 = document.getElementById("phase_"+toIndex) as HTMLButtonElement
-        if(!target || !target2) return 
+    const switchPhasesAnimation = (index: number, toIndex: number) => {
+        let target = document.getElementById("phase_" + index) as HTMLButtonElement
+        let target2 = document.getElementById("phase_" + toIndex) as HTMLButtonElement
+        if (!target || !target2) return
         let toRight = index < toIndex
         target.classList.remove("selected")
-        target.classList.add(toRight ? "slide-to-right": "slide-to-left")
-        target2.classList.add(!toRight ? "slide-to-right": "slide-to-left")
+        target.classList.add(toRight ? "slide-to-right" : "slide-to-left")
+        target2.classList.add(!toRight ? "slide-to-right" : "slide-to-left")
     }
 
-    const movePhase = ( index: number, toIndex: number) => {
-        if(index === undefined || toIndex === undefined) return 
+    const movePhase = (index: number, toIndex: number) => {
+        if (index === undefined || toIndex === undefined) return
         let value: Item[] | undefined = undefined
         let newResult = result.map((el, i) => {
             if (i === index) {
@@ -75,7 +75,7 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
             else return el
         })
         if (value === undefined) return
-        let checkedToIndex =toIndex < index ? toIndex : toIndex+1
+        let checkedToIndex = toIndex < index ? toIndex : toIndex + 1
         newResult.splice(checkedToIndex, 0, value)
         let preFilter = newResult
         let settedValue = []
@@ -83,9 +83,9 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
             if (typeof preFilter[i] !== "string") settedValue.push(preFilter[i])
         }
         switchPhasesAnimation(index, toIndex)
-        setTimeout(()=>{
-            if(phase === index) setPhase(toIndex)
-            else if(phase === toIndex) setPhase(index)
+        setTimeout(() => {
+            if (phase === index) setPhase(toIndex)
+            else if (phase === toIndex) setPhase(index)
             setPicker(settedValue as Item[][])
         }, 300)
     }
@@ -152,17 +152,17 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
     let pressTimer: null | number = null;
     let draggingPhase: boolean = false
 
-    const DragPhase = (index:number) => {
+    const DragPhase = (index: number) => {
         pressTimer = setTimeout(() => {
-            let target = document.getElementById("phase_"+index) as HTMLButtonElement
+            let target = document.getElementById("phase_" + index) as HTMLButtonElement
             if (!target) return
             draggingPhase = true
             target.classList.add("selected")
-            const cancel = (e: TouchEvent)=>{
+            const cancel = (e: TouchEvent) => {
                 DragPhaseCancel()
                 let button = e.target as HTMLButtonElement
-                if(!button) return 
-                if(!button.classList.contains("phase-move-button")) target.classList.remove("selected")
+                if (!button) return
+                if (!button.classList.contains("phase-move-button")) target.classList.remove("selected")
                 document.removeEventListener("touchstart", cancel)
             }
             document.addEventListener("touchstart", cancel)
@@ -182,34 +182,34 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
             for (let j = 0; j < result[i].length; j++) {
                 phaseLength += result[i][j].amount!
             }
-            phases.push(<React.Fragment key={Math.random()}>    
+            phases.push(<React.Fragment key={Math.random()}>
                 <button
-                id={'phase_'+i}
-                onTouchStart={() => {
-                    if(result.length > 1) DragPhase(i)
+                    id={'phase_' + i}
+                    onTouchStart={() => {
+                        if (result.length > 1) DragPhase(i)
                     }}
-                onTouchEnd={() => {
-                    if (!draggingPhase) setPhase(i)
-                    DragPhaseCancel()
-                }}
-                className={phase === i ? "active" : ""}
-            >
-                <div className='number'>{i + 1}</div>
-                <span>
-                    <button className={i === 0 ? "invisible" : "phase-move-button"} 
-                    onTouchStart={()=>{if(i !== 0)movePhase(i, i-1)}}><FontAwesomeIcon icon={faCaretLeft}/></button>
-                    <button className='phase-move-button' onTouchStart={()=>{if(result.length > 1)removePhase(i)}}><FontAwesomeIcon icon={faXmark}/></button>
-                    <button className={i === result.length-1 ? "invisible" : "phase-move-button"} 
-                    onTouchStart={()=>{if(i !== result.length-1)movePhase(i, i+1)}}><FontAwesomeIcon icon={faCaretRight}/></button>
-                </span>
-                {phaseLength !== 0 && <p>{phaseLength}</p>}
-            </button>
+                    onTouchEnd={() => {
+                        if (!draggingPhase) setPhase(i)
+                        DragPhaseCancel()
+                    }}
+                    className={phase === i ? "active" : ""}
+                >
+                    <div className='number'>{i + 1}</div>
+                    <span>
+                        <button className={i === 0 ? "invisible" : "phase-move-button"}
+                            onTouchStart={() => { if (i !== 0) movePhase(i, i - 1) }}><FontAwesomeIcon icon={faCaretLeft} /></button>
+                        <button className='phase-move-button' onTouchStart={() => { if (result.length > 1) removePhase(i) }}><FontAwesomeIcon icon={faXmark} /></button>
+                        <button className={i === result.length - 1 ? "invisible" : "phase-move-button"}
+                            onTouchStart={() => { if (i !== result.length - 1) movePhase(i, i + 1) }}><FontAwesomeIcon icon={faCaretRight} /></button>
+                    </span>
+                    {phaseLength !== 0 && <p>{phaseLength}</p>}
+                </button>
             </React.Fragment>
             )
         }
         phases.push(<button
             key={Math.random()}
-            onClick={() => { addPhase() }}
+            onTouchStart={() => { addPhase() }}
         >
             <FontAwesomeIcon icon={faPlus} />
         </button>)
@@ -397,16 +397,18 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
         {pop && pops[pop]}
         <Header />
         {pages[page !== "" ? "items" : "types"]}
-        <nav className='picker-nav'>
-            <button className="return-to-type-selector " style={{ opacity: page !== "" ? 1 : 0 }} onClick={() => {
-                setPage("")
-                setSelectedItem(undefined)
-            }}>
-                <FontAwesomeIcon icon={faArrowLeft} />
-            </button>
-            <button className='view-command-button' onClick={() => { setPop("command") }}>
-                <FontAwesomeIcon icon={faCaretUp} /> Ver comanda
-            </button>
-        </nav>
+        <nav className='picker-nav'></nav>
+        <button className="return-to-type-selector " style={{ opacity: page !== "" ? 1 : 0 }} onClick={() => {
+            setPage("")
+            setSelectedItem(undefined)
+        }}>
+            <FontAwesomeIcon icon={faRotateBack} />
+        </button>
+        <button 
+            className='view-command-button'
+            onClick={() => { setPop("command") }}
+        >
+            <FontAwesomeIcon icon={faReceipt} /> 
+        </button>
     </>
 }
