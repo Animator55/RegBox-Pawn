@@ -63,12 +63,15 @@ const generateSession = (id: string, core: string) => {
   } as sessionType
 }
 
+let timestamp: number | undefined = undefined 
+
 export default function App({ }: Props) {
   const [session, setSession] = React.useState<sessionType | undefined>(undefined)
   const [config, setConfig] = React.useState(defaultConfig)
   const [page, setPage] = React.useState<"main" | "picker">("main")
   const [displayMode, setDisplayState] = React.useState<"map" | "view">("map")
   const [localHistorial, setLocalHistorial] = React.useState<histStructure | undefined>(undefined)
+  const [loading, setLoading] = React.useState<string | undefined>(undefined)
   // const [localTablePlaces, setTablePlaces] = React.useState<TablePlaceType[]>(tablePlaces)
   // const [prods, setProds] = React.useState<productsType>(products)
   const localTablePlaces: TablePlaceType[] = tablePlaces
@@ -109,7 +112,10 @@ export default function App({ }: Props) {
                   owner: session._id,
                   owner_name: session.name, /// only for notification events
                 }
-                if(conn) conn.send(message)
+                if(conn) {
+                  conn.send(message)
+                  setLoading("request")
+                }
               }
               setCurrentState(id)
               setDisplay("view")
@@ -277,6 +283,10 @@ export default function App({ }: Props) {
           console.log(data)
           setLocalHistorial(data.data)
         }
+        else if(data.type === "error"){
+          alert("a")
+        }
+        setLoading(undefined)
       })
 
       conn.on('close', function () {
@@ -296,12 +306,35 @@ export default function App({ }: Props) {
   })
 
   const RequestHistorial = ()=>{
-    if(conn )conn.send({type:"request-historial"})
+    if(conn ){
+      conn.send({type:"request-historial"})
+      setLoading("request-historial")
+    }
   }
+
+  React.useEffect(()=>{
+    if(loading === "request") {
+      timestamp = setTimeout(()=>{
+        setLoading("reconnect")
+      }, 3000)
+    }
+    else if(loading === "reconnect") {
+      if(conn ){
+        conn.send({type:"request-notification"})
+      }
+    }
+    else if(loading === undefined && timestamp !== undefined) {
+      clearInterval(timestamp)
+    }
+  }, [loading])
 
   const pages: { [key: string]: any } = {
     "main": <>
-      <TopBar pickerOn={pickerOn} session={session} RequestHistorial={RequestHistorial}/>
+      <TopBar 
+        loading={loading} 
+        setLoading={setLoading}
+        pickerOn={pickerOn} session={session} 
+        RequestHistorial={RequestHistorial}/>
       {displays[displayMode]}
       <SideBar
         isCurrent={currentTable}
@@ -336,7 +369,10 @@ export default function App({ }: Props) {
               owner: session._id,
               owner_name: session.name, /// only for notification events
             }
-            if(conn) conn.send(message)
+            if(conn) {
+              conn.send(message)
+              setLoading("request")
+            }
           }
           setPicker([[]])
         }
@@ -392,7 +428,7 @@ export default function App({ }: Props) {
   }
 
   return <main>
-    <button onClick={()=>{console.log(conn); }}>Request Historial</button>
+    <section style={{position:"fixed", pointerEvents:"none", textAlign: "center", bottom: "1.5rem", zIndex: 1, width:"100%", color: "white"}}>{loading}</section>
     <Configuration.Provider value={{ config: config, setConfig: setConfig }}>
       {pop && pop.name && pops[pop.name]}
       {pages[page]}
