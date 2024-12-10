@@ -342,11 +342,16 @@ export default function App({ }: Props) {
         console.log("a")
         if (data.type === "historial") {
           setLocalHistorial(data.data)
+          setLoading(undefined)
+        }
+        if (data.type === "confirm") {
+          let button = document.querySelector(".refresh") as HTMLButtonElement
+          if(button) button.click()
         }
         else if (data.type === "error") {
           alert("Some error happened")
+          setLoading(undefined)
         }
-        setLoading(undefined)
       })
 
       conn.on('close', function () {
