@@ -7,9 +7,10 @@ import { sessionType } from '../vite-env'
 
 type Props = { loading: string | undefined
     setLoading:Function
+    currentTable: string | undefined
     pickerOn: boolean , session: sessionType |undefined, RequestHistorial:Function}
 
-export default function TopBar({ loading, setLoading,pickerOn,session, RequestHistorial }: Props) {
+export default function TopBar({ loading, setLoading,pickerOn, currentTable,session, RequestHistorial }: Props) {
     const [pop, setPop] = React.useState<"products" | "account" | undefined>(undefined)
 
     const closePop = () => {
@@ -22,7 +23,14 @@ export default function TopBar({ loading, setLoading,pickerOn,session, RequestHi
     }
     let hist =loading === "request-historial"
     return <header className='main-header'>
-        {pickerOn ?
+        {pickerOn ? currentTable ?
+            <>
+                <div className='select-warning'>
+                    <FontAwesomeIcon icon={faWarning}/>
+                    <p>Editando mesa</p>
+                </div>
+            </>
+         :
             <>
                 <div className='select-warning'>
                     <FontAwesomeIcon icon={faWarning}/>

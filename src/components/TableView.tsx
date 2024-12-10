@@ -1,4 +1,4 @@
-import { faMinus, faPen, faPlus, faWarning } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faMinus, faPen, faPlus, faWarning } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Item, TableEvents } from '../vite-env'
 import { stateTraductions } from '../defaults/stateTraductions'
@@ -10,10 +10,13 @@ type Props = {
   setPage: Function
   setPicker: Function
   setMap: Function
+  addItem: Function
   pickerOn: boolean
+  picker: Item[][]
+  confirmPicker: Function
 }
 
-export default function TableView({ current, setPage, pickerOn, setPicker, setMap }: Props) {
+export default function TableView({ current, setPage, pickerOn, picker, setPicker, setMap, addItem, confirmPicker }: Props) {
   const [selected, setSelected] = React.useState<{ phase: number, item: string } | undefined>(undefined)
 
   const Header = () => {
@@ -35,18 +38,25 @@ export default function TableView({ current, setPage, pickerOn, setPicker, setMa
           return <div key={Math.random()}>
             <label>Tiempo {i + 1}</label>
             <ul>
-              {pha.map((el: Item) => {
+              {pha.map((el: Item, j) => {
+                let check = picker[i]
                 let isSelected = selected?.phase === i && selected.item === el._id
-                return <div
+                return !(pickerOn && check && picker[i][j] === undefined) &&  <div
                   className={isSelected ? 'prod-item selected' : 'prod-item'}
                   onClick={() => {
-                    if(!isSelected)setSelected({ phase: i, item: el._id })
+                    if (!isSelected) setSelected({ phase: i, item: el._id })
                   }} key={Math.random()}>
                   <div>{el.name}</div>
-                  <div className="amount-div">{el.amount}</div>
+                  <div style={pickerOn && check && picker[i][j].amount !== el.amount ? {color: picker[i][j].amount! > el.amount! ? "var(--cgreen)" : "var(--cred)"}: {}} className="amount-div">{pickerOn && check ? picker[i][j].amount : el.amount}</div>
                   <div className='amount-buttons'>
-                    <button><FontAwesomeIcon icon={faPlus} /></button>
-                    <button><FontAwesomeIcon icon={faMinus} /></button>
+                    <button onClick={() => {
+                      addItem(pickerOn && check ? picker[i][j] : el, 1, i)
+                    }}>
+                      <FontAwesomeIcon icon={faPlus} /></button>
+                    <button onClick={() => {
+                      addItem(pickerOn && check ? picker[i][j] : el, -1, i)
+                    }}>
+                      <FontAwesomeIcon icon={faMinus} /></button>
                   </div>
                 </div>
               })}
@@ -77,7 +87,7 @@ export default function TableView({ current, setPage, pickerOn, setPicker, setMa
     <Header />
     <List />
     {(current && current.state !== "closed") && <>
-      {!pickerOn && <button className='search-fixed-button'
+      {(!pickerOn && current.products.length !== 0) && <button className='search-fixed-button'
         onClick={() => {
           setPicker(current.products)
           setPage("picker-with-data")
@@ -86,8 +96,11 @@ export default function TableView({ current, setPage, pickerOn, setPicker, setMa
       </button>}
       <button className='picker-mode-button'
         style={pickerOn ? { backgroundColor: "var(--cgreen)" } : {}}
-        onClick={() => { setPage("picker") }}>
-        <FontAwesomeIcon icon={pickerOn ? faPen : faPlus} />
+        onClick={() => {
+          if (pickerOn) { confirmPicker() }
+          else { setPage("picker") }
+        }}>
+        <FontAwesomeIcon icon={pickerOn ? faCheck : faPlus} />
       </button>
     </>
     }

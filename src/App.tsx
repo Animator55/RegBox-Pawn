@@ -63,7 +63,8 @@ const generateSession = (id: string, core: string) => {
   } as sessionType
 }
 
-let timestamp: number | undefined = undefined 
+let timestamp: number | undefined = undefined
+let tableScroll = 0
 
 export default function App({ }: Props) {
   const [session, setSession] = React.useState<sessionType | undefined>(undefined)
@@ -85,7 +86,7 @@ export default function App({ }: Props) {
 
   const [currentTable, setCurrentState] = React.useState<string | undefined>(undefined)
   const [picker, setPicker] = React.useState<Item[][]>([[]])
-  let pickerOn = (picker.length !== 1 || picker[0].length !== 0)
+  let pickerOn = (picker.length !== 1 || (picker[0] && picker[0].length !== 0))
 
   const setCurrent = (id: string, creating: boolean) => {
     if (!creating) {
@@ -102,17 +103,17 @@ export default function App({ }: Props) {
                 let message = {
                   important: false,
                   type: "products",
-                  comment: "Añadidos productos",
+                  comment: "Añadidos productos" + "(por: " + session.name + ")",
                   timestamp: fixNum(date.getHours()) + ":" + fixNum(date.getMinutes()),
-                  notification_id: `${Math.random()*Math.random()}`,
+                  notification_id: session._id + `.${date.getSeconds()}`,
                   _id: id,
-                  name:localHistorial[id].name ,
+                  name: localHistorial[id].name,
                   accepted: undefined, /// only for notification events
                   products: picker, /// only for notification events
                   owner: session._id,
                   owner_name: session.name, /// only for notification events
                 }
-                if(conn) {
+                if (conn) {
                   conn.send(message)
                   setLoading("request")
                 }
@@ -148,7 +149,7 @@ export default function App({ }: Props) {
 
   const getLastTable = (id?: string): TableEvents | undefined => {
     let local_id = id === undefined ? currentTable : id
-    if (!local_id || !localHistorial || localHistorial[local_id].historial.length === 0) return
+    if (!local_id || !localHistorial || !localHistorial[local_id] || localHistorial[local_id].historial.length === 0) return
     return {
       ...localHistorial[local_id].historial[localHistorial[local_id].historial.length - 1],
       _id: currentTable,
@@ -205,6 +206,37 @@ export default function App({ }: Props) {
     return true
   }
 
+  const addItem = (item: Item, value: 1 | -1, phasedef: number) => {
+    if (!localHistorial || !currentTable) return
+    let phase = phasedef
+    let table = pickerOn ? picker : getLastTable(currentTable)?.products
+    if (!table) return
+    let prods = table[phase]
+
+    let amount = value
+    tableScroll = value !== undefined ? document.querySelector(".table-list")?.scrollTop! : 0
+    let result = undefined
+
+    if (!item.amount) return
+
+    let newAmount = item.amount + amount
+    if (newAmount <= 0) {
+      result = Object.values({
+        ...table, [phase]: prods.filter(el => {
+          if (el._id !== item._id) return el
+        })
+      }) as Item[][]
+    }
+    else {
+      result = Object.values({
+        ...table, [phase]: prods.map(el => {
+          if (el._id === item._id) return { ...item, amount: item.amount! + amount }
+          else return el
+        })
+      }) as Item[][]
+    }
+    setPicker(result)
+  }
 
   let tablesOpenMin = []
   for (const id in localHistorial) {
@@ -215,6 +247,32 @@ export default function App({ }: Props) {
     )
   }
 
+  const confirmPickerWithData = () => {
+    if (currentTable && localHistorial) {
+      if (localHistorial[currentTable] && localHistorial[currentTable].historial.length !== 0 && session) {
+        let date = new Date
+        let message = {
+          important: false,
+          type: "replace",
+          comment: "Modificados productos" + "(por: " + session.name + ")",
+          notification_id: session._id + `.${date.getSeconds()}`,
+          timestamp: fixNum(date.getHours()) + ":" + fixNum(date.getMinutes()),
+          _id: currentTable,
+          name: localHistorial[currentTable].name,
+          accepted: undefined, /// only for notification events
+          products: picker, /// only for notification events
+          owner: session._id,
+          owner_name: session.name, /// only for notification events
+        }
+        if (conn) {
+          conn.send(message)
+          setLoading("request")
+        }
+      }
+      setPicker([[]])
+    }
+    setPage("main")
+  }
   const displays: { [key: string]: any } = {
     "map": <Map
       setPage={setPage}
@@ -226,9 +284,12 @@ export default function App({ }: Props) {
     "view": currentTable && <TableView
       setPicker={setPicker}
       pickerOn={pickerOn}
+      picker={picker}
       setPage={setPage}
+      addItem={addItem}
       current={getLastTable()}
       setMap={() => { setDisplay("map") }}
+      confirmPicker={confirmPickerWithData}
     />,
   }
 
@@ -276,14 +337,16 @@ export default function App({ }: Props) {
     })
     if (conn !== undefined) return
     peer.on("connection", function (conn) {
-      console.log("connected with "+ conn.peer)
-      conn.on("data", function (data:{type: string, data: histStructure} | any) { //RECIEVED DATA
-        console.log(data)
-        if(data.type === "historial") {
-          console.log(data)
+      console.log("connected with " + conn.peer)
+      conn.on("data", function (data: { type: string, data: histStructure } | any) { //RECIEVED DATA
+        console.log("a")
+        if (data.type === "historial") {
           setLocalHistorial(data.data)
         }
-        else if(data.type === "error"){
+        else if (data.type === "confirm") {
+          conn.send({ type: "request-historial" })
+        }
+        else if (data.type === "error") {
           alert("a")
         }
         setLoading(undefined)
@@ -303,38 +366,46 @@ export default function App({ }: Props) {
       setCurrent(lastCreated, false)
       lastCreated = undefined
     }
+    if (tableScroll !== 0) {
+      let ul = document.querySelector(".table-list")
+      if (ul) ul.scrollTo({ top: tableScroll, })
+      tableScroll = 0
+    }
   })
 
-  const RequestHistorial = ()=>{
-    if(conn ){
-      conn.send({type:"request-historial"})
+  const RequestHistorial = () => {
+    if (conn) {
+      conn.send({ type: "request-historial" })
       setLoading("request-historial")
     }
   }
 
-  React.useEffect(()=>{
-    if(loading === "request") {
-      timestamp = setTimeout(()=>{
+
+  React.useEffect(() => {
+    if (loading === "request") {
+      timestamp = setTimeout(() => {
         setLoading("reconnect")
       }, 3000)
     }
-    else if(loading === "reconnect") {
-      if(conn ){
-        conn.send({type:"request-notification"})
+    else if (loading === "reconnect") {
+      if (conn) {
+        conn.send({ type: "request-notification" })
       }
     }
-    else if(loading === undefined && timestamp !== undefined) {
+    else if (loading === undefined && timestamp !== undefined) {
       clearInterval(timestamp)
+
     }
   }, [loading])
 
   const pages: { [key: string]: any } = {
     "main": <>
-      <TopBar 
-        loading={loading} 
+      <TopBar
+        currentTable={currentTable}
+        loading={loading}
         setLoading={setLoading}
-        pickerOn={pickerOn} session={session} 
-        RequestHistorial={RequestHistorial}/>
+        pickerOn={pickerOn} session={session}
+        RequestHistorial={RequestHistorial} />
       {displays[displayMode]}
       <SideBar
         isCurrent={currentTable}
@@ -342,6 +413,7 @@ export default function App({ }: Props) {
         setCurrent={setCurrent}
         tablePlaces={tablePlaces}
         historial={localHistorial}
+        cancelPicker={setPicker}
       />
     </>,
     "picker": <Picker
@@ -360,16 +432,17 @@ export default function App({ }: Props) {
             let message = {
               important: false,
               type: "products",
-              comment: "Añadidos productos",
+              comment: "Añadidos productos" + "(por: " + session.name + ")",
+              notification_id: session._id + `.${date.getSeconds()}`,
               timestamp: fixNum(date.getHours()) + ":" + fixNum(date.getMinutes()),
               _id: currentTable,
-              name:localHistorial[currentTable].name ,
+              name: localHistorial[currentTable].name,
               accepted: undefined, /// only for notification events
               products: picker, /// only for notification events
               owner: session._id,
               owner_name: session.name, /// only for notification events
             }
-            if(conn) {
+            if (conn) {
               conn.send(message)
               setLoading("request")
             }
@@ -388,22 +461,7 @@ export default function App({ }: Props) {
         setPage("main")
         setPicker([[]])
       }}
-      confirmPicker={() => {
-        if (currentTable && localHistorial) {
-          if (localHistorial[currentTable] && localHistorial[currentTable].historial.length !== 0) {
-            setLocalHistorial({
-              ...localHistorial, [currentTable]: {
-                ...localHistorial[currentTable], historial: localHistorial[currentTable].historial.map((table, i) => {
-                  if (i !== localHistorial[currentTable].historial.length - 1) return table
-                  else return { ...table, products: picker }
-                })
-              }
-            })
-          }
-          setPicker([[]])
-        }
-        setPage("main")
-      }}
+      confirmPicker={confirmPickerWithData}
     />
   }
 
@@ -428,7 +486,7 @@ export default function App({ }: Props) {
   }
 
   return <main>
-    <section style={{position:"fixed", pointerEvents:"none", textAlign: "center", bottom: "1.5rem", zIndex: 1, width:"100%", color: "white"}}>{loading}</section>
+    <section style={{ position: "fixed", pointerEvents: "none", textAlign: "center", bottom: "1.5rem", zIndex: 1, width: "100%", color: "white" }}>{loading}</section>
     <Configuration.Provider value={{ config: config, setConfig: setConfig }}>
       {pop && pop.name && pops[pop.name]}
       {pages[page]}

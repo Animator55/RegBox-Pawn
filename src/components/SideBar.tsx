@@ -14,9 +14,10 @@ type Props = {
   tablePlaces: TablePlaceType[]
   historial: histStructure | undefined
   setMap: Function
+  cancelPicker: Function
 }
 
-export default function SideBar({ setCurrent, tablePlaces, historial, setMap, isCurrent }: Props) {
+export default function SideBar({ setCurrent, tablePlaces, historial, setMap, isCurrent, cancelPicker }: Props) {
   const [search, setSearch] = React.useState("")
   const [visible, setVisibleState] = React.useState(false)
 
@@ -28,6 +29,7 @@ export default function SideBar({ setCurrent, tablePlaces, historial, setMap, is
     sidebar.offsetTop
     setTimeout(() => {
       setVisibleState(val)   
+      cancelPicker([[]])
     }, 300)
   }
 
