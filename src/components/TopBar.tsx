@@ -4,13 +4,19 @@ import AccountPop from './pops/AccountPop'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {  faCircleDollarToSlot, faRotate, faUserCircle, faWarning } from '@fortawesome/free-solid-svg-icons'
 import { sessionType } from '../vite-env'
+import { productsType } from '../defaults/products'
 
 type Props = { loading: string | undefined
     setLoading:Function
     currentTable: string | undefined
-    pickerOn: boolean , session: sessionType |undefined, RequestHistorial:Function}
+    pickerOn: boolean , session: sessionType |undefined, 
+    RequestHistorial:Function
+    RequestTables:Function
+    RequestProds:Function
+    prods: productsType
+}
 
-export default function TopBar({ loading, setLoading,pickerOn, currentTable,session, RequestHistorial }: Props) {
+export default function TopBar({ loading, setLoading,pickerOn, prods, currentTable,session, RequestHistorial, RequestTables, RequestProds }: Props) {
     const [pop, setPop] = React.useState<"products" | "account" | undefined>(undefined)
 
     const closePop = () => {
@@ -18,8 +24,8 @@ export default function TopBar({ loading, setLoading,pickerOn, currentTable,sess
     }
 
     const pops: { [key: string]: any } = {
-        "products": <ProdPop close={closePop} />,
-        "account": <AccountPop close={closePop} />,
+        "products": <ProdPop setLoading={setLoading} loading={loading} prods={prods} close={closePop} RequestProds={RequestProds} />,
+        "account": <AccountPop close={closePop} RequestTables={RequestTables}  />,
     }
     let hist =loading === "request-historial"
     return <header className='main-header'>

@@ -50,7 +50,12 @@
     flex-direction: column;
     gap: 0.7rem;
     color: var(--cwhite);
+    padding: 0 1.5rem;
     padding-top: 2rem;
+    text-align: center;
+}
+.warning.black {
+    color: var(--cblack);
 }
 .warning > svg {
     font-size: 3rem;

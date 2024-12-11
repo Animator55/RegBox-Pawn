@@ -161,6 +161,7 @@
     flex-direction: column;
     gap: .5rem;
     padding: 1rem;
+    color: var(--cdarker)
   }
 
   .confirm-pop {
@@ -250,7 +251,7 @@
     max-width: 2rem;
     max-height: 2rem;
     background-color: rgba(0, 0, 0, 0.459) !important;
-    box-shadow: 0 0 5px var(--clightgray);
+    border: 1px solid var(--cdarkgray);
     border-radius: 50%;
     color: var(--cwhite);
   }
@@ -921,8 +922,8 @@
     margin: 0;
   }
 
-  .item-selector-cont>ul>button>.amount-count,
-  .item-selector-cont>ul>button>div {
+  .item-selector-cont>ul>button:not(.prod-pop-item)>.amount-count,
+  .item-selector-cont>ul>button:not(.prod-pop-item)>div {
     position: absolute;
     width: 1.5rem;
     height: 1.5rem;
@@ -937,7 +938,7 @@
     color: var(--cdarkgray);
   }
 
-  .item-selector-cont>ul>button>div {
+  .item-selector-cont>ul>button:not(.prod-pop-item)>div {
     right: auto;
     background-color: transparent;
     color: var(--corange);

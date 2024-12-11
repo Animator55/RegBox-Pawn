@@ -41,7 +41,10 @@ export default function SideBar({ setCurrent, tablePlaces, historial, setMap, is
 
   for (let i = 0; i < tablePlaces.length; i++) {
     let key = "unnactive"
-    if (historial && historial[tablePlaces[i]._id]) key = historial[tablePlaces[i]._id]?.historial[historial[tablePlaces[i]._id].historial.length - 1].state
+    if (historial 
+      && historial[tablePlaces[i]._id]
+      && historial[tablePlaces[i]._id]?.historial[historial[tablePlaces[i]._id].historial.length - 1]
+    ) key = historial[tablePlaces[i]._id]?.historial[historial[tablePlaces[i]._id].historial.length - 1].state
     constructor[key].push(tablePlaces[i])
   }
 

@@ -1,4 +1,4 @@
-import { faExpand, faPen, faPlus, faWarning } from '@fortawesome/free-solid-svg-icons'
+import { faExpand, faPen, faPlus, faRotate, faWarning } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import { TablePlaceType } from '../vite-env'
@@ -12,11 +12,12 @@ type Props = {
   tablesOpenMin: { _id: string, name: string, state: "open" | "paying" | "closed" | "unnactive" }[]
   tablePlaces: TablePlaceType[]
   setPage: Function
+  loading: string | undefined
   pickerOn: boolean
 }
 
 
-export default function Map({ setCurrent, tablesOpenMin, tablePlaces, setPage, pickerOn }: Props) {
+export default function Map({ setCurrent, tablesOpenMin, tablePlaces, setPage, pickerOn, loading }: Props) {
   const c = React.useContext(Configuration)
   const localMap: TablePlaceType[] = tablePlaces
 
@@ -25,9 +26,7 @@ export default function Map({ setCurrent, tablesOpenMin, tablePlaces, setPage, p
     const zoomContainer = document.querySelector<HTMLDivElement>('.background');
     const zoomContent = document.querySelector<HTMLDivElement>('.draggable');
 
-    if (!zoomContainer || !zoomContent) {
-      throw new Error("Zoom container or content not found.");
-    }
+    if (!zoomContainer || !zoomContent) return
 
     // Estados iniciales
     let scale: number = c.config.map.zoom; // Nivel inicial de zoom
@@ -154,9 +153,15 @@ export default function Map({ setCurrent, tablesOpenMin, tablePlaces, setPage, p
     }
 
     const Alert = () => {
-      return <section className='alert'>
+      return <section className='warning'>
         <FontAwesomeIcon icon={faWarning} />
         <h2>No hay mesas añadidas a el mapa.</h2>
+      </section>
+    }
+    const Loading = () => {
+      return <section className='warning'>
+        <FontAwesomeIcon icon={faRotate} spin/>
+        <h2>Obteniendo mesas...</h2>
       </section>
     }
 
@@ -165,7 +170,8 @@ export default function Map({ setCurrent, tablesOpenMin, tablePlaces, setPage, p
       <section className='background'
       // onMouseDown={drag} onTouchStart={drag_Touch} onWheel={(e) => { changeZoom(e.deltaY < 0) }}
       >
-        {localMap && localMap.length !== 0 ?
+        {loading === "request-tables" ? <Loading/> :
+        localMap && localMap.length !== 0 ?
           <div className='draggable'
             style={{
               transform: `scale(${c.config.map.zoom}) translate(${c.config.map.x}px,${c.config.map.y}px)`

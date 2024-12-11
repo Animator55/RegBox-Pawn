@@ -68,6 +68,7 @@ export default function TableView({ current, setPage, pickerOn, picker, setPicke
   }
 
   React.useEffect(() => {
+    if(current?.state === "unnactive") setMap()
     history.pushState(null, "", location.href);
 
     const handlePopState = (event: PopStateEvent) => {
@@ -83,7 +84,7 @@ export default function TableView({ current, setPage, pickerOn, picker, setPicke
   })
 
 
-  return <section className='page'>
+  return current && current.state !== "unnactive" && <section className='page'>
     <Header />
     <List />
     {(current && current.state !== "closed") && <>

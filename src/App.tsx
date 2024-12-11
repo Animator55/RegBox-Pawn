@@ -14,7 +14,7 @@ import Peer, { DataConnection } from 'peerjs'
 
 import "./assets/App.css"
 import Picker from './components/Picker'
-import { products1, productsType } from './defaults/products'
+import { productsType } from './defaults/products'
 import SideBar from './components/SideBar'
 
 type Props = {}
@@ -46,16 +46,17 @@ let lastCreated: string | undefined = undefined
 
 const userData = { /// localStorage
   _id: "pawn-1",
+  name: "Pawn",
   core: "main-1"
 }
 let peer: Peer | undefined = undefined
 let conn: DataConnection | undefined = undefined
 
 
-const generateSession = (id: string, core: string) => {
+const generateSession = (id: string, name: string, core: string) => {
   return {
     _id: id,
-    name: id,
+    name: name,
     role: "pawn",
     opened: "0",
     domain: core,
@@ -73,10 +74,10 @@ export default function App({ }: Props) {
   const [displayMode, setDisplayState] = React.useState<"map" | "view">("map")
   const [localHistorial, setLocalHistorial] = React.useState<histStructure | undefined>(undefined)
   const [loading, setLoading] = React.useState<string | undefined>(undefined)
-  // const [localTablePlaces, setTablePlaces] = React.useState<TablePlaceType[]>(tablePlaces)
-  // const [prods, setProds] = React.useState<productsType>(products)
-  const localTablePlaces: TablePlaceType[] = tablePlaces
-  const prods: productsType = products1
+  const [localTablePlaces, setTablePlaces] = React.useState<TablePlaceType[]>([])
+  const [prods, setProds] = React.useState<productsType>({})
+  // const localTablePlaces: TablePlaceType[] = tablePlaces
+  // const prods: productsType = products1
 
   const setDisplay = (val: "map" | "view") => {
     setDisplayState(val)
@@ -280,6 +281,7 @@ export default function App({ }: Props) {
       tablesOpenMin={tablesOpenMin}
       tablePlaces={localTablePlaces}
       pickerOn={pickerOn}
+      loading={loading}
     />,
     "view": currentTable && <TableView
       setPicker={setPicker}
@@ -332,7 +334,7 @@ export default function App({ }: Props) {
     })
     peer.on('open', function (id: string) {
       if (peer === undefined || peer.id === undefined) return
-      setSession(generateSession(id, userData.core))
+      setSession(generateSession(id, userData.name, userData.core))
       connectToCore(userData.core)
     })
     if (conn !== undefined) return
@@ -342,6 +344,14 @@ export default function App({ }: Props) {
         console.log("a")
         if (data.type === "historial") {
           setLocalHistorial(data.data)
+          setLoading(undefined)
+        }
+        if (data.type === "tables") {
+          setTablePlaces(data.data)
+          setLoading(undefined)
+        }
+        if (data.type === "prods") {
+          setProds(data.data)
           setLoading(undefined)
         }
         if (data.type === "confirm") {
@@ -382,6 +392,20 @@ export default function App({ }: Props) {
     }
   }
 
+  const RequestTables = () => {
+    if (conn) {
+      conn.send({ type: "request-tables" })
+      setLoading("request-tables")
+    }
+  }
+
+  const RequestProds = () => {
+    if (conn) {
+      conn.send({ type: "request-products" })
+      setLoading("request-products")
+    }
+  }
+
 
   React.useEffect(() => {
     if (loading === "request") {
@@ -406,7 +430,11 @@ export default function App({ }: Props) {
         loading={loading}
         setLoading={setLoading}
         pickerOn={pickerOn} session={session}
-        RequestHistorial={RequestHistorial} />
+        RequestHistorial={RequestHistorial} 
+        RequestTables={RequestTables} 
+        RequestProds={RequestProds} 
+        prods={prods}
+        />
       {displays[displayMode]}
       <SideBar
         isCurrent={currentTable}
