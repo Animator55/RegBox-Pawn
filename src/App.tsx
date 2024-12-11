@@ -16,8 +16,10 @@ import "./assets/App.css"
 import Picker from './components/Picker'
 import { productsType } from './defaults/products'
 import SideBar from './components/SideBar'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faRotate, faWarning } from '@fortawesome/free-solid-svg-icons'
 
-type Props = {}
+type Props = {userData: {_id: string, name: string, core: string}}
 
 export const Configuration = React.createContext({
   config: {
@@ -44,11 +46,6 @@ for (const id in historialDef) {
 let lastCreated: string | undefined = undefined
 
 
-const userData = { /// localStorage
-  _id: "pawn-1",
-  name: "Pawn",
-  core: "main-1"
-}
 let peer: Peer | undefined = undefined
 let conn: DataConnection | undefined = undefined
 
@@ -67,7 +64,8 @@ const generateSession = (id: string, name: string, core: string) => {
 let timestamp: number | undefined = undefined
 let tableScroll = 0
 
-export default function App({ }: Props) {
+export default function App({userData}: Props) {
+  const [error, setError] = React.useState<string|undefined>(undefined)
   const [session, setSession] = React.useState<sessionType | undefined>(undefined)
   const [config, setConfig] = React.useState(defaultConfig)
   const [page, setPage] = React.useState<"main" | "picker">("main")
@@ -320,7 +318,7 @@ export default function App({ }: Props) {
     peer.on('error', function (err) {
       switch (err.type) {
         case 'unavailable-id':
-          console.log(id + ' is taken')
+          setError("La sesión de ("+ id + ') ya fue abierta.')
           peer = undefined
           break
         case 'peer-unavailable':
@@ -359,7 +357,7 @@ export default function App({ }: Props) {
           if(button) button.click()
         }
         else if (data.type === "error") {
-          alert("Some error happened")
+          alert("Ocurrió un error, actualize la conexión.")
           setLoading(undefined)
         }
       })
@@ -515,10 +513,21 @@ export default function App({ }: Props) {
   }
 
   return <main>
-    <section style={{ position: "fixed", pointerEvents: "none", textAlign: "center", bottom: "1.5rem", zIndex: 1, width: "100%", color: "white" }}>{loading}</section>
-    <Configuration.Provider value={{ config: config, setConfig: setConfig }}>
-      {pop && pop.name && pops[pop.name]}
-      {pages[page]}
-    </Configuration.Provider>
+    {peer ? <>
+      <section style={{ position: "fixed", pointerEvents: "none", textAlign: "center", bottom: "1.5rem", zIndex: 1, width: "100%", color: "white" }}>{loading}</section>
+      <Configuration.Provider value={{ config: config, setConfig: setConfig }}>
+        {pop && pop.name && pops[pop.name]}
+        {pages[page]}
+      </Configuration.Provider>
+    </> : 
+    <section className='warning'>
+      <FontAwesomeIcon icon={error ? faWarning:faRotate} spin={error === undefined}/>
+      <h2>{error ? error : "Estableciendo sesión..."}</h2>
+      {error && <button className='default-button' onClick={()=>{location.reload()}}>
+        <FontAwesomeIcon icon={faRotate}/>
+        Reiniciar
+        </button>}
+    </section>
+    }
   </main>
 }

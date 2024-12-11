@@ -1,0 +1,32 @@
+.auth-section{
+    display: flex;
+    flex-direction: column;
+    padding: 1rem; 
+    gap: 0.5rem; 
+    align-items: center;
+    width: 100%;
+}
+
+.auth-section hr {
+    width: 100%;
+}
+.auth-section .title {
+    color: var(--cwhite);
+    font-size: 2rem;
+}
+
+/***/
+
+.auth-section button {
+    background-color: var(--cdarkgray);
+    padding: 2rem 1rem;
+    font-size: 1.3rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color:  var(--cwhite);
+    border-radius: 5px;
+}
+
+/***/

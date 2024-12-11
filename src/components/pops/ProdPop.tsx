@@ -1,4 +1,4 @@
-import { faRepeat, faRotate, faRotateBack, faSortAlphaDownAlt, faSortAlphaUpAlt, faSortAmountAsc, faSortAmountDesc, faWarning, faXmark } from "@fortawesome/free-solid-svg-icons"
+import { faRotate, faRotateBack, faSortAlphaDownAlt, faSortAlphaUpAlt, faSortAmountAsc, faSortAmountDesc, faWarning, faXmark } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { productsType } from "../../defaults/products"
 import { Item, router } from "../../vite-env"
