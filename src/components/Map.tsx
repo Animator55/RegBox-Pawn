@@ -12,12 +12,13 @@ type Props = {
   tablesOpenMin: { _id: string, name: string, state: "open" | "paying" | "closed" | "unnactive" }[]
   tablePlaces: TablePlaceType[]
   setPage: Function
+  RequestTables: Function
   loading: string | undefined
   pickerOn: boolean
 }
 
 
-export default function Map({ setCurrent, tablesOpenMin, tablePlaces, setPage, pickerOn, loading }: Props) {
+export default function Map({ setCurrent, tablesOpenMin, tablePlaces, setPage, pickerOn, loading,RequestTables }: Props) {
   const c = React.useContext(Configuration)
   const localMap: TablePlaceType[] = tablePlaces
 
@@ -156,6 +157,9 @@ export default function Map({ setCurrent, tablesOpenMin, tablePlaces, setPage, p
       return <section className='warning'>
         <FontAwesomeIcon icon={faWarning} />
         <h2>No hay mesas añadidas a el mapa.</h2>
+        <button className='default-button' onClick={()=>{RequestTables()}}>
+          Obtener mesas
+        </button>
       </section>
     }
     const Loading = () => {

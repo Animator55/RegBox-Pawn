@@ -1,7 +1,7 @@
 import React from 'react'
 import { Item, router } from '../vite-env'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAsterisk, faCaretLeft, faCaretRight, faMinus, faPlus, faReceipt, faRotateBack, faSortAlphaDownAlt, faSortAlphaUpAlt, faSortAmountAsc, faSortAmountDesc, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faAsterisk, faCaretLeft, faCaretRight, faMinus, faPlus, faReceipt, faRotate, faRotateBack, faSortAlphaDownAlt, faSortAlphaUpAlt, faSortAmountAsc, faSortAmountDesc, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { productsType } from '../defaults/products'
 import SearchBar from './def/Search'
 import OrderListPop from './pops/OrderListPop'
@@ -15,12 +15,14 @@ type Props = {
     cancelPicker: Function
     confirmPicker: Function
     setPicker: Function
+    RequestProds: Function
+    loading: string | undefined
     prods: productsType
     selectedTable: string | undefined
 }
 
 
-export default function Picker({ cancelPicker, confirmPicker, prods, selectedTable, result, setPicker }: Props) {
+export default function Picker({ cancelPicker, confirmPicker, RequestProds,loading, prods, selectedTable, result, setPicker }: Props) {
     const [phase, setPhase] = React.useState<number>(0)
     const [search, setSearch] = React.useState<string>("")
     const UlRef = React.useRef<HTMLUListElement | null>(null);
@@ -118,6 +120,24 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
         }) as Item[][])
     }
 
+
+    const Alert = () => {
+        return <section className='warning black'>
+            <FontAwesomeIcon icon={faWarning} />
+            <h2>No hay productos que enlistar.</h2>
+            <button className='default-button' onClick={()=>{
+                RequestProds()
+            }}>
+                Obtener productos
+            </button>
+        </section>
+    }
+    const Loading = () => {
+        return <section className='warning black'>
+            <FontAwesomeIcon icon={faRotate} spin />
+            <h2>Obteniendo productos...</h2>
+        </section>
+    }
     const ShowCommand = () => {
         return <section className='back-blur' onClick={(e) => {
             let target = e.target as HTMLDivElement
@@ -218,7 +238,8 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
             <header>
                 {phases}
             </header>
-            <ul>
+            {loading === "request-products" ? <Loading /> :
+            prods && Object.keys(prods).length !== 0 ? <ul>
                 {Object.keys(prods).map(type => {
                     return <button
                         key={Math.random()}
@@ -228,7 +249,8 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
                         {(amountsByType[type] !== undefined && amountsByType[type] !== 0) && <p>{amountsByType[type]}</p>}
                     </button>
                 })}
-            </ul>
+            </ul> 
+          : <Alert />} 
         </section>
     }
 
@@ -404,11 +426,11 @@ export default function Picker({ cancelPicker, confirmPicker, prods, selectedTab
         }}>
             <FontAwesomeIcon icon={faRotateBack} />
         </button>
-        <button 
+        <button
             className='view-command-button'
             onClick={() => { setPop("command") }}
         >
-            <FontAwesomeIcon icon={faReceipt} /> 
+            <FontAwesomeIcon icon={faReceipt} />
         </button>
     </>
 }

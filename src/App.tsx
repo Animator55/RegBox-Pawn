@@ -19,7 +19,7 @@ import SideBar from './components/SideBar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faRotate, faWarning } from '@fortawesome/free-solid-svg-icons'
 
-type Props = {userData: {_id: string, name: string, core: string}}
+type Props = { userData: { _id: string, name: string, core: string } }
 
 export const Configuration = React.createContext({
   config: {
@@ -64,8 +64,8 @@ const generateSession = (id: string, name: string, core: string) => {
 let timestamp: number | undefined = undefined
 let tableScroll = 0
 
-export default function App({userData}: Props) {
-  const [error, setError] = React.useState<string|undefined>(undefined)
+export default function App({ userData }: Props) {
+  const [error, setError] = React.useState<{ type: "error" | "info", text: string } | undefined>(undefined)
   const [session, setSession] = React.useState<sessionType | undefined>(undefined)
   const [config, setConfig] = React.useState(defaultConfig)
   const [page, setPage] = React.useState<"main" | "picker">("main")
@@ -272,6 +272,29 @@ export default function App({userData}: Props) {
     }
     setPage("main")
   }
+
+  const RequestHistorial = () => {
+    if (conn) {
+      conn.send({ type: "request-historial" })
+      setLoading("request-historial")
+    }
+  }
+
+  const RequestTables = () => {
+    if (conn) {
+      conn.send({ type: "request-tables" })
+      setLoading("request-tables")
+    }
+  }
+
+  const RequestProds = () => {
+    if (conn) {
+      conn.send({ type: "request-products" })
+      setLoading("request-products")
+    }
+  }
+
+
   const displays: { [key: string]: any } = {
     "map": <Map
       setPage={setPage}
@@ -279,6 +302,7 @@ export default function App({userData}: Props) {
       tablesOpenMin={tablesOpenMin}
       tablePlaces={localTablePlaces}
       pickerOn={pickerOn}
+      RequestTables={RequestTables}
       loading={loading}
     />,
     "view": currentTable && <TableView
@@ -315,14 +339,16 @@ export default function App({userData}: Props) {
     peer = new Peer(id);
     if (peer === undefined) return
 
+    setError({ type: "info", text: "Estableciendo sesión..." })
     peer.on('error', function (err) {
       switch (err.type) {
         case 'unavailable-id':
-          setError("La sesión de ("+ id + ') ya fue abierta.')
+          setError({ type: "error", text: "La sesión de (" + id + ') ya fue abierta.' })
           peer = undefined
           break
         case 'peer-unavailable':
-          console.log('user offline')
+          console.log("userOffline")
+          setError({ type: "error", text: "No se pudo conectar. Revise el estado de 'RegBox Main'." })
           break
         default:
           conn = undefined
@@ -333,11 +359,12 @@ export default function App({userData}: Props) {
     peer.on('open', function (id: string) {
       if (peer === undefined || peer.id === undefined) return
       setSession(generateSession(id, userData.name, userData.core))
+      setError(undefined)
       connectToCore(userData.core)
     })
     if (conn !== undefined) return
     peer.on("connection", function (conn) {
-      console.log("connected with " + conn.peer)
+      console.log("connected with core " + conn.peer)
       conn.on("data", function (data: { type: string, data: histStructure } | any) { //RECIEVED DATA
         console.log("a")
         if (data.type === "historial") {
@@ -354,7 +381,7 @@ export default function App({userData}: Props) {
         }
         if (data.type === "confirm") {
           let button = document.querySelector(".refresh") as HTMLButtonElement
-          if(button) button.click()
+          if (button) button.click()
         }
         else if (data.type === "error") {
           alert("Ocurrió un error, actualize la conexión.")
@@ -383,27 +410,6 @@ export default function App({userData}: Props) {
     }
   })
 
-  const RequestHistorial = () => {
-    if (conn) {
-      conn.send({ type: "request-historial" })
-      setLoading("request-historial")
-    }
-  }
-
-  const RequestTables = () => {
-    if (conn) {
-      conn.send({ type: "request-tables" })
-      setLoading("request-tables")
-    }
-  }
-
-  const RequestProds = () => {
-    if (conn) {
-      conn.send({ type: "request-products" })
-      setLoading("request-products")
-    }
-  }
-
 
   React.useEffect(() => {
     if (loading === "request") {
@@ -428,11 +434,11 @@ export default function App({userData}: Props) {
         loading={loading}
         setLoading={setLoading}
         pickerOn={pickerOn} session={session}
-        RequestHistorial={RequestHistorial} 
-        RequestTables={RequestTables} 
-        RequestProds={RequestProds} 
+        RequestHistorial={RequestHistorial}
+        RequestTables={RequestTables}
+        RequestProds={RequestProds}
         prods={prods}
-        />
+      />
       {displays[displayMode]}
       <SideBar
         isCurrent={currentTable}
@@ -444,8 +450,10 @@ export default function App({userData}: Props) {
       />
     </>,
     "picker": <Picker
+      loading={loading}
       result={picker}
       setPicker={setPicker}
+      RequestProds={RequestProds}
       selectedTable={getTableName(currentTable)}
       prods={prods}
       cancelPicker={() => {
@@ -480,8 +488,10 @@ export default function App({userData}: Props) {
       }}
     />,
     "picker-with-data": <Picker
+      loading={loading}
       result={picker}
       setPicker={setPicker}
+      RequestProds={RequestProds}
       selectedTable={getTableName(currentTable)}
       prods={prods}
       cancelPicker={() => {
@@ -513,21 +523,21 @@ export default function App({userData}: Props) {
   }
 
   return <main>
-    {peer ? <>
+    {peer && !error ? <>
       <section style={{ position: "fixed", pointerEvents: "none", textAlign: "center", bottom: "1.5rem", zIndex: 1, width: "100%", color: "white" }}>{loading}</section>
       <Configuration.Provider value={{ config: config, setConfig: setConfig }}>
         {pop && pop.name && pops[pop.name]}
         {pages[page]}
       </Configuration.Provider>
-    </> : 
-    <section className='warning'>
-      <FontAwesomeIcon icon={error ? faWarning:faRotate} spin={error === undefined}/>
-      <h2>{error ? error : "Estableciendo sesión..."}</h2>
-      {error && <button className='default-button' onClick={()=>{location.reload()}}>
-        <FontAwesomeIcon icon={faRotate}/>
-        Reiniciar
+    </> :
+      <section className='warning'>
+        <FontAwesomeIcon icon={error?.type === "error" ? faWarning : faRotate} spin={error?.type !== "error"} />
+        <h2>{error?.text}</h2>
+        {error?.type === "error" && <button className='default-button' onClick={() => { location.reload() }}>
+          <FontAwesomeIcon icon={faRotate} />
+          Reiniciar
         </button>}
-    </section>
+      </section>
     }
   </main>
 }
