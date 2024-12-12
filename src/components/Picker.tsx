@@ -21,8 +21,15 @@ type Props = {
     selectedTable: string | undefined
 }
 
+let phasesScroll = 0
 
-export default function Picker({ cancelPicker, confirmPicker, RequestProds,loading, prods, selectedTable, result, setPicker }: Props) {
+const getPhasesScrollValue = ()=>{
+    let div = document.querySelector(".phases-header") as HTMLHeadingElement
+    if(div) return div.scrollLeft
+    else return 0
+}
+
+export default function Picker({ cancelPicker, confirmPicker, RequestProds, loading, prods, selectedTable, result, setPicker }: Props) {
     const [phase, setPhase] = React.useState<number>(0)
     const [search, setSearch] = React.useState<string>("")
     const UlRef = React.useRef<HTMLUListElement | null>(null);
@@ -41,15 +48,18 @@ export default function Picker({ cancelPicker, confirmPicker, RequestProds,loadi
         amountsByType[item.type] = amountsByType[item.type] !== undefined ? (amountsByType[item.type] + (1 * item.amount!)) : (1 * item.amount!)
     }
 
+
     const addPhase = () => {
         setPicker([...result, []])
         setPhase(result.length)
+        phasesScroll= 999999
     }
     const removePhase = (index: number) => {
         // check currentPhase
         let newSelectedPhase = index
         if (newSelectedPhase >= result.length - 1) newSelectedPhase = index - 1
         setPhase(newSelectedPhase)
+        phasesScroll = getPhasesScrollValue()
 
         setPicker(result.filter((el, i) => {
             if (i !== index) return el
@@ -86,6 +96,7 @@ export default function Picker({ cancelPicker, confirmPicker, RequestProds,loadi
         }
         switchPhasesAnimation(index, toIndex)
         setTimeout(() => {
+            phasesScroll =getPhasesScrollValue()
             if (phase === index) setPhase(toIndex)
             else if (phase === toIndex) setPhase(index)
             setPicker(settedValue as Item[][])
@@ -125,7 +136,7 @@ export default function Picker({ cancelPicker, confirmPicker, RequestProds,loadi
         return <section className='warning black'>
             <FontAwesomeIcon icon={faWarning} />
             <h2>No hay productos que enlistar.</h2>
-            <button className='default-button' onClick={()=>{
+            <button className='default-button' onClick={() => {
                 RequestProds()
             }}>
                 Obtener productos
@@ -150,11 +161,15 @@ export default function Picker({ cancelPicker, confirmPicker, RequestProds,loadi
                     return <section key={Math.random()}>
                         <label>Tiempo {i + 1}</label>
                         <ul>
-                            {pha.length !== 0 && pha.map(item => {
+                            {pha.length !== 0 ? pha.map(item => {
                                 return <li key={Math.random()}>
                                     {item.amount} X {item.name} {(item.comment && item.comment !== "") && ` (${item.comment})`}
                                 </li>
-                            })}
+                            }) :
+                                <section className='no-items'>
+                                    <FontAwesomeIcon icon={faWarning} />
+                                    <p>No hay productos en este tiempo.</p>
+                                </section>}
                         </ul>
                     </section>
                 })}
@@ -209,7 +224,10 @@ export default function Picker({ cancelPicker, confirmPicker, RequestProds,loadi
                         if (result.length > 1) DragPhase(i)
                     }}
                     onTouchEnd={() => {
-                        if (!draggingPhase) setPhase(i)
+                        if (!draggingPhase) {
+                            phasesScroll =getPhasesScrollValue()
+                            setPhase(i)
+                        }
                         DragPhaseCancel()
                     }}
                     className={phase === i ? "active" : ""}
@@ -235,22 +253,22 @@ export default function Picker({ cancelPicker, confirmPicker, RequestProds,loadi
         </button>)
 
         return <section id="picker-page" className='page type-selector'>
-            <header>
+            <header className='phases-header'>
                 {phases}
             </header>
             {loading === "request-products" ? <Loading /> :
-            prods && Object.keys(prods).length !== 0 ? <ul>
-                {Object.keys(prods).map(type => {
-                    return <button
-                        key={Math.random()}
-                        onClick={() => { setPage(type) }}
-                    >
-                        {type}
-                        {(amountsByType[type] !== undefined && amountsByType[type] !== 0) && <p>{amountsByType[type]}</p>}
-                    </button>
-                })}
-            </ul> 
-          : <Alert />} 
+                prods && Object.keys(prods).length !== 0 ? <ul>
+                    {Object.keys(prods).map(type => {
+                        return <button
+                            key={Math.random()}
+                            onClick={() => { setPage(type) }}
+                        >
+                            {type}
+                            {(amountsByType[type] !== undefined && amountsByType[type] !== 0) && <p>{amountsByType[type]}</p>}
+                        </button>
+                    })}
+                </ul>
+                    : <Alert />}
         </section>
     }
 
@@ -270,6 +288,10 @@ export default function Picker({ cancelPicker, confirmPicker, RequestProds,loadi
     }
     let scrollHeight = UlRef.current?.scrollTop;
     React.useLayoutEffect(() => {
+        if(phasesScroll !== 0) {
+            let div = document.querySelector(".phases-header") as HTMLHeadingElement
+            if(div) div.scrollLeft = phasesScroll
+        }
         if (UlRef.current && scrollHeight) UlRef.current.scrollTop = scrollHeight
     });
 
@@ -328,7 +350,7 @@ export default function Picker({ cancelPicker, confirmPicker, RequestProds,loadi
 
         return <section id="picker-page" className='page item-selector'>
             <div className='item-selector-cont'>
-
+                <h2 className='item-selector-title'>{page}</h2>
                 <header className='table-list-header'>
                     <SearchBar
                         searchButton={setSearch}

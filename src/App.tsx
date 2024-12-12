@@ -3,8 +3,6 @@ import TopBar from './components/TopBar'
 import Map from './components/Map'
 import TableView from './components/TableView'
 import { configType, HistorialTableType, histStructure, Item, router, sessionType, SingleEvent, TableEvents, TablePlaceType } from './vite-env'
-import { historialDef } from './defaults/historialDef'
-import { tablePlaces } from './defaults/tablePlaces'
 import getTableData from './logic/getTableData'
 import fixNum from './logic/fixDateNumber'
 import { back_addTable, back_editTable } from './logic/API'
@@ -37,11 +35,11 @@ export const Configuration = React.createContext({
   } as configType, setConfig: (val: configType) => { console.log(val) }
 })
 
-let defaultHistorialParsed = {}
-for (const id in historialDef) {
-  let parsed = JSON.parse(historialDef[id]) as HistorialTableType
-  defaultHistorialParsed = { ...defaultHistorialParsed, [id]: parsed }
-}
+// let defaultHistorialParsed = {}
+// for (const id in historialDef) {
+//   let parsed = JSON.parse(historialDef[id]) as HistorialTableType
+//   defaultHistorialParsed = { ...defaultHistorialParsed, [id]: parsed }
+// }
 
 let lastCreated: string | undefined = undefined
 
@@ -137,6 +135,27 @@ export default function App({ userData }: Props) {
           if (result) {
             if (pickerOn) lastCreated = id
             else {
+              let name = getTableName(id)
+              if (localTablePlaces && name !== "" && session) {
+                let date = new Date
+                let message = {
+                  important: false,
+                  type: "products",
+                  comment: "Mesa creada " + "(por: " + session.name + ")",
+                  timestamp: fixNum(date.getHours()) + ":" + fixNum(date.getMinutes()),
+                  notification_id: session._id + `.${date.getTime()}`,
+                  _id: id,
+                  name: name,
+                  accepted: undefined, /// only for notification events
+                  products: [], /// only for notification events
+                  owner: session._id,
+                  owner_name: session.name, /// only for notification events
+                }
+                if (conn) {
+                  conn.send(message)
+                  setLoading("request")
+                }
+              }
               setCurrentState(id)
               setDisplay("view")
             }
@@ -344,7 +363,6 @@ export default function App({ userData }: Props) {
       switch (err.type) {
         case 'unavailable-id':
           setError({ type: "error", text: "La sesión de (" + id + ') ya fue abierta.' })
-          peer = undefined
           break
         case 'peer-unavailable':
           console.log("userOffline")
@@ -444,7 +462,7 @@ export default function App({ userData }: Props) {
         isCurrent={currentTable}
         setMap={() => { setDisplay("map") }}
         setCurrent={setCurrent}
-        tablePlaces={tablePlaces}
+        tablePlaces={localTablePlaces}
         historial={localHistorial}
         cancelPicker={setPicker}
       />

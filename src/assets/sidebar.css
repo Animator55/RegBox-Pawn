@@ -85,7 +85,9 @@
 
 .table-list-side > button.active {
     box-shadow: 0 0 5px var(--corange);
-    border-color: var(--corange)!important;
+    color: var(--cblack)!important;
+    background: var(--corange)!important;
+    border-color: var(--cwhite)!important;
 }
 .table-list-side > button {
     border: 2px solid var(--clightgray);

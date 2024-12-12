@@ -25,10 +25,17 @@ export default function ProdPop({ close, setLoading, prods, loading, RequestProd
   const [page, setPage] = React.useState<string>("")
   const [pop, setPop] = React.useState<"order" | undefined>(undefined)
 
+  let hist = loading === "request-products"
   const Alert = () => {
     return <section className='warning black'>
       <FontAwesomeIcon icon={faWarning} />
       <h2>No hay productos que enlistar.</h2>
+      <button className="default-button" onClick={() => {
+        if (!hist) RequestProds()
+        else setLoading(undefined)
+      }}>
+        <p>Actualizar</p>
+      </button>
     </section>
   }
   const Loading = () => {
@@ -88,12 +95,12 @@ export default function ProdPop({ close, setLoading, prods, loading, RequestProd
                 dangerouslySetInnerHTML={{ __html: check }}
               ></p>
               <p>{item.price}</p>
-              {item.presets && <div>
+              {item.presets && <div className="tags">
                 {item.presets.map(el => {
                   return <div
                     key={Math.random()}
                   >
-                    <p>{el}</p>
+                    {el}
                   </div>
                 })}
               </div>}
@@ -135,8 +142,6 @@ export default function ProdPop({ close, setLoading, prods, loading, RequestProd
       close={() => { setPop(undefined) }}
     />,
   }
-
-  let hist = loading === "request-products"
 
   return <section className='back-blur confirm-spefic' onClick={(e) => {
     let target = e.target as HTMLDivElement
