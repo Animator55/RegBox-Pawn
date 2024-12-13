@@ -350,7 +350,7 @@ export default function Picker({ cancelPicker, confirmPicker, RequestProds, load
 
         return <section id="picker-page" className='page item-selector'>
             <div className='item-selector-cont'>
-                <h2 className='item-selector-title'>{page}</h2>
+                {/* <h2 className='item-selector-title'>{page}</h2> */}
                 <header className='table-list-header'>
                     <SearchBar
                         searchButton={setSearch}
