@@ -102,7 +102,7 @@ export default function App({ userData }: Props) {
                   type: "products",
                   comment: "Añadidos productos" + "(por: " + session.name + ")",
                   timestamp: fixNum(date.getHours()) + ":" + fixNum(date.getMinutes()),
-                  notification_id: session._id + `.${date.getTime()}`,
+                  notification_id: session._id + `.${Math.round(date.getTime()/10)}`,
                   _id: id,
                   name: localHistorial[id].name,
                   accepted: undefined, /// only for notification events
@@ -143,7 +143,7 @@ export default function App({ userData }: Props) {
                   type: "products",
                   comment: "Mesa creada " + "(por: " + session.name + ")",
                   timestamp: fixNum(date.getHours()) + ":" + fixNum(date.getMinutes()),
-                  notification_id: session._id + `.${date.getTime()}`,
+                  notification_id: session._id + `.${Math.round(date.getTime()/10)}`,
                   _id: id,
                   name: name,
                   accepted: undefined, /// only for notification events
@@ -273,7 +273,7 @@ export default function App({ userData }: Props) {
           important: false,
           type: "replace",
           comment: "Modificados productos" + "(por: " + session.name + ")",
-          notification_id: session._id + `.${date.getTime()}`,
+          notification_id: session._id + `.${Math.round(date.getTime()/10)}`,
           timestamp: fixNum(date.getHours()) + ":" + fixNum(date.getMinutes()),
           _id: currentTable,
           name: localHistorial[currentTable].name,
@@ -370,6 +370,7 @@ export default function App({ userData }: Props) {
           break
         default:
           conn = undefined
+          console.log(err)
           console.log('an error happened')
       }
       return false;
@@ -486,7 +487,7 @@ export default function App({ userData }: Props) {
               important: false,
               type: "products",
               comment: "Añadidos productos" + "(por: " + session.name + ")",
-              notification_id: session._id + `.${date.getTime()}`,
+              notification_id: session._id + `.${Math.round(date.getTime()/10)}`,
               timestamp: fixNum(date.getHours()) + ":" + fixNum(date.getMinutes()),
               _id: currentTable,
               name: localHistorial[currentTable].name,

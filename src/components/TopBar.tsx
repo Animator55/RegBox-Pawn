@@ -2,7 +2,7 @@ import React from 'react'
 import ProdPop from './pops/ProdPop'
 import AccountPop from './pops/AccountPop'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {  faCircleDollarToSlot, faRotate, faUserCircle, faWarning } from '@fortawesome/free-solid-svg-icons'
+import {  faCircleDollarToSlot, faComment, faMessage, faRotate, faUserCircle, faWarning } from '@fortawesome/free-solid-svg-icons'
 import { sessionType } from '../vite-env'
 import { productsType } from '../defaults/products'
 
@@ -17,7 +17,7 @@ type Props = { loading: string | undefined
 }
 
 export default function TopBar({ loading, setLoading,pickerOn, prods, currentTable,session, RequestHistorial, RequestTables, RequestProds }: Props) {
-    const [pop, setPop] = React.useState<"products" | "account" | undefined>(undefined)
+    const [pop, setPop] = React.useState<"products" | "account" | "requests" | undefined>(undefined)
 
     const closePop = () => {
         setPop(undefined)
@@ -26,6 +26,7 @@ export default function TopBar({ loading, setLoading,pickerOn, prods, currentTab
     const pops: { [key: string]: any } = {
         "products": <ProdPop setLoading={setLoading} loading={loading} prods={prods} close={closePop} RequestProds={RequestProds} />,
         "account": <AccountPop close={closePop} RequestTables={RequestTables}  />,
+        "requests": <AccountPop close={closePop} RequestTables={RequestTables}  />,
     }
     let hist =loading === "request-historial"
     return <header className='main-header'>
@@ -52,6 +53,11 @@ export default function TopBar({ loading, setLoading,pickerOn, prods, currentTab
                 }}>
                     <FontAwesomeIcon icon={faRotate} spin={hist}/>
                     <p>{hist ? "Actualizando":"Actualizar"}</p>
+                </button>
+                <button
+                    onClick={() => { setPop("requests") }}
+                >
+                    <FontAwesomeIcon icon={faComment} />
                 </button>
                 <button
                     onClick={() => { setPop("products") }}
