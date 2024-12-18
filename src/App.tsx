@@ -62,6 +62,10 @@ const generateSession = (id: string, name: string, core: string) => {
 let timestamp: number | undefined = undefined
 let tableScroll = 0
 
+const addMessageToRequestHistorial = (message: any)=>{
+
+}
+
 export default function App({ userData }: Props) {
   const [error, setError] = React.useState<{ type: "error" | "info", text: string } | undefined>(undefined)
   const [session, setSession] = React.useState<sessionType | undefined>(undefined)
@@ -110,6 +114,7 @@ export default function App({ userData }: Props) {
                   owner: session._id,
                   owner_name: session.name, /// only for notification events
                 }
+                addMessageToRequestHistorial(message)
                 if (conn) {
                   conn.send(message)
                   setLoading("request")
@@ -151,6 +156,7 @@ export default function App({ userData }: Props) {
                   owner: session._id,
                   owner_name: session.name, /// only for notification events
                 }
+                addMessageToRequestHistorial(message)
                 if (conn) {
                   conn.send(message)
                   setLoading("request")
@@ -282,6 +288,7 @@ export default function App({ userData }: Props) {
           owner: session._id,
           owner_name: session.name, /// only for notification events
         }
+        addMessageToRequestHistorial(message)
         if (conn) {
           conn.send(message)
           setLoading("request")
@@ -496,6 +503,7 @@ export default function App({ userData }: Props) {
               owner: session._id,
               owner_name: session.name, /// only for notification events
             }
+            addMessageToRequestHistorial(message)
             if (conn) {
               conn.send(message)
               setLoading("request")
