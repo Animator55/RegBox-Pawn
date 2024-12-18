@@ -63,7 +63,7 @@ let timestamp: number | undefined = undefined
 let tableScroll = 0
 
 const addMessageToRequestHistorial = (message: any)=>{
-
+  message
 }
 
 export default function App({ userData }: Props) {

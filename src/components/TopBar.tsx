@@ -2,7 +2,7 @@ import React from 'react'
 import ProdPop from './pops/ProdPop'
 import AccountPop from './pops/AccountPop'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {  faCircleDollarToSlot, faComment, faMessage, faRotate, faUserCircle, faWarning } from '@fortawesome/free-solid-svg-icons'
+import {  faCircleDollarToSlot, faComment, faRotate, faUserCircle, faWarning } from '@fortawesome/free-solid-svg-icons'
 import { sessionType } from '../vite-env'
 import { productsType } from '../defaults/products'
 
