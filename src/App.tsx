@@ -63,7 +63,10 @@ let timestamp: number | undefined = undefined
 let tableScroll = 0
 
 const addMessageToRequestHistorial = (message: any)=>{
-  message
+  let stor = window.localStorage.getItem("RegBoxPawn_requestHistorial")
+  let newData = {}
+  if(stor !== null) newData = JSON.parse(stor)
+  window.localStorage.setItem("RegBoxPawn_requestHistorial", JSON.stringify({...newData, [message.notification_id]: message}))
 }
 
 export default function App({ userData }: Props) {

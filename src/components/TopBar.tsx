@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {  faCircleDollarToSlot, faComment, faRotate, faUserCircle, faWarning } from '@fortawesome/free-solid-svg-icons'
 import { sessionType } from '../vite-env'
 import { productsType } from '../defaults/products'
+import RequestsPop from './pops/RequestsPop'
 
 type Props = { loading: string | undefined
     setLoading:Function
@@ -26,7 +27,7 @@ export default function TopBar({ loading, setLoading,pickerOn, prods, currentTab
     const pops: { [key: string]: any } = {
         "products": <ProdPop setLoading={setLoading} loading={loading} prods={prods} close={closePop} RequestProds={RequestProds} />,
         "account": <AccountPop close={closePop} RequestTables={RequestTables}  />,
-        "requests": <AccountPop close={closePop} RequestTables={RequestTables}  />,
+        "requests": <RequestsPop close={closePop} RequestTables={RequestTables}  />,
     }
     let hist =loading === "request-historial"
     return <header className='main-header'>

@@ -120,3 +120,80 @@
     padding: .4rem;
     word-break: break-word;
 }
+
+
+/***/
+
+
+.request-pop {
+    background-color: var(--cdarker)!important;
+    overflow: hidden;
+    width: 90dvw;
+    max-height: 86dvh;
+    display: flex;
+    flex-direction: column;
+    height: 86dvh;
+}
+
+.request-pop > header {
+    background-color: var(--corange);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+}
+.request-pop > header > * {
+    margin: 0;
+}
+.request-pop > header >button{
+    color: var(--cdarker);
+    background-color: transparent;
+    padding: 0;
+    margin-left: auto;
+    font-size: 1.5rem;
+}
+
+.request-pop ul {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+.request-pop li {
+    padding: .7rem 1rem;
+    border-radius: 5px;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--cdarkgray);
+    box-shadow: 2px 2px 5px var(--cblack);
+}
+.request-pop li header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.request-pop li header > * {
+    margin: 0;
+    font-weight: normal;
+}
+
+.request-pop li header p {
+    font-size: 1.2rem;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.request-pop li header i {
+    opacity: 0.8;
+}
+.request-pop li header button:first-of-type { 
+    margin-left: auto;
+}
+.request-pop li header button:last-child {
+    color: var(--clightgray);
+    background-color: transparent;
+    padding: 0;
+    font-size: 1.2rem;
+}
