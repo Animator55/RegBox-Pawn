@@ -467,6 +467,7 @@ export default function App({ userData }: Props) {
         RequestTables={RequestTables}
         RequestProds={RequestProds}
         prods={prods}
+        setPicker={setPicker}
       />
       {displays[displayMode]}
       <SideBar
