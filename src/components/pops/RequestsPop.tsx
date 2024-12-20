@@ -2,7 +2,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import "../../assets/pops.css"
 import { SingleEvent } from "../../vite-env"
-import { faCaretDown, faClipboard, faXmark } from "@fortawesome/free-solid-svg-icons"
+import { faCaretDown, faClipboard, faWarning, faXmark } from "@fortawesome/free-solid-svg-icons"
 import React from "react"
 
 type Props = {
@@ -29,20 +29,26 @@ export default function RequestsPop({ close, RequestTables, setPicker }: Props) 
         <i>{el.timestamp}</i>
         <button className="default-button" onClick={() => { console.log(el.notification_id) }}>Request</button>
         <button onClick={() => {
-          if(!el.notification_id) return
+          if (!el.notification_id) return
           if (!opened.includes(el.notification_id)) setOpened([...opened, el.notification_id])
-          else setOpened(opened.filter((id)=>{if(id !== el.notification_id) return }))
+          else setOpened(opened.filter((id) => { if (id !== el.notification_id) return }))
         }}>
           <FontAwesomeIcon icon={faCaretDown} />
         </button>
       </header>
       {(el.notification_id && opened.includes(el.notification_id)) && <section>
-        <button onClick={()=>{setPicker(el.products)}}>
-          <FontAwesomeIcon icon={faClipboard}/>
+        <button onClick={() => { setPicker(el.products) }}>
+          <FontAwesomeIcon icon={faClipboard} />
           Copiar Productos
         </button>
       </section>}
     </li>)
+  }
+  const Alert = () => {
+    return <section className='warning'>
+      <FontAwesomeIcon icon={faWarning} />
+      <h2>No hay historial de envíos.</h2>
+    </section>
   }
   return <section className='back-blur' onClick={(e) => {
     let target = e.target as HTMLDivElement
@@ -57,9 +63,13 @@ export default function RequestsPop({ close, RequestTables, setPicker }: Props) 
           <FontAwesomeIcon icon={faXmark} />
         </button>
       </header>
-      <ul>
-        {list}
-      </ul>
+      {list.length === 0 ?
+        <Alert />
+        :
+        <ul>
+          {list}
+        </ul>
+      }
     </section>
   </section>
 }

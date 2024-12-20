@@ -15,7 +15,8 @@ import Picker from './components/Picker'
 import { productsType } from './defaults/products'
 import SideBar from './components/SideBar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faRotate, faWarning } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faRotate, faWarning } from '@fortawesome/free-solid-svg-icons'
+import TableHistorial from './components/pops/TableHistorial'
 
 type Props = { userData: { _id: string, name: string, core: string } }
 
@@ -70,7 +71,7 @@ const addMessageToRequestHistorial = (message: any)=>{
 }
 
 export default function App({ userData }: Props) {
-  const [error, setError] = React.useState<{ type: "error" | "info", text: string } | undefined>(undefined)
+  const [error, setError] = React.useState<{ type: "error" | "info"| "warn", text: string } | undefined>(undefined)
   const [session, setSession] = React.useState<sessionType | undefined>(undefined)
   const [config, setConfig] = React.useState(defaultConfig)
   const [page, setPage] = React.useState<"main" | "picker">("main")
@@ -79,8 +80,6 @@ export default function App({ userData }: Props) {
   const [loading, setLoading] = React.useState<string | undefined>(undefined)
   const [localTablePlaces, setTablePlaces] = React.useState<TablePlaceType[]>([])
   const [prods, setProds] = React.useState<productsType>({})
-  // const localTablePlaces: TablePlaceType[] = tablePlaces
-  // const prods: productsType = products1
 
   const setDisplay = (val: "map" | "view") => {
     setDisplayState(val)
@@ -338,6 +337,7 @@ export default function App({ userData }: Props) {
       setPicker={setPicker}
       pickerOn={pickerOn}
       picker={picker}
+      viewHistorial={()=>{setPop({name:"historialTable", data:"", function: ()=>{}})}}
       setPage={setPage}
       addItem={addItem}
       current={getLastTable()}
@@ -376,7 +376,7 @@ export default function App({ userData }: Props) {
           break
         case 'peer-unavailable':
           console.log("userOffline")
-          setError({ type: "error", text: "No se pudo conectar. Revise el estado de 'RegBox Main'." })
+          setError({ type: "warn", text: "No se pudo conectar. Revise el estado de 'RegBox Main'." })
           break
         default:
           conn = undefined
@@ -550,7 +550,10 @@ export default function App({ userData }: Props) {
         let func = pop?.function
         setPop(undefined)
         if (func !== undefined) func()
-      }} close={() => { setPop(undefined) }} />
+      }} close={() => { setPop(undefined) }} />,
+    "historialTable": <TableHistorial
+      selectedTable={localHistorial ? currentTable ? localHistorial[currentTable] : undefined : undefined}
+      close={() => { setPop(undefined) }} />
   }
 
   return <main>
@@ -562,11 +565,14 @@ export default function App({ userData }: Props) {
       </Configuration.Provider>
     </> :
       <section className='warning'>
-        <FontAwesomeIcon icon={error?.type === "error" ? faWarning : faRotate} spin={error?.type !== "error"} />
+        <FontAwesomeIcon icon={error?.type === "info" ? faRotate: faWarning} spin={error?.type === "info"} />
         <h2>{error?.text}</h2>
-        {error?.type === "error" && <button className='default-button' onClick={() => { location.reload() }}>
-          <FontAwesomeIcon icon={faRotate} />
-          Reiniciar
+        {error?.type !== "info" && <button className='default-button' onClick={() => { 
+          if(error?.type === "error") location.reload() 
+            else setError(undefined)
+          }}>
+          <FontAwesomeIcon icon={error?.type === "error" ? faRotate : faCheck} />
+          {error?.type === "error" ? "Reiniciar" : "Aceptar"}
         </button>}
       </section>
     }

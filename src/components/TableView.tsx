@@ -1,4 +1,4 @@
-import { faCheck, faMinus, faPen, faPlus, faWarning } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faClockRotateLeft, faMinus, faPen, faPlus, faWarning } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Item, TableEvents } from '../vite-env'
 import { stateTraductions } from '../defaults/stateTraductions'
@@ -14,15 +14,21 @@ type Props = {
   pickerOn: boolean
   picker: Item[][]
   confirmPicker: Function
+  viewHistorial: Function
 }
 
-export default function TableView({ current, setPage, pickerOn, picker, setPicker, setMap, addItem, confirmPicker }: Props) {
+export default function TableView({ current, setPage, pickerOn, picker, setPicker, setMap, addItem, confirmPicker,viewHistorial }: Props) {
   const [selected, setSelected] = React.useState<{ phase: number, item: string } | undefined>(undefined)
 
   const Header = () => {
     if (!current) return
     return <header className='table-view-header'>
       <h3>Mesa {current.name}</h3>
+      <button className='default-button' onClick={()=>{
+        viewHistorial()
+      }}>
+        <FontAwesomeIcon icon={faClockRotateLeft}/>
+      </button>
       <p style={{ color: colorSelector[current.state] }}>{stateTraductions[current.state]}</p>
     </header>
   }
