@@ -545,25 +545,31 @@
     display: flex;
     align-items: center;
     padding: 0.5rem 1rem;
-    justify-content: space-between;
+    gap: .5rem;
+  }
+  .table-view-header > button {
+    margin-left: auto;
+    background-color: transparent;
+    color: var(--cwhite);
+    font-size: 1.2rem;
   }
 
   .table-view-header>h3,
   .table-view-header>p {
     color: var(--cwhite);
-    font-size: 1rem;
+    font-size: .9rem;
     margin: 0;
   }
 
   .table-view-header>h3 {
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: normal;
   }
 
   .table-view-header>p {
     border: 1px solid;
     border-radius: 5px;
-    padding: 0.4rem;
+    padding: 0.3rem;
   }
 
 
@@ -661,9 +667,21 @@
 
   /***/
 
-  .pop {
+  .pop:not(.account-span) {
     background-color: var(--cwhite);
     border-radius: 10px;
+    opacity: 0;
+    position: relative;
+    top: -5rem;
+    animation: fade 300ms forwards;
+    max-width: 93%;
+  }
+
+  @keyframes fade {
+    to {
+      opacity: 1;
+      top: 0rem;
+    }
   }
 
   .page {
@@ -681,9 +699,10 @@
     background: var(--cwhite);
   }
 
-  .type-selector>header::-webkit-scrollbar{
+  .type-selector>header::-webkit-scrollbar {
     height: 4px;
   }
+
   .type-selector>header {
     position: relative;
     display: flex;
@@ -918,7 +937,7 @@
     flex-direction: row;
     height: 100%;
   }
-  
+
   .item-selector-cont {
     display: flex;
     flex-direction: column;
@@ -970,7 +989,7 @@
   }
 
   .item-selector-cont>ul>button:last-child,
-  .item-selector-cont>ul>button:has(+button:last-child)  {
+  .item-selector-cont>ul>button:has(+button:last-child) {
     margin-bottom: 20dvh;
   }
 

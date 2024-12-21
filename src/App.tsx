@@ -303,8 +303,11 @@ export default function App({ userData }: Props) {
 
   const RequestHistorial = () => {
     if (conn) {
-      conn.send({ type: "request-historial" })
-      setLoading("request-historial")
+      let type = "request-historial"
+      if(Object.keys(prods).length === 0) type+="-products"
+      if(localTablePlaces.length === 0) type+="-tables"
+      conn.send({ type: type })
+      setLoading(type)
     }
   }
 
@@ -368,7 +371,7 @@ export default function App({ userData }: Props) {
     peer = new Peer(id);
     if (peer === undefined) return
 
-    setError({ type: "info", text: "Estableciendo sesión..." })
+    setError({ type: "info", text: ("Estableciendo sesión como " + userData.name) })
     peer.on('error', function (err) {
       switch (err.type) {
         case 'unavailable-id':
@@ -564,7 +567,7 @@ export default function App({ userData }: Props) {
         {pages[page]}
       </Configuration.Provider>
     </> :
-      <section className='warning'>
+      <section className='warning fixed'>
         <FontAwesomeIcon icon={error?.type === "info" ? faRotate: faWarning} spin={error?.type === "info"} />
         <h2>{error?.text}</h2>
         {error?.type !== "info" && <button className='default-button' onClick={() => { 

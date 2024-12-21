@@ -54,6 +54,10 @@
     padding-top: 2rem;
     text-align: center;
 }
+
+.warning.fixed {
+    padding-top: 5rem;
+}
 .warning.black {
     color: var(--cblack);
 }
@@ -100,6 +104,12 @@
     animation: fade-up 200ms forwards;
     position: relative;
     top: 2rem;
+}
+.fade-up {
+    position: relative;
+    top: 2rem;
+    opacity: 0;
+    animation: fade-up 200ms forwards;
 }
 @keyframes fade-up {
     from {

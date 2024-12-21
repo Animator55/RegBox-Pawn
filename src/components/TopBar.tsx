@@ -2,7 +2,7 @@ import React from 'react'
 import ProdPop from './pops/ProdPop'
 import AccountPop from './pops/AccountPop'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {  faCircleDollarToSlot, faComment, faRotate, faUserCircle, faWarning } from '@fortawesome/free-solid-svg-icons'
+import {   faRotate, faUserCircle, faWarning } from '@fortawesome/free-solid-svg-icons'
 import { sessionType } from '../vite-env'
 import { productsType } from '../defaults/products'
 import RequestsPop from './pops/RequestsPop'
@@ -27,7 +27,7 @@ export default function TopBar({ loading, setLoading,pickerOn, setPicker, prods,
 
     const pops: { [key: string]: any } = {
         "products": <ProdPop setLoading={setLoading} loading={loading} prods={prods} close={closePop} RequestProds={RequestProds} />,
-        "account": <AccountPop close={closePop} RequestTables={RequestTables}  />,
+        "account": <AccountPop close={closePop} RequestTables={RequestTables} openPop={(val:"products" | "requests")=>{setPop(val)}}  />,
         "requests": <RequestsPop setPicker={setPicker} close={closePop} RequestTables={RequestTables}  />,
     }
     let hist =loading === "request-historial"
@@ -55,16 +55,6 @@ export default function TopBar({ loading, setLoading,pickerOn, setPicker, prods,
                 }}>
                     <FontAwesomeIcon icon={faRotate} spin={hist}/>
                     <p>{hist ? "Actualizando":"Actualizar"}</p>
-                </button>
-                <button
-                    onClick={() => { setPop("requests") }}
-                >
-                    <FontAwesomeIcon icon={faComment} />
-                </button>
-                <button
-                    onClick={() => { setPop("products") }}
-                >
-                    <FontAwesomeIcon icon={faCircleDollarToSlot} />
                 </button>
                 <button
                     className='account'

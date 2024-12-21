@@ -9,14 +9,14 @@ type Props = {
   login: Function
 }
 
-const getSessions = ()=>{
+const getSessions = () => {
   let storage = window.localStorage.getItem("RegBoxSessions")
   let sessions: { [key: string]: { _id: string, name: string, password: string, domain: string } } = {}
   if (storage !== "" && storage !== null) sessions = JSON.parse(storage)
   return sessions
 }
 
-const getDomains = ()=>{
+const getDomains = () => {
   let sessions = getSessions()
   let domains = []
   for (const key in sessions) {
@@ -28,10 +28,10 @@ const getDomains = ()=>{
 const generateSession = (name: string, password: string, domain: string) => {
   let sessions = getSessions()
 
-  let id= ""
+  let id = ""
 
-  for(const key in sessions){
-    if(sessions[key].name === name &&
+  for (const key in sessions) {
+    if (sessions[key].name === name &&
       sessions[key].password === password &&
       sessions[key].domain === domain
     ) {
@@ -39,26 +39,26 @@ const generateSession = (name: string, password: string, domain: string) => {
       break
     }
   }
-  if(id === "") return {type: "error", data:"Usuario, contraseña o dominio incorrecto/s."}
+  if (id === "") return { type: "error", data: "Usuario, contraseña o dominio incorrecto/s." }
 
-  return {type: "success", data:{_id: id,name, password, domain}}
+  return { type: "success", data: { _id: id, name, password, domain } }
 }
 
 const createSession = (name: string, password: string, domain: string) => {
   let sessions = getSessions()
 
   let boolean = false ///  checks if already exists
-  for(const key in sessions){
-    if(sessions[key].name === name &&
+  for (const key in sessions) {
+    if (sessions[key].name === name &&
       sessions[key].domain === domain
     ) {
       boolean = true
       break
     }
   }
-  if(boolean) return {type: "error", data:"Usuario ya existente en el dominio."}
-  
-  let id = `${name}${Math.round((Math.random()*Math.random())*100000)}`
+  if (boolean) return { type: "error", data: "Usuario ya existente en el dominio." }
+
+  let id = `${name}${Math.round((Math.random() * Math.random()) * 100000)}`
   let userData = {
     _id: id,
     name,
@@ -66,9 +66,9 @@ const createSession = (name: string, password: string, domain: string) => {
     domain
   }
 
-  window.localStorage.setItem("RegBoxSessions", JSON.stringify({...sessions, [id]: userData}))
+  window.localStorage.setItem("RegBoxSessions", JSON.stringify({ ...sessions, [id]: userData }))
 
-  return {type: "success", data: userData}
+  return { type: "success", data: userData }
 }
 
 export default function Auth({ login }: Props) {
@@ -116,7 +116,7 @@ export default function Auth({ login }: Props) {
 
     // send request ---- then =>
 
-    let result: {type: string, data: userDataStructure | string} = createSession(name, password, domain)
+    let result: { type: string, data: userDataStructure | string } = createSession(name, password, domain)
 
     setTimeout(() => {
       submit.classList.remove('loading-button')
@@ -135,7 +135,7 @@ export default function Auth({ login }: Props) {
 
   const LoginComp = () => {
     return <>
-      <h2>Iniciar sesión</h2>
+      <h2 className="title fade-up">Iniciar sesión</h2>
       <hr />
 
       <section className='error-box'>
@@ -143,16 +143,7 @@ export default function Auth({ login }: Props) {
         {error}
       </section>
 
-      <form onSubmit={submit} className='form'>
-        <select name="domain">
-          {domains.length !== 0 && domains.map(dom => {
-            return <option
-              key={Math.random()}
-            >
-              {dom}
-            </option>
-          })}
-        </select>
+      <form onSubmit={submit} className='form fade-up' style={{animationDelay: ".2s"}}>
         <div className='labeled-input'>
           <label>Usuario</label>
           <input name='user' defaultValue={"PawnTest"} />
@@ -167,6 +158,18 @@ export default function Auth({ login }: Props) {
             </button>
           </div>
         </div>
+        <div className='labeled-input'>
+          <label>Dominio</label>
+          <select name="domain">
+            {domains.length !== 0 && domains.map(dom => {
+              return <option
+                key={Math.random()}
+              >
+                {dom}
+              </option>
+            })}
+          </select>
+        </div>
 
         <button name='login' type='submit' data-text="Confirmar"></button>
         <a onClick={() => { setPage("create") }}>Crear una nueva cuenta</a>
@@ -176,16 +179,15 @@ export default function Auth({ login }: Props) {
 
   const CreateComp = () => {
     return <>
-      <h2>Crear sesión</h2>
+      <h2 className="title fade-up">Crear sesión</h2>
       <hr />
 
-      <div className='divisor' data-text=""></div>
       <section className='error-box'>
         {error !== "" && <FontAwesomeIcon icon={faCircleExclamation} />}
         {error}
       </section>
 
-      <form onSubmit={create} className='form'>
+      <form onSubmit={create}  className='form fade-up' style={{animationDelay: ".2s"}}>
         <div className='labeled-input'>
           <label>Usuario</label>
           <input name='user' />
@@ -202,8 +204,8 @@ export default function Auth({ login }: Props) {
         </div>
         <div className='labeled-input'>
           <label>Dominio</label>
-          <input name="domain" className="d-none" defaultValue={"main-1"}/>
-          <button type="button" onClick={() => {
+          <input name="domain" className="d-none" defaultValue={"main-1"} />
+          <button className="qr-button" type="button" onClick={() => {
             console.log("qr")
           }}>
             <FontAwesomeIcon icon={faQrcode} />
