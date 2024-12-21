@@ -304,10 +304,10 @@ export default function App({ userData }: Props) {
   const RequestHistorial = () => {
     if (conn) {
       let type = "request-historial"
-      if(Object.keys(prods).length === 0) type+="-products"
-      if(localTablePlaces.length === 0) type+="-tables"
+      if(Object.keys(prods).length === 0 && localTablePlaces.length === 0) type+="_products_tables"
       conn.send({ type: type })
       setLoading(type)
+      if(type === "request-historial_products_tables") setError({type: "info", text: "Obteniendo datos..."})
     }
   }
 
@@ -399,6 +399,13 @@ export default function App({ userData }: Props) {
       console.log("connected with core " + conn.peer)
       conn.on("data", function (data: { type: string, data: histStructure } | any) { //RECIEVED DATA
         console.log("a")
+        if (data.type === "historial_products_tables") {
+          setError(undefined)
+          setLocalHistorial(data.data.historial)
+          setProds(data.data.prods)
+          setTablePlaces(data.data.tables)
+          setLoading(undefined)
+        }
         if (data.type === "historial") {
           setLocalHistorial(data.data)
           setLoading(undefined)
@@ -560,7 +567,7 @@ export default function App({ userData }: Props) {
   }
 
   return <main>
-    {peer && !error ? <>
+    {peer && (!error && loading !== "request-historial_products_tables") ? <>
       <section style={{ position: "fixed", pointerEvents: "none", textAlign: "center", bottom: "1.5rem", zIndex: 1, width: "100%", color: "white" }}>{loading}</section>
       <Configuration.Provider value={{ config: config, setConfig: setConfig }}>
         {pop && pop.name && pops[pop.name]}
