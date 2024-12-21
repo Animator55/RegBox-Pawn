@@ -7,11 +7,10 @@ import React from "react"
 
 type Props = {
   close: Function
-  RequestTables: Function
   setPicker: Function
 }
 
-export default function RequestsPop({ close, RequestTables, setPicker }: Props) {
+export default function RequestsPop({ close, setPicker }: Props) {
   let [opened, setOpened] = React.useState<string[]>([])
 
   let stor = window.localStorage.getItem("RegBoxPawn_requestHistorial")

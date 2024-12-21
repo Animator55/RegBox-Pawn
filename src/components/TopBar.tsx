@@ -28,7 +28,7 @@ export default function TopBar({ loading, setLoading,pickerOn, setPicker, prods,
     const pops: { [key: string]: any } = {
         "products": <ProdPop setLoading={setLoading} loading={loading} prods={prods} close={closePop} RequestProds={RequestProds} />,
         "account": <AccountPop close={closePop} RequestTables={RequestTables} openPop={(val:"products" | "requests")=>{setPop(val)}}  />,
-        "requests": <RequestsPop setPicker={setPicker} close={closePop} RequestTables={RequestTables}  />,
+        "requests": <RequestsPop setPicker={setPicker} close={closePop}  />,
     }
     let hist =loading === "request-historial"  
     return <header className='main-header'>
