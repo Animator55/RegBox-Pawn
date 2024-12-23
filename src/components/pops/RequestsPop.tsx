@@ -20,6 +20,24 @@ export default function RequestsPop({ close, setPicker }: Props) {
   let list = []
   for (const key in newData) {
     let el = newData[key]
+    let ul=[]
+    let phasesLength = (el.notification_id && opened.includes(el.notification_id)) ? el.products?.length! : 1
+    for(let i=0;i<phasesLength; i++){
+      if(!el.products) break
+      let length = (el.notification_id && opened.includes(el.notification_id)) ? el.products[i]?.length! : 3
+      for(let j=0; j<length; j++){
+        if(!el.products || !el.products[0] || !el.products[0][j]) break
+        ul.push(<div
+          key={Math.random()}
+        >
+          {el.products[0][j].amount}
+          X
+          {el.products[0][j].name}
+        </div>)
+      }
+      if(el.notification_id && opened.includes(el.notification_id))ul.push(<hr></hr>)
+    }
+
     list.push(<li
       key={Math.random()}
     >
@@ -30,17 +48,20 @@ export default function RequestsPop({ close, setPicker }: Props) {
         <button onClick={() => {
           if (!el.notification_id) return
           if (!opened.includes(el.notification_id)) setOpened([...opened, el.notification_id])
-          else setOpened(opened.filter((id) => { if (id !== el.notification_id) return }))
+          else setOpened(opened.filter((id) => { if (id !== el.notification_id) return id}))
         }}>
           <FontAwesomeIcon icon={faCaretDown} />
         </button>
       </header>
       {(el.notification_id && opened.includes(el.notification_id)) && <section>
-        <button onClick={() => { setPicker(el.products) }}>
+        <button  onClick={() => { setPicker(el.products) }}>
           <FontAwesomeIcon icon={faClipboard} />
           Copiar Productos
         </button>
       </section>}
+      <section>
+        {ul}
+      </section>
     </li>)
   }
   const Alert = () => {

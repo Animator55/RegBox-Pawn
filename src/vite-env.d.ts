@@ -31,7 +31,7 @@ export type SingleEvent = {
     name?: string
     notification_id?: string //only for notification events
     accepted?: boolean | undefined /// only for notification events
-    products?: Item[] /// only for notification events
+    products?: Item[][] /// only for notification events
     owner: string
     owner_name?: string /// only for notification events
 }
