@@ -2,7 +2,7 @@ import React from 'react'
 import ProdPop from './pops/ProdPop'
 import AccountPop from './pops/AccountPop'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {   faRotate, faUserCircle, faWarning } from '@fortawesome/free-solid-svg-icons'
+import {   faRotate, faUserCircle, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { sessionType } from '../vite-env'
 import { productsType } from '../defaults/products'
 import RequestsPop from './pops/RequestsPop'
@@ -50,11 +50,11 @@ export default function TopBar({ loading, setLoading,pickerOn, setPicker, prods,
             <>
                 {pop && pops[pop]}
                 <button className='refresh' onClick={()=>{
-                    if(!hist) RequestHistorial()
+                    if(!hist && loading === undefined) RequestHistorial()
                     else setLoading(undefined)
                 }}>
-                    <FontAwesomeIcon icon={faRotate} spin={hist}/>
-                    <p>{hist ? "Actualizando":"Actualizar"}</p>
+                    <FontAwesomeIcon icon={!hist && loading !== undefined ? faXmark: faRotate} spin={hist}/>
+                    <p>{hist ? "Actualizando": loading === undefined ? "Actualizar" : "Cancelar"}</p>
                 </button>
                 <button
                     className='account'

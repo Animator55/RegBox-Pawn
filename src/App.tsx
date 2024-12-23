@@ -15,7 +15,7 @@ import Picker from './components/Picker'
 import { productsType } from './defaults/products'
 import SideBar from './components/SideBar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faRotate, faWarning } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faRotate, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
 import TableHistorial from './components/pops/TableHistorial'
 
 type Props = { userData: { _id: string, name: string, core: string } }
@@ -71,7 +71,7 @@ const addMessageToRequestHistorial = (message: any)=>{
 }
 
 export default function App({ userData }: Props) {
-  const [error, setError] = React.useState<{ type: "error" | "info"| "warn", text: string } | undefined>(undefined)
+  const [error, setError] = React.useState<{ type: "error" | "info"| "warn", text: string, cancel?: boolean } | undefined>(undefined)
   const [session, setSession] = React.useState<sessionType | undefined>(undefined)
   const [config, setConfig] = React.useState(defaultConfig)
   const [page, setPage] = React.useState<"main" | "picker">("main")
@@ -307,7 +307,7 @@ export default function App({ userData }: Props) {
       if(Object.keys(prods).length === 0 && localTablePlaces.length === 0) type+="_products_tables"
       conn.send({ type: type })
       setLoading(type)
-      if(type === "request-historial_products_tables") setError({type: "info", text: "Obteniendo datos..."})
+      if(type === "request-historial_products_tables") setError({type: "info", text: "Obteniendo datos...", cancel: true})
     }
   }
 
@@ -577,12 +577,13 @@ export default function App({ userData }: Props) {
       <section className='warning fixed'>
         <FontAwesomeIcon icon={error?.type === "info" ? faRotate: faWarning} spin={error?.type === "info"} />
         <h2>{error?.text}</h2>
-        {error?.type !== "info" && <button className='default-button' onClick={() => { 
-          if(error?.type === "error") location.reload() 
+        {(error?.type !== "info" || error?.cancel === true) && <button className='default-button' onClick={() => { 
+            if(error?.cancel === true) setLoading(undefined)
+            if(error?.type === "error") location.reload() 
             else setError(undefined)
           }}>
-          <FontAwesomeIcon icon={error?.type === "error" ? faRotate : faCheck} />
-          {error?.type === "error" ? "Reiniciar" : "Aceptar"}
+          <FontAwesomeIcon icon={error?.type === "error" ? faRotate : error?.cancel ? faXmark: faCheck} />
+          {error?.type === "error" ? "Reiniciar" :error?.cancel ? "Cancelar": "Aceptar"}
         </button>}
       </section>
     }
