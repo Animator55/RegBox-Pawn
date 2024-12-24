@@ -70,6 +70,17 @@ const addMessageToRequestHistorial = (message: any)=>{
   window.localStorage.setItem("RegBoxPawn_requestHistorial", JSON.stringify({...newData, [message.notification_id]: message}))
 }
 
+const setStoragedData = (entry: "products"|"tables",data: any)=>{
+  window.localStorage.setItem("RegBoxPawn_"+entry, JSON.stringify(data))
+}
+
+
+const getStoragedData = (entry: "products"|"tables")=>{
+  let stor = window.localStorage.getItem("RegBoxPawn_"+entry)
+  if(stor === null || stor === undefined) return entry === "products" ? {} : []
+  return JSON.parse(stor)
+}
+
 export default function App({ userData }: Props) {
   const [error, setError] = React.useState<{ type: "error" | "info"| "warn", text: string, cancel?: boolean } | undefined>(undefined)
   const [session, setSession] = React.useState<sessionType | undefined>(undefined)
@@ -78,8 +89,8 @@ export default function App({ userData }: Props) {
   const [displayMode, setDisplayState] = React.useState<"map" | "view">("map")
   const [localHistorial, setLocalHistorial] = React.useState<histStructure | undefined>(undefined)
   const [loading, setLoading] = React.useState<string | undefined>(undefined)
-  const [localTablePlaces, setTablePlaces] = React.useState<TablePlaceType[]>([])
-  const [prods, setProds] = React.useState<productsType>({})
+  const [localTablePlaces, setTablePlaces] = React.useState<TablePlaceType[]>(getStoragedData("tables"))
+  const [prods, setProds] = React.useState<productsType>(getStoragedData("products"))
 
   const setDisplay = (val: "map" | "view") => {
     setDisplayState(val)
@@ -404,6 +415,8 @@ export default function App({ userData }: Props) {
           setLocalHistorial(data.data.historial)
           setProds(data.data.prods)
           setTablePlaces(data.data.tables)
+          setStoragedData("products", data.data.prods)
+          setStoragedData("tables", data.data.tables)
           setLoading(undefined)
         }
         if (data.type === "historial") {
@@ -412,10 +425,12 @@ export default function App({ userData }: Props) {
         }
         if (data.type === "tables") {
           setTablePlaces(data.data)
+          setStoragedData("tables", data.data)
           setLoading(undefined)
         }
         if (data.type === "prods") {
           setProds(data.data)
+          setStoragedData("products", data.data)
           setLoading(undefined)
         }
         if (data.type === "confirm") {
@@ -477,7 +492,10 @@ export default function App({ userData }: Props) {
         RequestTables={RequestTables}
         RequestProds={RequestProds}
         prods={prods}
-        setPicker={setPicker}
+        setPicker={(val: Item[][])=>{
+          setPicker(val)
+          setPage("picker")
+        }}
       />
       {displays[displayMode]}
       <SideBar
