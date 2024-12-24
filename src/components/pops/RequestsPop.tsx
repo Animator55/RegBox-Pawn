@@ -2,7 +2,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import "../../assets/pops.css"
 import { SingleEvent } from "../../vite-env"
-import { faCaretDown, faClipboard, faWarning, faXmark } from "@fortawesome/free-solid-svg-icons"
+import { faCaretDown, faClipboard, faQuestionCircle, faWarning, faXmark } from "@fortawesome/free-solid-svg-icons"
 import React from "react"
 
 type Props = {
@@ -20,47 +20,73 @@ export default function RequestsPop({ close, setPicker }: Props) {
   let list = []
   for (const key in newData) {
     let el = newData[key]
-    let ul=[]
-    let phasesLength = (el.notification_id && opened.includes(el.notification_id)) ? el.products?.length! : 1
-    for(let i=0;i<phasesLength; i++){
-      if(!el.products) break
-      let length = (el.notification_id && opened.includes(el.notification_id)) ? el.products[i]?.length! : 3
-      for(let j=0; j<length; j++){
-        if(!el.products || !el.products[0] || !el.products[0][j]) break
+    let ul = []
+    let isExpanded = el.notification_id && opened.includes(el.notification_id)
+    let hasProds = el.products !== undefined && el.products.length !== 0
+    let total = (el.products?.flat().length ? el.products?.flat().length : 0) - 1
+    let phasesLength = (isExpanded) ? el.products?.length! : 1
+    for (let i = 0; i < phasesLength; i++) {
+      if (!el.products) break
+      let length = (isExpanded) ? el.products[i]?.length! : 1
+      for (let j = 0; j < length; j++) {
+        if (!el.products || !el.products[i] || !el.products[i][j]) break
         ul.push(<div
           key={Math.random()}
         >
-          {el.products[0][j].amount}
-          X
-          {el.products[0][j].name}
+          <div>
+            {el.products[i][j].amount}
+          </div>
+          <div>
+            {el.products[i][j].name}
+          </div>
         </div>)
       }
-      if(el.notification_id && opened.includes(el.notification_id))ul.push(<hr></hr>)
+      if (isExpanded) ul.push(<hr></hr>)
     }
 
     list.push(<li
       key={Math.random()}
+      className={
+        (el.notification_id && opened.indexOf(el.notification_id) === opened.length - 1) ? "just-expanded" :
+          isExpanded ? "expanded" :
+            ""}
     >
       <header>
         <p>Mesa {el.name}</p>
         <i>{el.timestamp}</i>
-        <button className="default-button" onClick={() => { console.log(el.notification_id) }}>Request</button>
-        <button onClick={() => {
+        {(isExpanded) && <>
+          <button
+            className="copy-prods"
+            onClick={() => { console.log(el.notification_id) }}
+            style={{ animationDelay: "100ms" }}
+          >
+            <FontAwesomeIcon icon={faQuestionCircle} />
+          </button>
+          <button className="copy-prods" onClick={() => { setPicker(el.products) }}>
+            <FontAwesomeIcon icon={faClipboard} />
+          </button>
+        </>
+        }
+        {hasProds ? <button onClick={() => {
           if (!el.notification_id) return
           if (!opened.includes(el.notification_id)) setOpened([...opened, el.notification_id])
-          else setOpened(opened.filter((id) => { if (id !== el.notification_id) return id}))
+          else setOpened(opened.filter((id) => { if (id !== el.notification_id) return id }))
         }}>
           <FontAwesomeIcon icon={faCaretDown} />
         </button>
+          : <button
+            className="copy-prods"
+            onClick={() => { console.log(el.notification_id) }}
+          >
+            <FontAwesomeIcon icon={faQuestionCircle} />
+          </button>
+        }
       </header>
-      {(el.notification_id && opened.includes(el.notification_id)) && <section>
-        <button  onClick={() => { setPicker(el.products) }}>
-          <FontAwesomeIcon icon={faClipboard} />
-          Copiar Productos
-        </button>
-      </section>}
-      <section>
+      <section className={isExpanded ? "request-products-list expanded" : "request-products-list"}>
         {ul}
+        {(!(isExpanded) && total > 0) && <div className="extra-number">
+          +{total}
+        </div>}
       </section>
     </li>)
   }
@@ -86,7 +112,7 @@ export default function RequestsPop({ close, setPicker }: Props) {
       {list.length === 0 ?
         <Alert />
         :
-        <ul>
+        <ul className="requests-list">
           {list}
         </ul>
       }

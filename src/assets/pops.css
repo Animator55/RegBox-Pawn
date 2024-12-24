@@ -152,6 +152,8 @@
 
 .request-pop>header>* {
     margin: 0;
+    color: var(--cdarker);
+    font-weight: normal;
 }
 
 .request-pop>header>button {
@@ -168,8 +170,10 @@
     flex-direction: column;
     gap: 0.5rem;
     overflow-x: hidden;
+    flex-direction: column-reverse;
     overflow-y: scroll;
 }
+
 
 .request-pop li {
     padding: .7rem 1rem;
@@ -212,6 +216,71 @@
     background-color: transparent;
     padding: 0;
     font-size: 1.2rem;
+}
+.request-products-list{
+    padding: 0.5rem 0;
+    position: relative;
+}
+.request-products-list:not(.expanded)::after {
+    position: absolute;
+    content: "";
+    background: linear-gradient(180deg, transparent, var(--cdarkgray));
+    inset: 0;
+}
+.request-products-list > div {
+    display: grid;
+    grid-template-columns: 10% 90%;
+}
+.request-products-list > div > div {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.request-products-list .extra-number{
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 0.5rem;
+    right: 0;
+    color: var(--cgreen);
+    z-index: 2;
+}
+.expanded .copy-prods {
+    opacity: 1;
+}
+.just-expanded .copy-prods {
+    opacity: 0;
+    animation: spawn-from-right 300ms forwards;
+}
+.copy-prods:active {
+    color: var(--cwhite);
+    font-size: 1.3rem;
+    transition: font-size 300ms;
+}
+.copy-prods {
+    opacity: 0;
+    position: relative;
+    background-color: transparent;
+    transition: font-size 300ms;
+    color: var(--clightgray);
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
+    justify-content: center;
+}
+
+@keyframes spawn-from-right {
+    from {
+        left: 2rem;
+        opacity: 0;
+    }
+    to {
+        left: 0;
+        opacity: 1;
+    }
 }
 
 
