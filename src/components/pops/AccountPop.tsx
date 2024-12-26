@@ -35,7 +35,7 @@ export default function AccountPop({close, RequestTables,openPop}: Props) {
           Ver Productos
         </button>
         <button onClick={()=>{
-          console.log("close session")
+          location.reload()
         }}>
           <FontAwesomeIcon icon={faArrowRightFromBracket}/>
           Cerrar sesión
