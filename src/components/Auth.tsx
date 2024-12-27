@@ -78,30 +78,50 @@ export default function Auth({ login }: Props) {
   const [page, setPage] = React.useState(domains.length === 0 ? "create" : "login")
   const [error, setError] = React.useState("")
 
-  const [scanResult, setScanResult] = useState("");
-  const videoRef = useRef<null | HTMLVideoElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const qrReaderRef = useRef<BrowserMultiFormatReader | null>(null); // Referencia al lector de QR
+  const [scanResult, setScanResult] = useState<string | null>(null);
 
   const startScanner = () => {
     if (!videoRef.current) return
-    const codeReader = new BrowserMultiFormatReader();
     videoRef.current.parentElement!.style.opacity = "1"
+    videoRef.current.parentElement!.style.pointerEvents = "all"
+    const codeReader = new BrowserMultiFormatReader();
+    qrReaderRef.current = codeReader; // Almacena la instancia para controlarla luego
+
     codeReader
-      .decodeFromVideoDevice(null, videoRef.current, (result, error) => {
+      .decodeFromVideoDevice(null, videoRef.current, result => {
         if (result) {
-          setScanResult(result.getText())
-          const videoElement = videoRef.current
-          if (videoElement && videoElement.srcObject) {
-            const mediaStream = videoElement.srcObject as MediaStream
-            const tracks = mediaStream.getTracks()
-            tracks.forEach((track) => track.stop())
-          }
-        }
-        if (error) {
-          console.error(error);
+          setScanResult(result.getText());
+          stopScanner(); // Detiene la cámara después de escanear
         }
       })
-      .catch((err) => console.error(err));
+      .catch((err) => console.error("Error al iniciar el escáner:", err));
   };
+
+  const stopScanner = () => {
+    if (qrReaderRef.current) {
+      qrReaderRef.current.reset(); // Detiene el lector de QR
+    }
+    if (videoRef.current) {
+      videoRef.current.parentElement!.style.pointerEvents = ""
+      videoRef.current.parentElement!.style.opacity = ""
+
+      if (videoRef.current.srcObject) {
+        const mediaStream = videoRef.current.srcObject as MediaStream;
+        const tracks = mediaStream.getTracks();
+        tracks.forEach((track) => track.stop()); // Detiene todos los tracks activos
+      }
+    }
+    setScanResult(null)
+  };
+
+  React.useEffect(() => {
+    return () => {
+      stopScanner(); // Asegura que los recursos se liberan al desmontar
+    };
+  }, []);
+
 
   const submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -229,9 +249,9 @@ export default function Auth({ login }: Props) {
         </div>
         <div className='labeled-input'>
           <label>Dominio</label>
-          {scanResult !== "" ?
+          {scanResult ?
             <div className='input-container'>
-              <input name="domain" defaultValue={scanResult} />
+              <input name="domain" defaultValue={scanResult ? scanResult : ""} />
               <button className="xmark" type='button' onClick={() => { setScanResult("") }}>
                 <FontAwesomeIcon icon={faXmark} />
               </button>
@@ -243,6 +263,11 @@ export default function Auth({ login }: Props) {
                 Escanear QR
               </button>
               <section className="QR-recorder">
+                <button type="button" className="cancel-qr" onClick={() => {
+                  stopScanner()
+                }}>
+                  <FontAwesomeIcon icon={faXmark} />
+                </button>
                 <video ref={videoRef} width="100%" height="auto" />
               </section>
             </>

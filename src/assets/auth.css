@@ -153,6 +153,17 @@
     gap: 1rem;
 }
 
+.cancel-qr {
+    position: fixed;
+    right: 1rem;
+    top: 1rem;
+    font-size: 1.8rem;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--cwhite); 
+}
 
 .loading-button {
     position: relative;
