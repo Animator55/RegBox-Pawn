@@ -114,13 +114,14 @@
     right: 2%;
 }
 
+
 .labeled-input .input-container > button:hover {
     box-shadow: 0 0 5px var(--cwhite);
 }
 
 
-.labeled-input .input-container > button.check > *:first-child, 
-.labeled-input .input-container > button:not(.check) > *:last-child {
+.labeled-input .input-container > button:not(.xmark).check > *:first-child, 
+.labeled-input .input-container > button:not(.xmark):not(.check) > *:last-child {
     display:none
 }
 
@@ -209,4 +210,18 @@
 .fade-in {
     opacity: 1;
     transition: opacity 300ms;
+}
+
+
+.QR-recorder {
+    position: fixed;
+    z-index: 2;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 300ms;
+    pointer-events: none;
+    background-color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

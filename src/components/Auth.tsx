@@ -1,8 +1,9 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import "../assets/auth.css"
-import { faCircleExclamation, faEye, faEyeSlash, faQrcode } from "@fortawesome/free-solid-svg-icons"
-import React from "react"
+import { faCircleExclamation, faEye, faEyeSlash, faQrcode, faXmark } from "@fortawesome/free-solid-svg-icons"
 import { router, userDataStructure } from "../vite-env"
+import React, { useRef, useState } from "react";
+import { BrowserMultiFormatReader } from '@zxing/library';
 
 
 type Props = {
@@ -77,6 +78,30 @@ export default function Auth({ login }: Props) {
   const [page, setPage] = React.useState(domains.length === 0 ? "create" : "login")
   const [error, setError] = React.useState("")
 
+  const [scanResult, setScanResult] = useState("");
+  const videoRef = useRef<null | HTMLVideoElement>(null);
+
+  const startScanner = () => {
+    if (!videoRef.current) return
+    const codeReader = new BrowserMultiFormatReader();
+    videoRef.current.parentElement!.style.opacity = "1"
+    codeReader
+      .decodeFromVideoDevice(null, videoRef.current, (result, error) => {
+        if (result) {
+          setScanResult(result.getText())
+          const videoElement = videoRef.current
+          if (videoElement && videoElement.srcObject) {
+            const mediaStream = videoElement.srcObject as MediaStream
+            const tracks = mediaStream.getTracks()
+            tracks.forEach((track) => track.stop())
+          }
+        }
+        if (error) {
+          console.error(error);
+        }
+      })
+      .catch((err) => console.error(err));
+  };
 
   const submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -143,7 +168,7 @@ export default function Auth({ login }: Props) {
         {error}
       </section>
 
-      <form onSubmit={submit} className='form fade-up' style={{animationDelay: ".2s"}}>
+      <form onSubmit={submit} className='form fade-up' style={{ animationDelay: ".2s" }}>
         <div className='labeled-input'>
           <label>Usuario</label>
           <input name='user' defaultValue={"PawnTest"} />
@@ -187,7 +212,7 @@ export default function Auth({ login }: Props) {
         {error}
       </section>
 
-      <form onSubmit={create}  className='form fade-up' style={{animationDelay: ".2s"}}>
+      <form onSubmit={create} className='form fade-up' style={{ animationDelay: ".2s" }}>
         <div className='labeled-input'>
           <label>Usuario</label>
           <input name='user' />
@@ -204,13 +229,24 @@ export default function Auth({ login }: Props) {
         </div>
         <div className='labeled-input'>
           <label>Dominio</label>
-          <input name="domain" className="d-none" defaultValue={"main-1"} />
-          <button className="qr-button" type="button" onClick={() => {
-            console.log("qr")
-          }}>
-            <FontAwesomeIcon icon={faQrcode} />
-            Escanear QR
-          </button>
+          {scanResult !== "" ?
+            <div className='input-container'>
+              <input name="domain" defaultValue={scanResult} />
+              <button className="xmark" type='button' onClick={() => { setScanResult("") }}>
+                <FontAwesomeIcon icon={faXmark} />
+              </button>
+            </div>
+            :
+            <>
+              <button className="qr-button" type="button" onClick={startScanner}>
+                <FontAwesomeIcon icon={faQrcode} />
+                Escanear QR
+              </button>
+              <section className="QR-recorder">
+                <video ref={videoRef} width="100%" height="auto" />
+              </section>
+            </>
+          }
         </div>
 
         <button name='login' type='submit' data-text="Confirmar"></button>
