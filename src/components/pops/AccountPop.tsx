@@ -3,41 +3,42 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import "../../assets/pops.css"
 
 type Props = {
-    close: Function
-    RequestTables: Function
-    openPop: Function
+  close: Function
+  RequestTables: Function
+  openPop: Function
 }
 
-export default function AccountPop({close, RequestTables,openPop}: Props) {
+export default function AccountPop({ close, RequestTables, openPop }: Props) {
   return <section className='back' onClick={(e) => {
     let target = e.target as HTMLDivElement
     if (target.className === "back") close()
   }}>
     <section className='pop account-span'>
       <ul>
-        <button onClick={()=>{
+        <button onClick={() => {
           RequestTables()
           close()
         }}>
-          <FontAwesomeIcon icon={faRepeat}/>
+          <FontAwesomeIcon icon={faRepeat} />
           Actualizar mapa
         </button>
-        <button onClick={()=>{
+        <button onClick={() => {
           openPop("requests")
         }}>
-          <FontAwesomeIcon icon={faComment}/>
+          <FontAwesomeIcon icon={faComment} />
           Ver Envíos
         </button>
-        <button onClick={()=>{
+        <button onClick={() => {
           openPop("products")
         }}>
-          <FontAwesomeIcon icon={faCircleDollarToSlot}/>
+          <FontAwesomeIcon icon={faCircleDollarToSlot} />
           Ver Productos
         </button>
-        <button onClick={()=>{
+        <button onClick={() => {
+          window.localStorage.removeItem("RegBox_Current_Session")
           location.reload()
         }}>
-          <FontAwesomeIcon icon={faArrowRightFromBracket}/>
+          <FontAwesomeIcon icon={faArrowRightFromBracket} />
           Cerrar sesión
         </button>
       </ul>

@@ -26,6 +26,12 @@ const getDomains = () => {
   return domains
 }
 
+const createCurrentSession = (data: { _id: string, name: string,password:string, domain: string })=>{
+  let prev = window.localStorage.getItem("RegBox_Current_Session")
+  if(prev !== null && prev !== undefined) return
+  window.localStorage.setItem("RegBox_Current_Session", JSON.stringify(data))
+}
+
 const generateSession = (name: string, password: string, domain: string) => {
   let sessions = getSessions()
 
@@ -42,7 +48,9 @@ const generateSession = (name: string, password: string, domain: string) => {
   }
   if (id === "") return { type: "error", data: "Usuario, contraseña o dominio incorrecto/s." }
 
-  return { type: "success", data: { _id: id, name, password, domain } }
+  let userData = { _id: id, name, password, domain }
+  createCurrentSession(userData)
+  return { type: "success", data: userData }
 }
 
 const createSession = (name: string, password: string, domain: string) => {
@@ -68,6 +76,7 @@ const createSession = (name: string, password: string, domain: string) => {
   }
 
   window.localStorage.setItem("RegBoxSessions", JSON.stringify({ ...sessions, [id]: userData }))
+  createCurrentSession(userData)
 
   return { type: "success", data: userData }
 }
@@ -80,7 +89,11 @@ export default function Auth({ login }: Props) {
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const qrReaderRef = useRef<BrowserMultiFormatReader | null>(null); // Referencia al lector de QR
-  const [scanResult, setScanResult] = useState<string | null>(null);
+  const [scanResult, setScanResult] = useState<string>("");
+
+  let currentSession = window.localStorage.getItem("RegBox_Current_Session")
+  let parsedSession= null
+  if(currentSession) parsedSession = JSON.parse(currentSession)
 
   const startScanner = () => {
     if (!videoRef.current) return
@@ -92,8 +105,8 @@ export default function Auth({ login }: Props) {
     codeReader
       .decodeFromVideoDevice(null, videoRef.current, result => {
         if (result) {
-          setScanResult(result.getText());
           stopScanner(); // Detiene la cámara después de escanear
+          setScanResult(result.getText());
         }
       })
       .catch((err) => console.error("Error al iniciar el escáner:", err));
@@ -113,7 +126,7 @@ export default function Auth({ login }: Props) {
         tracks.forEach((track) => track.stop()); // Detiene todos los tracks activos
       }
     }
-    setScanResult(null)
+    setScanResult("")
   };
 
   React.useEffect(() => {
@@ -191,12 +204,12 @@ export default function Auth({ login }: Props) {
       <form onSubmit={submit} className='form fade-up' style={{ animationDelay: ".2s" }}>
         <div className='labeled-input'>
           <label>Usuario</label>
-          <input name='user' defaultValue={"PawnTest"} />
+          <input name='user' defaultValue={parsedSession ? parsedSession.name : ""} />
         </div>
         <div className='labeled-input'>
           <label>Contraseña</label>
           <div className='input-container'>
-            <input name="password" type='password' defaultValue={"1"} />
+            <input name="password" type='password' defaultValue={parsedSession ? parsedSession.password : ""} />
             <button type='button' onClick={togglePassword}>
               <FontAwesomeIcon icon={faEyeSlash} />
               <FontAwesomeIcon icon={faEye} />
@@ -205,7 +218,7 @@ export default function Auth({ login }: Props) {
         </div>
         <div className='labeled-input'>
           <label>Dominio</label>
-          <select name="domain">
+          <select name="domain" defaultValue={parsedSession ? parsedSession.domain : ""}>
             {domains.length !== 0 && domains.map(dom => {
               return <option
                 key={Math.random()}
@@ -216,7 +229,7 @@ export default function Auth({ login }: Props) {
           </select>
         </div>
 
-        <button name='login' type='submit' data-text="Confirmar"></button>
+        <button name='login' id="login-button" type='submit' data-text="Confirmar"></button>
         <a onClick={() => { setPage("create") }}>Crear una nueva cuenta</a>
       </form>
     </>
@@ -249,9 +262,9 @@ export default function Auth({ login }: Props) {
         </div>
         <div className='labeled-input'>
           <label>Dominio</label>
-          {scanResult ?
+          {scanResult !== ""?
             <div className='input-container'>
-              <input name="domain" defaultValue={scanResult ? scanResult : ""} />
+              <input name="domain" defaultValue={scanResult} />
               <button className="xmark" type='button' onClick={() => { setScanResult("") }}>
                 <FontAwesomeIcon icon={faXmark} />
               </button>
@@ -279,6 +292,12 @@ export default function Auth({ login }: Props) {
       </form>
     </>
   }
+
+  React.useEffect(()=>{
+    if(!parsedSession) return
+    let submitButton = document.getElementById("login-button")
+    if(submitButton) submitButton.click()
+  })
 
   const pages: router = {
     "login": <LoginComp />,
