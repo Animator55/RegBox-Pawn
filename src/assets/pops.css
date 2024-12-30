@@ -170,7 +170,6 @@
     flex-direction: column;
     gap: 0.5rem;
     overflow-x: hidden;
-    flex-direction: column-reverse;
     overflow-y: scroll;
 }
 
@@ -246,7 +245,9 @@
     top: 0.5rem;
     right: 0;
     color: var(--cgreen);
+    background: linear-gradient(90deg, transparent, var(--cdarkgray) 30%);
     z-index: 2;
+    padding-left: 1rem;
 }
 .expanded .copy-prods {
     opacity: 1;

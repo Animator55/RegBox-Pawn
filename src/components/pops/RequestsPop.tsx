@@ -12,6 +12,7 @@ type Props = {
 
 export default function RequestsPop({ close, setPicker }: Props) {
   let [opened, setOpened] = React.useState<string[]>([])
+  const divRef = React.useRef<HTMLUListElement | null>(null);
 
   let stor = window.localStorage.getItem("RegBoxPawn_requestHistorial")
   let newData: { [key: string]: SingleEvent } = {}
@@ -44,7 +45,7 @@ export default function RequestsPop({ close, setPicker }: Props) {
       if (isExpanded) ul.push(<hr></hr>)
     }
 
-    list.push(<li
+    list.unshift(<li
       key={Math.random()}
       className={
         (el.notification_id && opened.indexOf(el.notification_id) === opened.length - 1) ? "just-expanded" :
@@ -90,6 +91,13 @@ export default function RequestsPop({ close, setPicker }: Props) {
       </section>
     </li>)
   }
+
+  React.useEffect(()=>{
+    if (divRef.current) {
+      divRef.current.scrollTop = divRef.current.scrollTop
+    } 
+  })
+
   const Alert = () => {
     return <section className='warning'>
       <FontAwesomeIcon icon={faWarning} />
@@ -112,7 +120,8 @@ export default function RequestsPop({ close, setPicker }: Props) {
       {list.length === 0 ?
         <Alert />
         :
-        <ul className="requests-list">
+        <ul className="requests-list"
+          ref={divRef}>
           {list}
         </ul>
       }
