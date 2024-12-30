@@ -14,11 +14,18 @@ type Props = { loading: string | undefined
     RequestHistorial:Function
     RequestTables:Function
     RequestProds:Function
+    RequestNotificationState:Function
     setPicker:Function
     prods: productsType
 }
 
-export default function TopBar({ loading, setLoading,pickerOn, setPicker, prods, currentTable,session, RequestHistorial, RequestTables, RequestProds }: Props) {
+export default function TopBar({ 
+    loading, setLoading,
+    pickerOn, setPicker, 
+    prods, currentTable,
+    session, 
+    RequestHistorial, RequestTables, RequestProds,RequestNotificationState
+}: Props) {
     const [pop, setPop] = React.useState<"products" | "account" | "requests" | undefined>(undefined)
 
     const closePop = () => {
@@ -28,7 +35,7 @@ export default function TopBar({ loading, setLoading,pickerOn, setPicker, prods,
     const pops: { [key: string]: any } = {
         "products": <ProdPop setLoading={setLoading} loading={loading} prods={prods} close={closePop} RequestProds={RequestProds} />,
         "account": <AccountPop close={closePop} RequestTables={RequestTables} openPop={(val:"products" | "requests")=>{setPop(val)}}  />,
-        "requests": <RequestsPop setPicker={setPicker} close={closePop}  />,
+        "requests": <RequestsPop RequestNotificationState={RequestNotificationState} setPicker={setPicker} close={closePop}  />,
     }
     let hist =loading === "request-historial"  
     return <header className='main-header'>

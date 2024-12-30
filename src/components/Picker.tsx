@@ -29,7 +29,9 @@ const getPhasesScrollValue = ()=>{
     else return 0
 }
 
-export default function Picker({ cancelPicker, confirmPicker, RequestProds, loading, prods, selectedTable, result, setPicker }: Props) {
+export default function Picker({ 
+    cancelPicker, confirmPicker, RequestProds, loading, prods, selectedTable, result, setPicker 
+}: Props) {
     const [phase, setPhase] = React.useState<number>(0)
     const [search, setSearch] = React.useState<string>("")
     const UlRef = React.useRef<HTMLUListElement | null>(null);
@@ -52,7 +54,7 @@ export default function Picker({ cancelPicker, confirmPicker, RequestProds, load
     const addPhase = () => {
         setPicker([...result, []])
         setPhase(result.length)
-        phasesScroll= 999999
+        phasesScroll= 99999999
     }
     const removePhase = (index: number) => {
         // check currentPhase

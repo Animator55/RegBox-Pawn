@@ -8,9 +8,10 @@ import React from "react"
 type Props = {
   close: Function
   setPicker: Function
+  RequestNotificationState: Function
 }
 
-export default function RequestsPop({ close, setPicker }: Props) {
+export default function RequestsPop({ close, setPicker, RequestNotificationState }: Props) {
   let [opened, setOpened] = React.useState<string[]>([])
   const divRef = React.useRef<HTMLUListElement | null>(null);
 
@@ -42,7 +43,8 @@ export default function RequestsPop({ close, setPicker }: Props) {
           </div>
         </div>)
       }
-      if (isExpanded) ul.push(<hr></hr>)
+      if (isExpanded) ul.push(<hr
+        key={Math.random()}></hr>)
     }
 
     list.unshift(<li
@@ -77,7 +79,7 @@ export default function RequestsPop({ close, setPicker }: Props) {
         </button>
           : <button
             className="copy-prods"
-            onClick={() => { console.log(el.notification_id) }}
+            onClick={() => { RequestNotificationState(el.notification_id) }}
           >
             <FontAwesomeIcon icon={faQuestionCircle} />
           </button>
@@ -92,10 +94,10 @@ export default function RequestsPop({ close, setPicker }: Props) {
     </li>)
   }
 
-  React.useEffect(()=>{
+  React.useEffect(() => {
     if (divRef.current) {
       divRef.current.scrollTop = divRef.current.scrollTop
-    } 
+    }
   })
 
   const Alert = () => {

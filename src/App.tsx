@@ -85,7 +85,7 @@ export default function App({ userData }: Props) {
   const [error, setError] = React.useState<{ type: "error" | "info"| "warn", text: string, cancel?: boolean } | undefined>(undefined)
   const [session, setSession] = React.useState<sessionType | undefined>(undefined)
   const [config, setConfig] = React.useState(defaultConfig)
-  const [page, setPage] = React.useState<"main" | "picker">("main")
+  const [page, setPageState] = React.useState<"main" | "picker">("main")
   const [displayMode, setDisplayState] = React.useState<"map" | "view">("map")
   const [localHistorial, setLocalHistorial] = React.useState<histStructure | undefined>(undefined)
   const [loading, setLoading] = React.useState<string | undefined>(undefined)
@@ -101,6 +101,14 @@ export default function App({ userData }: Props) {
   const [currentTable, setCurrentState] = React.useState<string | undefined>(undefined)
   const [picker, setPicker] = React.useState<Item[][]>([[]])
   let pickerOn = (picker.length !== 1 || (picker[0] && picker[0].length !== 0))
+
+  const setPage = (val: "main" | "picker")=>{
+    setError({type: "info", text: "Cargando..."})
+    setTimeout(()=>{
+      setError(undefined)
+      setPageState(val)
+    },150)
+  }
 
   const setCurrent = (id: string, creating: boolean) => {
     if (!creating) {
@@ -335,6 +343,12 @@ export default function App({ userData }: Props) {
       setLoading("request-products")
     }
   }
+  const RequestNotificationState = (_id:string) => {
+    if (conn) {
+      conn.send({ type: "request-notification-state", data: _id})
+      setLoading("request-notification-state")
+    }
+  }
 
 
   const displays: { [key: string]: any } = {
@@ -491,6 +505,7 @@ export default function App({ userData }: Props) {
         RequestHistorial={RequestHistorial}
         RequestTables={RequestTables}
         RequestProds={RequestProds}
+        RequestNotificationState={RequestNotificationState}
         prods={prods}
         setPicker={(val: Item[][])=>{
           setPicker(val)
