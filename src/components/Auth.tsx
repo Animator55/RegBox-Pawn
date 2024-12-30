@@ -67,7 +67,7 @@ const createSession = (name: string, password: string, domain: string) => {
   }
   if (boolean) return { type: "error", data: "Usuario ya existente en el dominio." }
 
-  let id = `${name}${Math.round((Math.random() * Math.random()) * 100000)}`
+  let id = `${name}&%_/${Math.round((Math.random() * Math.random()) * 100000)}`
   let userData = {
     _id: id,
     name,
