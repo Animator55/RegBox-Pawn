@@ -63,11 +63,16 @@ const generateSession = (id: string, name: string, core: string) => {
 let timestamp: number | undefined = undefined
 let tableScroll = 0
 
-const addMessageToRequestHistorial = (message: any)=>{
+const addMessageToRequestHistorial = (message: SingleEvent | undefined, noti_id?: string,state?: boolean)=>{
   let stor = window.localStorage.getItem("RegBoxPawn_requestHistorial")
-  let newData = {}
+  let newData: {[key:string]: SingleEvent} = {}
   if(stor !== null) newData = JSON.parse(stor)
-  window.localStorage.setItem("RegBoxPawn_requestHistorial", JSON.stringify({...newData, [message.notification_id]: message}))
+  if(!newData) return
+  let messageChecked = message === undefined && noti_id ? newData[noti_id] : message
+
+  if(!messageChecked || !messageChecked.notification_id) return
+  let newMessage = state ? {...messageChecked, recieved: state} : messageChecked
+  window.localStorage.setItem("RegBoxPawn_requestHistorial", JSON.stringify({...newData, [messageChecked.notification_id]: newMessage}))
 }
 
 const setStoragedData = (entry: "products"|"tables",data: any)=>{
@@ -80,6 +85,8 @@ const getStoragedData = (entry: "products"|"tables")=>{
   if(stor === null || stor === undefined) return entry === "products" ? {} : []
   return JSON.parse(stor)
 }
+
+let noti_id_var = ""
 
 export default function App({ userData }: Props) {
   const [error, setError] = React.useState<{ type: "error" | "info"| "warn", text: string, cancel?: boolean } | undefined>(undefined)
@@ -138,6 +145,7 @@ export default function App({ userData }: Props) {
                 addMessageToRequestHistorial(message)
                 if (conn) {
                   conn.send(message)
+                  noti_id_var = message.notification_id
                   setLoading("request")
                 }
               }
@@ -180,6 +188,7 @@ export default function App({ userData }: Props) {
                 addMessageToRequestHistorial(message)
                 if (conn) {
                   conn.send(message)
+                  noti_id_var = message.notification_id
                   setLoading("request")
                 }
               }
@@ -312,6 +321,7 @@ export default function App({ userData }: Props) {
         addMessageToRequestHistorial(message)
         if (conn) {
           conn.send(message)
+          noti_id_var = message.notification_id
           setLoading("request")
         }
       }
@@ -345,8 +355,8 @@ export default function App({ userData }: Props) {
   }
   const RequestNotificationState = (_id:string) => {
     if (conn) {
-      conn.send({ type: "request-notification-state", data: _id})
-      setLoading("request-notification-state")
+      conn.send({ type: "request-notification_state", data: _id})
+      setLoading("request-notification_state")
     }
   }
 
@@ -433,23 +443,29 @@ export default function App({ userData }: Props) {
           setStoragedData("tables", data.data.tables)
           setLoading(undefined)
         }
-        if (data.type === "historial") {
+        else if (data.type === "historial") {
           setLocalHistorial(data.data)
           setLoading(undefined)
         }
-        if (data.type === "tables") {
+        else if (data.type === "tables") {
           setTablePlaces(data.data)
           setStoragedData("tables", data.data)
           setLoading(undefined)
         }
-        if (data.type === "prods") {
+        else if (data.type === "prods") {
           setProds(data.data)
           setStoragedData("products", data.data)
           setLoading(undefined)
         }
-        if (data.type === "confirm") {
+        else if (data.type === "notification_state") {
+          addMessageToRequestHistorial(undefined, data.data._id, data.data.state)
+          setLoading(undefined)
+        }
+        else if (data.type === "notification") {
+          console.log("notification recieved", data)
+          addMessageToRequestHistorial(undefined, data._id, data.state)
           let button = document.querySelector(".refresh") as HTMLButtonElement
-          if (button) button.click()
+          if (button) button.click() /// not working
         }
         else if (data.type === "error") {
           alert("Ocurrió un error, actualize la conexión.")
@@ -481,13 +497,11 @@ export default function App({ userData }: Props) {
 
   React.useEffect(() => {
     if (loading === "request") {
-      timestamp = setTimeout(() => {
-        setLoading("reconnect")
-      }, 10000)
-    }
-    else if (loading === "reconnect") {
-      if (conn) {
-        conn.send({ type: "request-notification" })
+      if(conn) {
+        conn.send({type: "request-notification", data: noti_id_var})
+        timestamp = setTimeout(() => {
+          setLoading(undefined)
+        }, 10000)
       }
     }
     else if (loading === undefined && timestamp !== undefined) {
@@ -553,6 +567,7 @@ export default function App({ userData }: Props) {
             addMessageToRequestHistorial(message)
             if (conn) {
               conn.send(message)
+              noti_id_var = message.notification_id
               setLoading("request")
             }
           }

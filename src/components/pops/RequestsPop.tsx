@@ -2,7 +2,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import "../../assets/pops.css"
 import { SingleEvent } from "../../vite-env"
-import { faCaretDown, faClipboard, faQuestionCircle, faWarning, faXmark } from "@fortawesome/free-solid-svg-icons"
+import { faCaretDown, faCheck, faClipboard, faQuestionCircle, faWarning, faXmark } from "@fortawesome/free-solid-svg-icons"
 import React from "react"
 
 type Props = {
@@ -60,10 +60,10 @@ export default function RequestsPop({ close, setPicker, RequestNotificationState
         {(isExpanded) && <>
           <button
             className="copy-prods"
-            onClick={() => { console.log(el.notification_id) }}
+            onClick={() => { RequestNotificationState(el.notification_id) }}
             style={{ animationDelay: "100ms" }}
           >
-            <FontAwesomeIcon icon={faQuestionCircle} />
+            <FontAwesomeIcon icon={el.recieved ? faCheck : faQuestionCircle} />
           </button>
           <button className="copy-prods" onClick={() => { setPicker(el.products) }}>
             <FontAwesomeIcon icon={faClipboard} />
@@ -81,7 +81,7 @@ export default function RequestsPop({ close, setPicker, RequestNotificationState
             className="copy-prods"
             onClick={() => { RequestNotificationState(el.notification_id) }}
           >
-            <FontAwesomeIcon icon={faQuestionCircle} />
+            <FontAwesomeIcon icon={el.recieved ? faCheck : faQuestionCircle} />
           </button>
         }
       </header>

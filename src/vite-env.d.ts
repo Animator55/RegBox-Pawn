@@ -29,6 +29,7 @@ export type SingleEvent = {
     timestamp: string
     _id?: string
     name?: string
+    recieved?: boolean
     notification_id?: string //only for notification events
     accepted?: boolean | undefined /// only for notification events
     products?: Item[][] /// only for notification events
